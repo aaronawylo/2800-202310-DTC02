@@ -11,8 +11,6 @@ const port = process.env.PORT || 3000;
 
 const bcrypt = require('bcrypt');
 
-// const usersModel = require('./models/users');
-
 const saltRounds = 12;
 
 const Joi = require('joi');
@@ -89,7 +87,7 @@ function adminAuthorization(req, res, next) {
   }
 }
 
-app.get('/', (req, res) => {
+app.get('/', (req, res) => {});
 
 
 // Alex's code
