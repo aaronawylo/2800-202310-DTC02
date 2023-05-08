@@ -113,3 +113,11 @@ app.get()
 app.get()
 
 // End of Derek's code
+
+app.get("*", (req, res) => {
+    res.status(404).render("404.ejs");
+  });
+  
+  app.listen(port, () => {
+    console.log("Listening on port " + port + "!");
+    });
