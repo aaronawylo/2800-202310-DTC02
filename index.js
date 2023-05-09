@@ -87,30 +87,27 @@ function adminAuthorization(req, res, next) {
   }
 }
 
-app.get('/', (req, res) => {});
-
-
 // Alex's code
 
-app.get()
+
 
 // End of Alex's code
 
 // Marco's code
 
-app.get()
+
 
 // End of Marco's code
 
 // Aaron's Code
 
-app.get()
+
 
 // End of Aaron's code
 
 // Derek's code
 
-app.get()
+
 
 // End of Derek's code
 
@@ -118,6 +115,6 @@ app.get("*", (req, res) => {
     res.status(404).render("404.ejs");
   });
   
-  app.listen(port, () => {
+app.listen(port, () => {
     console.log("Listening on port " + port + "!");
-    });
+  });
