@@ -100,8 +100,20 @@ function adminAuthorization(req, res, next) {
 // End of Marco's code
 
 // Aaron's Code
-
-
+app.use(express.static('public'));
+app.get('/', (req, res) => {
+  if (isValidSession(req)){
+    res.render('index.ejs', {
+      "loggedIn": true,
+      "name": req.session.username,
+    })
+  }
+  else{
+    res.render('index.ejs', {
+      "loggedIn": false
+    })
+  }
+})
 
 // End of Aaron's code
 
