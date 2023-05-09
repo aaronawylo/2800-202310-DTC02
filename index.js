@@ -106,6 +106,39 @@ function adminAuthorization(req, res, next) {
 // End of Aaron's code
 
 // Derek's code
+app.get('/login', (req, res) => {
+  var invalidLogin = req.query.invalidLogin
+  if (isValidSession(req)){
+    res.render('login.ejs', {"loggedIn": true}, )
+  }
+  else{
+    res.render('login.ejs', {"loggedIn": false, "invalidLogin": invalidLogin}, )
+}
+})
+
+app.post('/loginSubmit', async (req, res) => {
+  var email = req.body.email
+  var password = req.body.password
+  const emailValidation = Joi.string().email().validate(req.body.email)
+  const passwordValidation = Joi.string().max(20).validate(req.body.password)
+  if (emailValidation.error != null || passwordValidation.error != null) {
+      res.redirect("/login?invalidLogin=true")
+      return
+  }
+  
+  var user = await usersModel.find({ email: email })
+  if (user.length > 0) {
+      const isMatch = await bcrypt.compareSync(password, user[0].password)
+      if (!isMatch) { res.redirect(`/login?invalidLogin=true`) }
+      else {
+          req.session.authenticated = true
+          req.session.username = user[0].username
+          req.session.cookie.maxAge = 60 * 60 * 1000;
+          res.redirect('/members')
+      }
+  }
+  else { res.redirect(`/login?invalidLogin=true`) }
+})
 
 
 
