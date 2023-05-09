@@ -1,0 +1,29 @@
+<% if (loggedIn) { %>
+    <div class= "container"> 
+        <h1> You are already logged in. </h1>
+        <a href='/logout'>
+            <button name='logout' type='text'>Log Out</button>
+            </a>
+    </div>
+    
+    <% } else { %>
+    <div class = "container">
+        <h1>Login</h1>
+    <form action='/loginSubmit' method='post'>
+        <div class="mb-3">
+            <label class="form-label">Email Address</label>
+            <input name='email' type='text' class="form-control">
+          </div>
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input name='password' class="form-control"  type='password'>
+        </div>
+        <button type="submit" class="btn btn-dark">Submit</button>
+      </form>
+    
+    <% if (invalidLogin) { %>
+        <h1>Invalid Email/Password Combination. Please try again.</h1>
+        <% } %>
+      </div>
+    
+    <% } %>
