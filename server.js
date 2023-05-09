@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-require('./index.js')
-
 main().catch(err => console.log(err));
 
 async function main() {

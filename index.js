@@ -128,7 +128,7 @@ app.post('/loginSubmit', async (req, res) => {
   
   var user = await usersModel.find({ email: email })
   if (user.length > 0) {
-      const isMatch = await bcrypt.compareSync(password, user[0].password)
+      const isMatch = bcrypt.compareSync(password, user[0].password)
       if (!isMatch) { res.redirect(`/login?invalidLogin=true`) }
       else {
           req.session.authenticated = true
