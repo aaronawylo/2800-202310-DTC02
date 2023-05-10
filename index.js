@@ -104,7 +104,7 @@ app.post('/signup', async (req, res) => {
 
   // Validate input
   const schema = Joi.object({
-    email: Joi.string().email().required(),
+    email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
     username: Joi.string().alphanum().min(3).max(20).required(),
     password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
     experience: Joi.string().required(),
@@ -116,7 +116,9 @@ app.post('/signup', async (req, res) => {
     experience,
   });
   if (validationResult.error) {
-    res.status(400).send(`Invalid username or password characters. <a href="/">Go back to home</a>`);
+    console.log(validationResult.error);
+    // res.status(400).send(`Invalid username or password characters or email format. <a href="/">Go back to home</a>`);
+    res.status(400).send(`${validationResult.error.message}. <a href="/">Go back to home</a>`);
     return;
   }
 
@@ -145,7 +147,7 @@ app.post('/signup', async (req, res) => {
 
   // Create new user
   const newUser = {
-    email: hashedEmail,
+    email: email,
     username: username,
     password: hashedPassword,
     experience: experience,
