@@ -34,6 +34,7 @@ const node_session_secret = process.env.NODE_SESSION_SECRET;
 
 var {database} = include('databaseConnection')
 
+const gamesModel = database.db(mongodb_database).collection('games')
 const usersModel = database.db(mongodb_database).collection('users')
 
 app.use(express.urlencoded({ extended: false }));
@@ -145,8 +146,10 @@ app.get('/logout', (req, res) => {
   res.redirect('/')
 })
 
-app.get("/gameInformation", (req, res) => {
-  res.render("gameinfo.ejs")
+app.get("/gameInformation", async (req, res) => {
+  const result = await gamesModel.findOne({title: "Elden Ring"})
+  console.log(result)
+  res.render("gameinfo.ejs", {"game": result})
 })
 
 // End of Derek's code

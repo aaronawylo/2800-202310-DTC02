@@ -1,0 +1,7 @@
+<h1> 
+    <!-- <%= game.reviews[0].replace(/\\/g, "") %> -->
+    <% game.reviews.forEach(function(review){ %>
+        <%= review.replace(/\\n/g, "").replace(/\\/g, "") %>
+        <br>
+    <% }) %>
+</h1>
