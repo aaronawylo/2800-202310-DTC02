@@ -115,6 +115,10 @@ app.get('/', (req, res) => {
   }
 })
 
+app.get('/questionnaire', sessionValidation, (req, res) => {
+  res.render('questionnaire.ejs')
+})
+
 // End of Aaron's code
 
 // Derek's code
