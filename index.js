@@ -140,7 +140,14 @@ app.post('/loginSubmit', async (req, res) => {
   else { res.redirect(`/login?invalidLogin=true`) }
 })
 
+app.get('/logout', (req, res) => {
+  req.session.destroy()
+  res.redirect('/')
+})
 
+app.get("/gameInformation", (req, res) => {
+  res.render("gameinfo.ejs")
+})
 
 // End of Derek's code
 
