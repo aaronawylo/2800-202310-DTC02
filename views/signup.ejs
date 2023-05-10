@@ -1,3 +1,34 @@
-<h1>
-    Signup
-</h1>
+<%- include("templates/header") %>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+                <h1>Sign Up</h1>
+                <form method='post' action='/signup'>
+                    <div class="form-group">
+                        <label for='email'>Email:</label>
+                        <input type='text' class="form-control" id='email' name='email' required>
+                    </div>
+                    <div class="form-group">
+                        <label for='username'>Username:</label>
+                        <input type='text' class="form-control" id='username' name='username' required>
+                    </div>
+                    <div class="form-group">
+                        <label for='password'>Password:</label>
+                        <input type='password' class="form-control" id='password' name='password' required>
+                    </div>
+                    <!-- create a dropdown menu letting the user choose one of four options -->
+                    <div class="form-group">
+                        <label for='experience'Experience:</label>
+                        <!-- the value of the form should update to the opttion selected -->
+                        <select type='experience' class="form-select" id='experience' name='experience' required>
+                            <option value='beginner'>Beginner Gamer</option>
+                            <option value='casual'>Casual Gamer</option>
+                            <option value='hardcore'>Hardcore Gamer</option>
+                        </select>
+                    </form>
+                    <br>
+                    <button type='submit' class="btn btn-primary">Sign Up</button>
+            </div>
+        </div>
+    </div>
+    <%- include("templates/footer") %>
