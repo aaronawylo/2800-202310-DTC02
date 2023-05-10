@@ -120,7 +120,7 @@ app.get('/', (req, res) => {
 // Derek's code
 app.get('/login', (req, res) => {
   var invalidLogin = req.query.invalidLogin
-  if (isValidSession(req)){
+  if (req.session.authenticated){
     res.render('login.ejs', {"loggedIn": true}, )
   }
   else{
@@ -131,28 +131,31 @@ app.get('/login', (req, res) => {
 app.post('/loginSubmit', async (req, res) => {
   var email = req.body.email
   var password = req.body.password
-  const emailValidation = Joi.string().email().validate(req.body.email)
-  const passwordValidation = Joi.string().max(20).validate(req.body.password)
+  const emailValidation = Joi.string().email().validate(email)
+  const passwordValidation = Joi.string().max(20).validate(password)
   if (emailValidation.error != null || passwordValidation.error != null) {
       res.redirect("/login?invalidLogin=true")
       return
   }
   
-  var user = await usersModel.find({ email: email })
-  if (user.length > 0) {
-      const isMatch = bcrypt.compareSync(password, user[0].password)
+  var user = await usersModel.findOne({ email: email })
+  if (user != null) {
+      const isMatch = bcrypt.compareSync(password, user.password)
       if (!isMatch) { res.redirect(`/login?invalidLogin=true`) }
       else {
           req.session.authenticated = true
-          req.session.username = user[0].username
+          req.session.username = user.username
           req.session.cookie.maxAge = 60 * 60 * 1000;
-          res.redirect('/members')
+          res.redirect('/login')
       }
   }
   else { res.redirect(`/login?invalidLogin=true`) }
 })
 
-
+app.get('/logout', (req, res) => {
+  req.session.destroy()
+  res.redirect('/')
+})
 
 // End of Derek's code
 
