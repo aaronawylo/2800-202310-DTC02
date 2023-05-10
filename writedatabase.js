@@ -36,13 +36,13 @@ async function main() {
 //                 await gameModel.create({
 //                     title: game.Title,
 //                     releaseDate: game.Release_Date,
-//                     team: game.Team.slice(1, -1).split(", ").map((element) => element.replace(/^'/, "").replace(/'$/, "").replace(/'/g, "\\'")), // slice, split, and map method code taken from chatgpt May 10, 2023 Sprint #3 by Derek
+//                     team: game.Team.slice(1, -1).split(", ").map((element) => element.replace(/^'/, "").replace(/'$/, "").replace(/'/g, "\\'")), // slice, split, and map method code adapted from chatgpt May 10, 2023 Sprint #3 by Derek
 //                     rating: game.Rating,
 //                     times_listed: game.Times_Listed,
 //                     number_of_reviews: game.Number_of_Reviews,
-//                     genres: game.Genres.slice(1, -1).split(", ").map((element) => element.replace(/^'/, "").replace(/'$/, "").replace(/'/g, "\\'")), // slice, split, and map method code taken from chatgpt May 10, 2023 Sprint #3 by Derek
+//                     genres: game.Genres.slice(1, -1).split(", ").map((element) => element.replace(/^'/, "").replace(/'$/, "").replace(/'/g, "\\'")), // slice, split, and map method code adapted taken from chatgpt May 10, 2023 Sprint #3 by Derek
 //                     summary: game.Summary,
-//                     reviews: game.Reviews.slice(1, -1).split(", ").map((element) => element.replace(/^'/, "").replace(/'$/, "").replace(/'/g, "\\'")), 
+//                     reviews: game.Reviews.slice(1, -1).split(", ").map((element) => element.replace(/^'/, "").replace(/'$/, "").replace(/'/g, "\\'")), // slice, split, and map method code adapted taken from chatgpt May 10, 2023 Sprint #3 by Derek
 //                     plays: game.Plays,
 //                     playing: game.Playing,
 //                     backlogs: game.Backlogs,
@@ -54,3 +54,9 @@ async function main() {
 // }
 
 // writeToMongodb()
+
+// const str = "['won't', 'can't']";
+// const arr = str.slice(1, -1).split(", ").map(elem => elem.slice(1, -1));
+// console.log(arr); // output: ["won't", "can't"]
+
+

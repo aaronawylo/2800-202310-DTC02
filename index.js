@@ -119,7 +119,7 @@ app.get('/', (req, res) => {
 // End of Aaron's code
 
 // Derek's code
-app.get('/login', (req, res) => {
+app.get('/login', (req, res) => { // code from Derek Tran's COMP 2537 Assignment 2, modified to check if user is already logged in
   var invalidLogin = req.query.invalidLogin
   if (req.session.authenticated){
     res.render('login.ejs', {"loggedIn": true}, )
@@ -129,8 +129,7 @@ app.get('/login', (req, res) => {
 }
 })
 
-app.post('/loginSubmit', async (req, res) => {
-  var email = req.body.email
+app.post('/loginSubmit', async (req, res) => { // code from Derek Tran's COMP 2537 Assignment 2  var email = req.body.email
   var password = req.body.password
   const emailValidation = Joi.string().email().validate(email)
   const passwordValidation = Joi.string().max(20).validate(password)
@@ -159,8 +158,8 @@ app.get('/logout', (req, res) => {
 })
 
 app.get("/gameInformation", async (req, res) => {
-  const result = await gamesModel.findOne({title: "Elden Ring"})
-  console.log(result)
+  gameTitle = "Undertale"
+  const result = await gamesModel.findOne({title: gameTitle})
   res.render("gameinfo.ejs", {"game": result})
 })
 
