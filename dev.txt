@@ -1,1 +1,28 @@
 Initial commit on dev to create branch.
+
+Aaron - Using the dev.txt to store my thought process on random things
+
+questionnaire thoughts:
+
+Questions to ask:
+
+1) Genres liked: 
+    List of genres:
+
+2) Rating:
+    Minimum rating that you want to see:
+    Sort by rating
+
+3) Release Date:
+    Having a certain cutoff for Date
+    Sort by date released
+
+4) Wishlist:
+    Are you adventurous enough to try games that people want to but haven't tried?
+
+5) Playing:
+    Do you want to lay games other people are currently playing?
+
+6) Which platforms do you play on?
+    Nintendo, PC (Valve, Blizzard), Playstation (Sony, Naughty Dog), XBox (Bethesda)
+
