@@ -1,0 +1,80 @@
+<%- include('./templates/header.ejs', { "name": name }) %>
+    <main>
+        <h1>
+            Trending Games
+        </h1>
+        <div class="row">
+            <%- include('./templates/trending_card.ejs') %>
+                <%- include('./templates/trending_card.ejs') %>
+                    <%- include('./templates/trending_card.ejs') %>
+        </div>
+        <div class="row">
+            <%- include('./templates/trending_card.ejs') %>
+                <%- include('./templates/trending_card.ejs') %>
+                    <%- include('./templates/trending_card.ejs') %>
+        </div>
+        <div class="row">
+            <%- include('./templates/trending_card.ejs') %>
+                <%- include('./templates/trending_card.ejs') %>
+                    <%- include('./templates/trending_card.ejs') %>
+        </div>
+        <script>
+        </script>
+        <!-- <script>
+                $(document).ready(function () {
+                    $.ajax({
+                        url: "https://steamspy.com/api.php?request=top100in2weeks",
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'Access-Control-Allow-Origin': '*', // allow CORS
+                        },
+                        type: "GET", /* or type:"GET" or type:"PUT" */
+                        dataType: "json",
+                        data: {
+                        },
+                        success: function (res) {
+                            console.log(res);
+                            function showmovies(my_input) {
+                                console.log(my_input);
+                                $("button").css({
+                                    'background-color': ''
+                                });
+                                $(`.${my_input}`).css({
+                                    'background-color': '#feb1b0'
+                                });
+                                $("main").empty()
+                                two_movies = res.data.movies.slice(my_input - 2, my_input)
+                                two_movies.forEach(function (movie) {
+                                    $("main").append(
+                                        `<div class="movie">
+                        <img src="${movie.large_cover_image}" alt="${movie.title}" class=movimg>
+                        </div>`
+                                    );
+                                });
+                            }
+                            showmovies(2);
+                            $("button").click(function () {
+                                var rank = parseInt(this.className.substring(0, 2))
+                                if ($(this).attr("id") == "prev") {
+                                    rank -= 2;
+                                } else if ($(this).attr("id") == "next") {
+                                    rank += 2;
+                                }
+                                $("button").attr("disabled", false);
+                                document.getElementById("prev").className = Math.max(parseInt(rank)) + 'prev';
+                                document.getElementById("next").className = Math.min(parseInt(rank)) + 'next';
+                                if (parseInt(rank) - 2 == 0) {
+                                    $("#prev").attr("disabled", true);
+                                }
+                                else if (parseInt(rank) + 2 == 22) {
+                                    $("#next").attr("disabled", true);
+                                }
+                                showmovies(rank);
+                            });
+                        }
+                    });
+                });
+            </script> -->
+    </main>
+    <!-- import trending.js -->
+    <%- include('./templates/footer.ejs') %>
