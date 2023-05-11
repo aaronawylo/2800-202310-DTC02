@@ -1,5 +1,5 @@
     <% if (loggedIn) { %>
-        <%- include('templates/header.ejs') %>
+        <%- include('templates/header.ejs', { name: name }) %>
         <div>
             <h1>Welcome, <%= name %>
             </h1>

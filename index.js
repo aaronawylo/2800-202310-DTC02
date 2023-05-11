@@ -171,7 +171,10 @@ app.post('/signup', async (req, res) => {
 });
 
 app.get('/trending', (req, res) => {
-  res.render('trending_page.ejs', { "loggedIn": true },)
+  res.render('trending_page.ejs', { 
+    "loggedIn": true,
+    "name": req.session.username,
+  },)
 })
 // End of Alex's code
 
@@ -224,7 +227,8 @@ app.get('/questionnaire', sessionValidation, (req, res) => {
     "Visual Novel"
 ]
   res.render('questionnaire.ejs', {
-    "genres": genres
+    "genres": genres,
+    "name": req.session.username,
   })
 })
 
@@ -268,7 +272,7 @@ var questionnaireInfo = {
 // push the questionnaireInfo array to the database
 username = req.session.username
 usersModel.updateOne({"username": username}, {$set: {"questionnaireInfo": questionnaireInfo}})
-res.render('questionnaireSubmit.ejs', { "questionnaireInfo": questionnaireInfo })
+res.render('questionnaireSubmit.ejs', { "name": req.session.username })
 })
 
 
