@@ -156,10 +156,12 @@ app.post('/signup', async (req, res) => {
   await usersModel.insertOne(newUser);
 
   // Log in user
-  req.session.user = newUser;
+  req.session.authenticated = true
+  req.session.username = req.body.username
+  req.session.cookie.maxAge = 1 * 60 * 60 * 1000;
 
   // Redirect to members area
-  res.redirect('/members');
+  res.redirect('/');
 });
 
 
