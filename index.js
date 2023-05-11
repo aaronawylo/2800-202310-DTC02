@@ -87,6 +87,13 @@ function adminAuthorization(req, res, next) {
   }
 }
 
+
+// Testing route
+app.get('/test', (req, res) => {
+  res.render('questionnaireSubmit.ejs')
+})
+
+
 // Alex's code
 
 
