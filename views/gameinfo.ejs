@@ -14,8 +14,20 @@
       <button class="nav-link" id="pills-stats-tab" data-bs-toggle="pill" data-bs-target="#pills-stats" type="button" role="tab" aria-controls="pills-stat" aria-selected="false">Stats</button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Similar Games</button>
+        <button class="nav-link" id="pills-similar-games-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-similar-games" aria-selected="false">Similar Games</button>
       </li>
+    <li class="nav-item" role="presentation">
+        <form action="/saveGame" method="post">
+        <input type="hidden" name = "game" value = "<%= game %>"></input>
+        <button class="nav-link" id="pills-save-tab" name = "purpose" 
+         value = "<% if (saved) { %>
+            'unsave'
+            <% } else { %>   'save' <% } %>"
+        data-bs-toggle="pill" data-bs-target="#pills-contact" type="submit" role="tab" aria-controls="pills-contact" aria-selected="false"><% if (saved) { %>
+            Unsave
+            <% } else { %>   Save <% } %></button>
+        </form>
+    </li>
    
   </ul>
   <div class="tab-content container" id="pills-tabContent">

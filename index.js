@@ -158,9 +158,29 @@ app.get('/logout', (req, res) => {
 })
 
 app.get("/gameInformation", async (req, res) => {
-  gameTitle = "Undertale"
+  const gameTitle = "Undertale"
+  const saved = false
   const result = await gamesModel.findOne({title: gameTitle})
-  res.render("gameinfo.ejs", {"game": result})
+  res.render("gameinfo.ejs", {"game": result, "saved": saved})
+})
+
+
+app.post('/saveGame', async (req, res) => {
+  if (req.session.authenticated){
+    const gameTitle = req.body.game._id
+    const purpose = req.body.purpose
+    if (purpose == "save"){
+      await usersModel.updateOne({username: req.session.username}, {$push: {savedGames: gameTitle}})
+      res.redirect('/gameInformation')
+    }
+    else {
+      await usersModel.updateOne({username: req.session.username}, {$pull: {savedGames: gameTitle}})
+      res.redirect('/gameInformation')
+    }
+  }
+  else{
+    res.redirect('/login')
+  }
 })
 
 // End of Derek's code
