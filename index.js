@@ -92,6 +92,23 @@ app.get('/test', (req, res) => {
   res.render('questionnaireSubmit.ejs')
 })
 
+// End Test route
+
+app.use(express.static('public'));
+app.get('/', (req, res) => {
+  if (isValidSession(req)) {
+    res.render('index.ejs', {
+      "loggedIn": true,
+      "name": req.session.username,
+    })
+  }
+  else {
+    res.render('index.ejs', {
+      "loggedIn": false
+    })
+  }
+})
+
 
 // Alex's code
 // Render the sign up form
@@ -185,20 +202,6 @@ app.get('/trending', (req, res) => {
 // End of Marco's code
 
 // Aaron's Code
-app.use(express.static('public'));
-app.get('/', (req, res) => {
-  if (isValidSession(req)) {
-    res.render('index.ejs', {
-      "loggedIn": true,
-      "name": req.session.username,
-    })
-  }
-  else {
-    res.render('index.ejs', {
-      "loggedIn": false
-    })
-  }
-})
 
 app.get('/questionnaire', sessionValidation, (req, res) => {
   var genres = [
