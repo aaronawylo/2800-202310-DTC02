@@ -2,6 +2,8 @@ Initial commit on dev to create branch.
 
 Aaron - Using the dev.txt to store my thought process on random things
 
+REMINDERS: Questionnaire page should be members only, it is free right now
+
 questionnaire thoughts:
 
 Questions to ask:

@@ -146,6 +146,49 @@ app.get('/questionnaire', (req, res) => {
   })
 })
 
+app.post('/questionnaireSubmit', (req, res) => {
+  var genres = [
+    "Adventure",
+    "Arcade",
+    "Brawler",
+    "Card & Board Game",
+    "Fighting",
+    "Indie",
+    "MOBA",
+    "Music",
+    "Pinball",
+    "Platform",
+    "Point-and-Click",
+    "Puzzle",
+    "Quiz/Trivia",
+    "RPG",
+    "Racing",
+    "Real Time Strategy",
+    "Shooter",
+    "Simulator",
+    "Sport",
+    "Strategy",
+    "Tactical",
+    "Turn Based Strategy",
+    "Visual Novel"
+]
+// create an array of all of the info from the questionnaire.ejs form
+var userGenres = []
+for (var i = 0; i < genres.length; i++){
+  if (req.body[genres[i]] == "true"){
+    userGenres.push(genres[i])
+  }
+}
+var questionnaireInfo = {
+  "minRating": req.body.minRating,
+  "genres": userGenres,
+}
+// push the questionnaireInfo array to the database
+username = req.session.username
+usersModel.updateOne({"username": username}, {$set: {"questionnaireInfo": questionnaireInfo}})
+res.render('questionnaireSubmit.ejs', { "questionnaireInfo": questionnaireInfo })
+})
+
 
 
 
