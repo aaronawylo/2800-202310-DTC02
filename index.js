@@ -146,7 +146,7 @@ app.post('/loginSubmit', async (req, res) => {
           req.session.authenticated = true
           req.session.username = user.username
           req.session.cookie.maxAge = 60 * 60 * 1000;
-          res.redirect('/login')
+          res.redirect('/')
       }
   }
   else { res.redirect(`/login?invalidLogin=true`) }
