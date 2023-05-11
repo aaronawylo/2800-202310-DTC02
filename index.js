@@ -122,7 +122,7 @@ app.get('/', (req, res) => {
   }
 })
 
-app.get('/questionnaire', (req, res) => {
+app.get('/questionnaire', sessionValidation, (req, res) => {
   var genres = [
     "Adventure",
     "Arcade",
@@ -153,7 +153,7 @@ app.get('/questionnaire', (req, res) => {
   })
 })
 
-app.post('/questionnaireSubmit', (req, res) => {
+app.post('/questionnaireSubmit', sessionValidation, (req, res) => {
   var genres = [
     "Adventure",
     "Arcade",
