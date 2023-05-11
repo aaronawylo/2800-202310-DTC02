@@ -115,9 +115,39 @@ app.get('/', (req, res) => {
   }
 })
 
-app.get('/questionnaire', sessionValidation, (req, res) => {
-  res.render('questionnaire.ejs')
+app.get('/questionnaire', (req, res) => {
+  var genres = [
+    "Adventure",
+    "Arcade",
+    "Brawler",
+    "Card & Board Game",
+    "Fighting",
+    "Indie",
+    "MOBA",
+    "Music",
+    "Pinball",
+    "Platform",
+    "Point-and-Click",
+    "Puzzle",
+    "Quiz/Trivia",
+    "RPG",
+    "Racing",
+    "Real Time Strategy",
+    "Shooter",
+    "Simulator",
+    "Sport",
+    "Strategy",
+    "Tactical",
+    "Turn Based Strategy",
+    "Visual Novel"
+]
+  res.render('questionnaire.ejs', {
+    "genres": genres
+  })
 })
+
+
+
 
 // End of Aaron's code
 

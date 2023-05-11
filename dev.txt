@@ -26,3 +26,29 @@ Questions to ask:
 6) Which platforms do you play on?
     Nintendo, PC (Valve, Blizzard), Playstation (Sony, Naughty Dog), XBox (Bethesda)
 
+[
+    "",
+    "Adventure",
+    "Arcade",
+    "Brawler",
+    "Card & Board Game",
+    "Fighting",
+    "Indie",
+    "MOBA",
+    "Music",
+    "Pinball",
+    "Platform",
+    "Point-and-Click",
+    "Puzzle",
+    "Quiz/Trivia",
+    "RPG",
+    "Racing",
+    "Real Time Strategy",
+    "Shooter",
+    "Simulator",
+    "Sport",
+    "Strategy",
+    "Tactical",
+    "Turn Based Strategy",
+    "Visual Novel"
+]
