@@ -22,7 +22,6 @@ app.set('view engine', 'ejs');
 // cookie expire time is one hour
 const expireTime = 1000 * 60 * 60;
 
-
 // Secret information section
 const mongodb_host = process.env.MONGODB_HOST;
 const mongodb_user = process.env.MONGODB_USER;
@@ -97,7 +96,9 @@ app.get('/test', (req, res) => {
 // Alex's code
 
 
-
+app.get('/trending', (req, res) => {
+  res.render('trending_page.ejs', { "loggedIn": true },)
+})
 // End of Alex's code
 
 // Marco's code
