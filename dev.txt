@@ -1,1 +1,62 @@
 Initial commit on dev to create branch.
+
+Aaron - Using the dev.txt to store my thought process on random things
+
+REMINDERS: Questionnaire page should be members only, it is free right now
+
+questionnaire thoughts:
+
+Questions to ask:
+
+1) Genres liked: 
+    List of genres:
+
+2) Rating:
+    Minimum rating that you want to see:
+    Sort by rating
+
+3) Release Date:
+    Having a certain cutoff for Date
+    Sort by date released
+
+4) Wishlist:
+    Are you adventurous enough to try games that people want to but haven't tried?
+
+5) Playing:
+    Do you want to lay games other people are currently playing?
+
+6) Which platforms do you play on?
+    Nintendo, PC (Valve, Blizzard), Playstation (Sony, Naughty Dog), XBox (Bethesda)
+
+[
+    "",
+    "Adventure",
+    "Arcade",
+    "Brawler",
+    "Card & Board Game",
+    "Fighting",
+    "Indie",
+    "MOBA",
+    "Music",
+    "Pinball",
+    "Platform",
+    "Point-and-Click",
+    "Puzzle",
+    "Quiz/Trivia",
+    "RPG",
+    "Racing",
+    "Real Time Strategy",
+    "Shooter",
+    "Simulator",
+    "Sport",
+    "Strategy",
+    "Tactical",
+    "Turn Based Strategy",
+    "Visual Novel"
+]
+
+//saving original checkbox code
+<div class="form-check checkbox-xl">
+    <input class="form-check-input" type="checkbox" id="<%= genre%>Checkbox" name="<%= genre%>" value="<%= genre%>">
+    <label class="form-check-label" for="<%= genre%>Checkbox"><%= genre%></label>
+</div>
