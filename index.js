@@ -34,6 +34,9 @@ const node_session_secret = process.env.NODE_SESSION_SECRET;
 var { database } = include('databaseConnection')
 
 const usersModel = database.db(mongodb_database).collection('users')
+const gamesModel = database.db(mongodb_database).collection('games')
+
+const { ObjectId } = require('mongodb')
 
 app.use(express.urlencoded({ extended: false }));
 
@@ -187,11 +190,46 @@ app.post('/signup', async (req, res) => {
   res.redirect('/');
 });
 
-app.get('/trending', (req, res) => {
-  res.render('trending_page.ejs', { 
+app.get('/trending', async (req, res) => {
+  // var trending_games = await gamesModel.find({}, { title: 1, _id: 0 }).sort({ rating: -1 }).collation({ locale: "en_US", numericOrdering: true }).limit(9).toArray()
+  var trending_games = await gamesModel.find().limit(9).toArray()
+  res.render('trending_page.ejs', {
     "loggedIn": true,
     "name": req.session.username,
+    "trending_games": trending_games
   },)
+})
+
+app.get('/profile', async (req, res) => {
+  if (req.session.authenticated) {
+    // console.log(req.session)
+    // console.log(req)
+    var current_user = await usersModel.findOne({ username: req.session.username })
+    var all_games = await gamesModel.find().toArray()
+    if (current_user.questionnaireInfo == undefined) {
+      genres = []
+    } else {
+      genres = current_user.questionnaireInfo.genres
+    }
+    if (current_user.savedGames == undefined) {
+      games = []
+    } else {
+      games = current_user.savedGames
+    }
+    res.render('User_Profile.ejs', {
+      "loggedIn": true,
+      "name": current_user.username,
+      "email": current_user.email,
+      "experience": current_user.experience,
+      "games": games,
+      "genres": genres,
+      "all_games": all_games
+    })
+  }
+
+  else {
+    res.redirect('/login');
+  }
 })
 // End of Alex's code
 
@@ -228,7 +266,7 @@ app.get('/questionnaire', sessionValidation, (req, res) => {
     "Tactical",
     "Turn Based Strategy",
     "Visual Novel"
-]
+  ]
   res.render('questionnaire.ejs', {
     "genres": genres,
     "name": req.session.username,
@@ -260,22 +298,22 @@ app.post('/questionnaireSubmit', sessionValidation, (req, res) => {
     "Tactical",
     "Turn Based Strategy",
     "Visual Novel"
-]
-// create an array of all of the info from the questionnaire.ejs form
-var userGenres = []
-for (var i = 0; i < genres.length; i++){
-  if (req.body[genres[i]] == "true"){
-    userGenres.push(genres[i])
+  ]
+  // create an array of all of the info from the questionnaire.ejs form
+  var userGenres = []
+  for (var i = 0; i < genres.length; i++) {
+    if (req.body[genres[i]] == "true") {
+      userGenres.push(genres[i])
+    }
   }
-}
-var questionnaireInfo = {
-  "minRating": req.body.minRating,
-  "genres": userGenres,
-}
-// push the questionnaireInfo array to the database
-username = req.session.username
-usersModel.updateOne({"username": username}, {$set: {"questionnaireInfo": questionnaireInfo}})
-res.render('questionnaireSubmit.ejs', { "name": req.session.username })
+  var questionnaireInfo = {
+    "minRating": req.body.minRating,
+    "genres": userGenres,
+  }
+  // push the questionnaireInfo array to the database
+  username = req.session.username
+  usersModel.updateOne({ "username": username }, { $set: { "questionnaireInfo": questionnaireInfo } })
+  res.render('questionnaireSubmit.ejs', { "name": req.session.username })
 })
 
 
@@ -287,10 +325,10 @@ res.render('questionnaireSubmit.ejs', { "name": req.session.username })
 app.get('/login', (req, res) => {
   var invalidLogin = req.query.invalidLogin
   if (req.session.authenticated) {
-    res.render('login.ejs', { "loggedIn": true },)
+    res.redirect('/')
   }
   else {
-    res.render('login.ejs', { "loggedIn": false, "invalidLogin": invalidLogin },)
+    res.render('login.ejs', { "invalidLogin": invalidLogin })
   }
 })
 
@@ -322,6 +360,69 @@ app.get('/logout', (req, res) => {
   req.session.destroy()
   res.redirect('/')
 })
+
+app.get('/resetPassword', (req, res) => {
+  var invalidEmail = req.query.invalidEmail
+  res.render('resetPassword.ejs', { "invalidEmail": invalidEmail })
+})
+
+app.post('/resetPasswordSubmit', async (req, res) => {
+  var email = req.body.email
+  var password = req.body.password
+  var user = await usersModel.findOne({ email: email })
+  if (user != null) {
+    const hashedPassword = await bcrypt.hash(password, saltRounds)
+    await usersModel.findOneAndUpdate({ email: email }, { $set: { password: hashedPassword } })
+    req.session.authenticated = true
+    req.session.username = user.username
+    req.session.cookie.maxAge = 60 * 60 * 1000;
+    res.redirect('/')
+  }
+
+  else { res.redirect(`/resetPassword?invalidEmail=true`) }
+})
+
+app.post("/gameInformation", async (req, res) => {
+  const gameID = req.body.gameID
+  const saved = await usersModel.findOne({
+    $and: [
+      { username: req.session.username },
+      { "savedGames": { $in: [(new ObjectId(gameID))] } }
+    ]
+  }
+  )
+  const isSaved = saved != null
+  console.log(isSaved)
+  const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
+  if (req.session.authenticated) {
+    res.render("gameinfo.ejs", { "game": game, "saved": isSaved, "name": req.session.username, "loggedIn": true })
+  }
+  else {
+    res.render("gameinfo.ejs", { "game": game, "saved": isSaved, "loggedIn": false })
+  }
+
+})
+
+
+app.post('/saveGame', async (req, res) => {
+  if (req.session.authenticated) {
+    const gameTitle = req.body.game
+    const purpose = req.body.purpose
+    const game = await gamesModel.findOne({ "_id": new ObjectId(gameTitle) })
+    if (purpose == "save") {
+      await usersModel.updateOne({ username: req.session.username }, { $push: { savedGames: new ObjectId(gameTitle) } })
+      res.render("gameinfo.ejs", { "game": game, "saved": true, "name": req.session.username, "loggedIn": true })
+    }
+    else {
+      await usersModel.updateOne({ username: req.session.username }, { $pull: { savedGames: new ObjectId(gameTitle) } })
+      res.render("gameinfo.ejs", { "game": game, "saved": false, "name": req.session.username, "loggedIn": true })
+    }
+  }
+  else {
+    res.redirect('/login')
+  }
+})
+
 
 // End of Derek's code
 

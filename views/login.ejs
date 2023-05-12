@@ -1,14 +1,4 @@
-<% if (loggedIn) { %>
-  <%- include('./templates/header.ejs', { "name": name }) %>
-    <div class= "container"> 
-        <h1> You are already logged in. </h1>
-        <a href='/logout'>
-            <button name='logout' type='text' class="btn btn-dark">Log Out</button>
-            </a>
-    </div>
-    
-    <% } else { %>
-      <%- include('./templates/headerloggedout.ejs') %>
+  <%- include('./templates/headerloggedout.ejs') %>
     <div class = "container">
         <h1>Login</h1>
     <form action='/loginSubmit' method='post'>
@@ -20,6 +10,11 @@
             <label class="form-label">Password</label>
             <input name='password' class="form-control"  type='password'>
         </div>
+        <a href="/resetPassword"> 
+        Forget Your Password?
+        </a>
+        <br>
+        <br>
         <button type="submit" class="btn btn-dark">Submit</button>
       </form>
     
@@ -28,6 +23,5 @@
         <% } %>
       </div>
     
-    <% } %>
 
 <%- include('./templates/footer.ejs') %>
