@@ -196,6 +196,30 @@ app.get('/trending', (req, res) => {
     "name": req.session.username,
   },)
 })
+
+app.get('/profile', async (req, res) => {
+  if (req.session.authenticated) {
+    // console.log(req.session)
+    // console.log(req)
+    var current_user = await usersModel.findOne({username: req.session.username})
+    var all_games = await gamesModel.find().toArray()
+    // console.log(all_games)
+    // console.log(all_users)
+    res.render('User_Profile.ejs', { 
+      "loggedIn": true, 
+      "name": current_user.username,
+      "email": current_user.email,
+      "experience": current_user.experience,
+      "games": current_user.savedGames,
+      "genres": current_user.questionnaireInfo.genres,
+      "all_games": gamesModel
+     })
+  }
+
+  else {
+    res.redirect('/login');
+  }
+})
 // End of Alex's code
 
 // Marco's code
