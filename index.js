@@ -275,7 +275,7 @@ var questionnaireInfo = {
 // push the questionnaireInfo array to the database
 username = req.session.username
 usersModel.updateOne({"username": username}, {$set: {"questionnaireInfo": questionnaireInfo}})
-res.render('questionnaireSubmit.ejs', { "name": req.session.username })
+res.render('questionnaireSubmit.ejs', {"name": req.session.username })
 })
 
 
@@ -323,6 +323,26 @@ app.get('/logout', (req, res) => {
   res.redirect('/')
 })
 
+app.get('/resetPassword', (req, res) => {
+  var invalidEmail = req.query.invalidEmail
+  res.render('resetPassword.ejs', { "invalidEmail": invalidEmail })
+  })
+
+app.post('/resetPasswordSubmit', async (req, res) => {
+  var email = req.body.email
+  var password = req.body.password
+  var user = await usersModel.findOne({ email: email })
+  if (user != null) {
+    const hashedPassword = await bcrypt.hash(password, saltRounds)
+      await usersModel.findOneAndUpdate({ email: email }, { $set: { password: hashedPassword } })
+      req.session.authenticated = true
+      req.session.username = user.username
+      req.session.cookie.maxAge = 60 * 60 * 1000;
+      res.redirect('/')
+    }
+  
+  else {res.redirect(`/resetPassword?invalidEmail=true`) }
+})
 // End of Derek's code
 
 app.get("*", (req, res) => {

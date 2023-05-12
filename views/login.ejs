@@ -1,5 +1,5 @@
 <% if (loggedIn) { %>
-  <%- include('./templates/header.ejs', { "name": name }) %>
+  <%- include('./templates/header.ejs',  { name: name }) %>
     <div class= "container"> 
         <h1> You are already logged in. </h1>
         <a href='/logout'>
@@ -20,6 +20,11 @@
             <label class="form-label">Password</label>
             <input name='password' class="form-control"  type='password'>
         </div>
+        <a href="/resetPassword"> 
+        Forget Your Password?
+        </a>
+        <br>
+        <br>
         <button type="submit" class="btn btn-dark">Submit</button>
       </form>
     
