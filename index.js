@@ -191,7 +191,7 @@ app.post('/signup', async (req, res) => {
 });
 
 app.get('/trending', (req, res) => {
-  res.render('trending_page.ejs', { 
+  res.render('trending_page.ejs', {
     "loggedIn": true,
     "name": req.session.username,
   },)
@@ -201,19 +201,27 @@ app.get('/profile', async (req, res) => {
   if (req.session.authenticated) {
     // console.log(req.session)
     // console.log(req)
-    var current_user = await usersModel.findOne({username: req.session.username})
+    var current_user = await usersModel.findOne({ username: req.session.username })
     var all_games = await gamesModel.find().toArray()
-    // console.log(all_games)
-    // console.log(all_users)
-    res.render('User_Profile.ejs', { 
-      "loggedIn": true, 
+    if (current_user.questionnaireInfo == undefined) {
+      genres = []
+    } else {
+      genres = current_user.questionnaireInfo.genres
+    }
+    if (current_user.savedGames == undefined) {
+      games = []
+    } else {
+      games = current_user.savedGame
+    }
+    res.render('User_Profile.ejs', {
+      "loggedIn": true,
       "name": current_user.username,
       "email": current_user.email,
       "experience": current_user.experience,
-      "games": current_user.savedGames,
-      "genres": current_user.questionnaireInfo.genres,
-      "all_games": gamesModel
-     })
+      "games": games,
+      "genres": genres,
+      "all_games": all_games
+    })
   }
 
   else {
@@ -255,7 +263,7 @@ app.get('/questionnaire', sessionValidation, (req, res) => {
     "Tactical",
     "Turn Based Strategy",
     "Visual Novel"
-]
+  ]
   res.render('questionnaire.ejs', {
     "genres": genres,
     "name": req.session.username,
@@ -287,22 +295,22 @@ app.post('/questionnaireSubmit', sessionValidation, (req, res) => {
     "Tactical",
     "Turn Based Strategy",
     "Visual Novel"
-]
-// create an array of all of the info from the questionnaire.ejs form
-var userGenres = []
-for (var i = 0; i < genres.length; i++){
-  if (req.body[genres[i]] == "true"){
-    userGenres.push(genres[i])
+  ]
+  // create an array of all of the info from the questionnaire.ejs form
+  var userGenres = []
+  for (var i = 0; i < genres.length; i++) {
+    if (req.body[genres[i]] == "true") {
+      userGenres.push(genres[i])
+    }
   }
-}
-var questionnaireInfo = {
-  "minRating": req.body.minRating,
-  "genres": userGenres,
-}
-// push the questionnaireInfo array to the database
-username = req.session.username
-usersModel.updateOne({"username": username}, {$set: {"questionnaireInfo": questionnaireInfo}})
-res.render('questionnaireSubmit.ejs', {"name": req.session.username })
+  var questionnaireInfo = {
+    "minRating": req.body.minRating,
+    "genres": userGenres,
+  }
+  // push the questionnaireInfo array to the database
+  username = req.session.username
+  usersModel.updateOne({ "username": username }, { $set: { "questionnaireInfo": questionnaireInfo } })
+  res.render('questionnaireSubmit.ejs', { "name": req.session.username })
 })
 
 
@@ -317,7 +325,7 @@ app.get('/login', (req, res) => {
     res.redirect('/')
   }
   else {
-    res.render('login.ejs', {"invalidLogin": invalidLogin })
+    res.render('login.ejs', { "invalidLogin": invalidLogin })
   }
 })
 
@@ -353,7 +361,7 @@ app.get('/logout', (req, res) => {
 app.get('/resetPassword', (req, res) => {
   var invalidEmail = req.query.invalidEmail
   res.render('resetPassword.ejs', { "invalidEmail": invalidEmail })
-  })
+})
 
 app.post('/resetPasswordSubmit', async (req, res) => {
   var email = req.body.email
@@ -361,50 +369,51 @@ app.post('/resetPasswordSubmit', async (req, res) => {
   var user = await usersModel.findOne({ email: email })
   if (user != null) {
     const hashedPassword = await bcrypt.hash(password, saltRounds)
-      await usersModel.findOneAndUpdate({ email: email }, { $set: { password: hashedPassword } })
-      req.session.authenticated = true
-      req.session.username = user.username
-      req.session.cookie.maxAge = 60 * 60 * 1000;
-      res.redirect('/')
-    }
-  
-  else {res.redirect(`/resetPassword?invalidEmail=true`) }
+    await usersModel.findOneAndUpdate({ email: email }, { $set: { password: hashedPassword } })
+    req.session.authenticated = true
+    req.session.username = user.username
+    req.session.cookie.maxAge = 60 * 60 * 1000;
+    res.redirect('/')
+  }
+
+  else { res.redirect(`/resetPassword?invalidEmail=true`) }
 })
 
 app.get("/gameInformation", async (req, res) => {
   const gameID = req.body.gameID
   const saved = await usersModel.findOne({
     $and: [
-      {username: req.session.username},
-      {"savedGames":{$in:[( new ObjectId(gameID))]}}
+      { username: req.session.username },
+      { "savedGames": { $in: [(new ObjectId(gameID))] } }
     ]
   }
-    )
+  )
   const isSaved = saved != null
-  const game = await gamesModel.findOne({"_id": new ObjectId(gameID)})
+  const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
   if (req.session.authenticated) {
-  res.render("gameinfo.ejs", {"game": game, "saved": isSaved, "name": req.session.username, "loggedIn": true})}
+    res.render("gameinfo.ejs", { "game": game, "saved": isSaved, "name": req.session.username, "loggedIn": true })
+  }
   else {
-    res.render("gameinfo.ejs", {"game": game, "saved": isSaved,"loggedIn": false})
+    res.render("gameinfo.ejs", { "game": game, "saved": isSaved, "loggedIn": false })
   }
 
-  })
+})
 
 
 app.post('/saveGame', async (req, res) => {
-  if (req.session.authenticated){
+  if (req.session.authenticated) {
     const gameTitle = req.body.game
     const purpose = req.body.purpose
-    if (purpose == "save"){
-      await usersModel.updateOne({username: req.session.username}, {$push: {savedGames: new ObjectId(gameTitle)}})
+    if (purpose == "save") {
+      await usersModel.updateOne({ username: req.session.username }, { $push: { savedGames: new ObjectId(gameTitle) } })
       res.redirect('/gameInformation')
     }
     else {
-      await usersModel.updateOne({username: req.session.username}, {$pull: {savedGames: new ObjectId(gameTitle)}})
+      await usersModel.updateOne({ username: req.session.username }, { $pull: { savedGames: new ObjectId(gameTitle) } })
       res.redirect('/gameInformation')
     }
   }
-  else{
+  else {
     res.redirect('/login')
   }
 })
