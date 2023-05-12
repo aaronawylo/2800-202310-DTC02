@@ -392,6 +392,7 @@ app.post("/gameInformation", async (req, res) => {
   }
   )
   const isSaved = saved != null
+  console.log(isSaved)
   const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
   if (req.session.authenticated) {
     res.render("gameinfo.ejs", { "game": game, "saved": isSaved, "name": req.session.username, "loggedIn": true })
