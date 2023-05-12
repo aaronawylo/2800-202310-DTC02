@@ -34,6 +34,9 @@ const node_session_secret = process.env.NODE_SESSION_SECRET;
 var { database } = include('databaseConnection')
 
 const usersModel = database.db(mongodb_database).collection('users')
+const gamesModel = database.db(mongodb_database).collection('games')
+
+const { ObjectId } = require('mongodb')
 
 app.use(express.urlencoded({ extended: false }));
 
@@ -287,10 +290,10 @@ res.render('questionnaireSubmit.ejs', {"name": req.session.username })
 app.get('/login', (req, res) => {
   var invalidLogin = req.query.invalidLogin
   if (req.session.authenticated) {
-    res.render('login.ejs', { "loggedIn": true },)
+    res.redirect('/')
   }
   else {
-    res.render('login.ejs', { "loggedIn": false, "invalidLogin": invalidLogin },)
+    res.render('login.ejs', {"invalidLogin": invalidLogin })
   }
 })
 
@@ -343,6 +346,46 @@ app.post('/resetPasswordSubmit', async (req, res) => {
   
   else {res.redirect(`/resetPassword?invalidEmail=true`) }
 })
+
+app.get("/gameInformation", async (req, res) => {
+  const gameID = req.body.gameID
+  const saved = await usersModel.findOne({
+    $and: [
+      {username: req.session.username},
+      {"savedGames":{$in:[( new ObjectId(gameID))]}}
+    ]
+  }
+    )
+  const isSaved = saved != null
+  const game = await gamesModel.findOne({"_id": new ObjectId(gameID)})
+  if (req.session.authenticated) {
+  res.render("gameinfo.ejs", {"game": game, "saved": isSaved, "name": req.session.username, "loggedIn": true})}
+  else {
+    res.render("gameinfo.ejs", {"game": game, "saved": isSaved,"loggedIn": false})
+  }
+
+  })
+
+
+app.post('/saveGame', async (req, res) => {
+  if (req.session.authenticated){
+    const gameTitle = req.body.game
+    const purpose = req.body.purpose
+    if (purpose == "save"){
+      await usersModel.updateOne({username: req.session.username}, {$push: {savedGames: new ObjectId(gameTitle)}})
+      res.redirect('/gameInformation')
+    }
+    else {
+      await usersModel.updateOne({username: req.session.username}, {$pull: {savedGames: new ObjectId(gameTitle)}})
+      res.redirect('/gameInformation')
+    }
+  }
+  else{
+    res.redirect('/login')
+  }
+})
+
+
 // End of Derek's code
 
 app.get("*", (req, res) => {
