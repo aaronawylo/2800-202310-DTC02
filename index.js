@@ -190,10 +190,13 @@ app.post('/signup', async (req, res) => {
   res.redirect('/');
 });
 
-app.get('/trending', (req, res) => {
+app.get('/trending', async (req, res) => {
+  // var trending_games = await gamesModel.find({}, { title: 1, _id: 0 }).sort({ rating: -1 }).collation({ locale: "en_US", numericOrdering: true }).limit(9).toArray()
+  var trending_games = await gamesModel.find().limit(9).toArray()
   res.render('trending_page.ejs', {
     "loggedIn": true,
     "name": req.session.username,
+    "trending_games": trending_games
   },)
 })
 
@@ -211,7 +214,7 @@ app.get('/profile', async (req, res) => {
     if (current_user.savedGames == undefined) {
       games = []
     } else {
-      games = current_user.savedGame
+      games = current_user.savedGames
     }
     res.render('User_Profile.ejs', {
       "loggedIn": true,
@@ -379,7 +382,7 @@ app.post('/resetPasswordSubmit', async (req, res) => {
   else { res.redirect(`/resetPassword?invalidEmail=true`) }
 })
 
-app.get("/gameInformation", async (req, res) => {
+app.post("/gameInformation", async (req, res) => {
   const gameID = req.body.gameID
   const saved = await usersModel.findOne({
     $and: [
@@ -404,13 +407,14 @@ app.post('/saveGame', async (req, res) => {
   if (req.session.authenticated) {
     const gameTitle = req.body.game
     const purpose = req.body.purpose
+    const game = await gamesModel.findOne({ "_id": new ObjectId(gameTitle) })
     if (purpose == "save") {
       await usersModel.updateOne({ username: req.session.username }, { $push: { savedGames: new ObjectId(gameTitle) } })
-      res.redirect('/gameInformation')
+      res.render("gameinfo.ejs", { "game": game, "saved": true, "name": req.session.username, "loggedIn": true })
     }
     else {
       await usersModel.updateOne({ username: req.session.username }, { $pull: { savedGames: new ObjectId(gameTitle) } })
-      res.redirect('/gameInformation')
+      res.render("gameinfo.ejs", { "game": game, "saved": false, "name": req.session.username, "loggedIn": true })
     }
   }
   else {
