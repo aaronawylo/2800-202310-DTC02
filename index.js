@@ -468,6 +468,14 @@ app.post('/saveToPlayed', async (req, res) => {
   }
 })
 
+app.post("/removeSaved" , async (req, res) => {
+  const gameID = req.body.gameID
+  await usersModel.updateOne({ username: req.session.username }, { $pull: { savedGames: new ObjectId(gameID) } })
+  res.redirect("/profile")
+})
+
+
+
 // End of Derek's code
 
 app.get("*", (req, res) => {
