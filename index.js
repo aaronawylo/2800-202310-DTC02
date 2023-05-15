@@ -316,6 +316,13 @@ app.post('/questionnaireSubmit', sessionValidation, (req, res) => {
   res.render('questionnaireSubmit.ejs', { "name": req.session.username })
 })
 
+// find a random game in the entire usersModel database and save the gameID as a POST request
+app.get('/randomGame', async (req, res) => {
+  var randomGame = await gamesModel.aggregate([{ $sample: { size: 1 } }]).toArray()
+  var gameID = randomGame[0]._id
+  res.render('randomGame.ejs', { "name": req.session.username, "gameID": gameID, "loggedIn": req.session.authenticated })
+})
+
 
 
 
