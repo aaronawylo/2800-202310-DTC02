@@ -320,7 +320,6 @@ app.post('/questionnaireSubmit', sessionValidation, (req, res) => {
 app.get('/randomGame', async (req, res) => {
   var randomGame = await gamesModel.aggregate([{ $sample: { size: 1 } }]).toArray()
   var gameID = randomGame[0]._id
-  
   res.render('randomGame.ejs', { "name": req.session.username, "gameID": gameID, "loggedIn": req.session.authenticated })
 })
 
@@ -400,7 +399,7 @@ app.post("/gameInformation", async (req, res) => {
   }
   )
   const isSaved = saved != null
-  console.log(isSaved)
+  // console.log(isSaved)
   const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
   if (req.session.authenticated) {
     res.render("gameinfo.ejs", { "game": game, "saved": isSaved, "name": req.session.username, "loggedIn": true })
