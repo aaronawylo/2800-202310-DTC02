@@ -193,6 +193,23 @@ app.post('/signup', async (req, res) => {
 app.get('/trending', async (req, res) => {
   // var trending_games = await gamesModel.find({}, { title: 1, _id: 0 }).sort({ rating: -1 }).collation({ locale: "en_US", numericOrdering: true }).limit(9).toArray()
   var trending_games = await gamesModel.find().limit(9).toArray()
+//   var my_request = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
+//     method: 'POST',
+//     headers: {
+//     'Client-ID': 'culgms7hbkoyqwn37h25ocnd1mwa1c',
+//     'Client-Secret': '4h5nsk1q8gco3ltiiwoparvr217bmg'
+//     }
+//   })  
+//  console.log(my_request)
+  fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
+    method: 'POST',
+    headers: {
+    'Client-ID': 'culgms7hbkoyqwn37h25ocnd1mwa1c',
+    'Client-Secret': '4h5nsk1q8gco3ltiiwoparvr217bmg'
+    }
+  })
+    .then(response => response.json())
+    .then(data => { console.log(data); })
   res.render('trending_page.ejs', {
     "loggedIn": true,
     "name": req.session.username,
