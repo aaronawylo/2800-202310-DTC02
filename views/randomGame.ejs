@@ -4,13 +4,31 @@
     <%- include ('./templates/headerloggedout.ejs') %>
 <% } %>
 
-<div>
+<div class="text-center">
+    
+</div>
+<br>
+<div style="position: relative">
     <form class="text-center" method="post" action="/gameInformation">
         <input type="hidden" name="gameID" value="<%= gameID %>">
-        <button type="submit" class="btn btn-primary btn-lg">Give me a random game!</button>
+        <input type="image" src="mario-mystery-box.gif" alt="Submit"></input>
     </form>
 </div>
-<!-- Your .ejs template -->
+
+<br>
+
+<div class="text-center">
+    <img src="up-arrow.png" alt="Up Arrow" width="100px">
+</div>
+
+<div class="text-center">
+    <h1>Hit me to go to a random game!</h1>
+</div>
+
+<div class="text-center">
+    <img src="contra.gif" alt="Contra Running" style="width: 100px">
+</div>
+
 <script>
     // Define the desired sequence
     const desiredSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
@@ -46,10 +64,10 @@
             enteredSequence = [];
         }
     }
-  
+
     // Add event listener for keydown event
     document.addEventListener('keydown', handleKeyDown);
-  </script>
-  
+</script>
+
 <%- include('templates/svgs.ejs') %>
 <%- include('templates/footer.ejs') %>
