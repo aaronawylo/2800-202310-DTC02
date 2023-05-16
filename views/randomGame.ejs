@@ -24,7 +24,9 @@
 <div class="text-center">
     <h1>Hit me to go to a random game!</h1>
 </div>
-
+<br>
+<br>
+<br>
 <div class="text-center">
     <img src="contra.gif" alt="Contra Running" style="width: 100px">
 </div>
@@ -47,9 +49,8 @@
         if (enteredSequence.join('') === desiredSequence.join('')) {
             console.log('Sequence matched!');
             // Perform desired action here
-            // Reset the entered sequence for the next input
-            res.redirect('/easterEgg')
-        // if eneteredSequence is less than length of desiredSequence, check if the enteredSequence is equal to the same length slice of desiredSequence
+            window.location.href = '/easterEgg';
+        // if enteredSequence is less than length of desiredSequence, check if the enteredSequence is equal to the same length slice of desiredSequence
         } else if (desiredSequence.length > enteredSequence.length) {
             if (enteredSequence.join('') === desiredSequence.slice(0, enteredSequence.length).join('')) {
                 return;
