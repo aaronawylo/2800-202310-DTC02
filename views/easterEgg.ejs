@@ -1,0 +1,22 @@
+<% if (loggedIn) { %>
+    <%- include ('./templates/header.ejs', {"name": name}) %>
+<% } else { %>
+    <%- include ('./templates/headerloggedout.ejs') %>
+<% } %>
+
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <img src="banana-dance.gif" alt="Banana Dance" width="100">
+        </div>
+        <div class="text-center col">
+            <iframe id="video" width="fill" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <div class="col text-center">
+            <img src="banana-dance.gif" alt="Banana Dance" width="100">
+        </div>
+    </div>
+</div>
+
+<%- include('templates/svgs.ejs') %>
+<%- include('templates/footer.ejs') %>
