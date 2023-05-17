@@ -191,8 +191,58 @@ app.post('/signup', async (req, res) => {
 });
 
 app.get('/trending', async (req, res) => {
-  // var trending_games = await gamesModel.find({}, { title: 1, _id: 0 }).sort({ rating: -1 }).collation({ locale: "en_US", numericOrdering: true }).limit(9).toArray()
   var trending_games = await gamesModel.find().limit(9).toArray()
+  var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
+  async function getTwitchData() {
+  const response = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
+    method: 'POST',
+    headers: {
+    'Client-ID': client_id,
+    'Client-Secret': '4h5nsk1q8gco3ltiiwoparvr217bmg'
+    }
+  })
+  const my_info = await response.json()
+  return my_info
+  }
+  const twitchData = await getTwitchData()
+  var gameNames = []
+ for (var i = 0; i < trending_games.length; i++) {
+    gameNames.push(trending_games[i].title)
+  }
+const my_string = gameNames.join('","')
+console.log(my_string)
+
+  async function getAllGames(gameNames) {
+    const response = await fetch('https://api.igdb.com/v4/games', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Client-ID': client_id,
+        'Authorization': 'Bearer ' + twitchData.access_token,
+      },
+      body: `fields name,cover.url; 
+      sort release_dates.date desc;
+      where release_dates.date != null;
+      where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}", "${gameNames[6]}", "${gameNames[7]}", "${gameNames[8]}", "${gameNames[9]}");`
+    })
+    const my_info = await response.json()
+    return my_info
+  }
+  const gameResponse = await getAllGames(gameNames)
+  console.log(gameResponse)
+  for (var i = 0; i < trending_games.length; i++) {
+    for (var j = 0; j < gameResponse.length; j++) {
+      if (trending_games[i].title == gameResponse[j].name) {
+        if (gameResponse[j].cover == undefined) {
+          trending_games[i].cover = "no-cover.png"
+        } else {
+          gameResponse[j].cover.url = gameResponse[j].cover.url.replace("t_thumb", "t_cover_big")
+          trending_games[i].cover = gameResponse[j].cover.url
+        }
+      }
+    }
+  }
+
   res.render('trending_page.ejs', {
     "loggedIn": true,
     "name": req.session.username,
