@@ -193,23 +193,102 @@ app.post('/signup', async (req, res) => {
 app.get('/trending', async (req, res) => {
   // var trending_games = await gamesModel.find({}, { title: 1, _id: 0 }).sort({ rating: -1 }).collation({ locale: "en_US", numericOrdering: true }).limit(9).toArray()
   var trending_games = await gamesModel.find().limit(9).toArray()
-//   var my_request = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
-//     method: 'POST',
-//     headers: {
-//     'Client-ID': 'culgms7hbkoyqwn37h25ocnd1mwa1c',
-//     'Client-Secret': '4h5nsk1q8gco3ltiiwoparvr217bmg'
-//     }
-//   })  
-//  console.log(my_request)
-  fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
+  // console.log(trending_games[0].title)
+var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
+  async function getTwitchData() {
+  const response = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
     method: 'POST',
     headers: {
-    'Client-ID': 'culgms7hbkoyqwn37h25ocnd1mwa1c',
+    'Client-ID': client_id,
     'Client-Secret': '4h5nsk1q8gco3ltiiwoparvr217bmg'
     }
   })
-    .then(response => response.json())
-    .then(data => { console.log(data); })
+  const my_info = await response.json()
+  return my_info
+  }
+  const twitchData = await getTwitchData()
+  // console.log(twitchData)
+  var gameNames = []
+ for (var i = 0; i < trending_games.length; i++) {
+    //  add trending_games[i].title to gameNames
+    gameNames.push(trending_games[i].title)
+  }
+  // console.log(gameNames)
+
+
+  async function getAllGames(gameNames) {
+    const response = await fetch('https://api.igdb.com/v4/games', {
+    // const response = await fetch('https://api.igdb.com/v4/artworks', {
+    // const response = await fetch('https://api.igdb.com/v4/covers', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Client-ID': client_id,
+        'Authorization': 'Bearer ' + twitchData.access_token,
+      },
+      // body: `fields name,summary; where (name ~ "Elden Ring");`
+      // body: `fields name,summary; where name = ("Elden Ring", "Hades");`
+      // body: `fields name; where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}", "${gameNames[6]}", "${gameNames[7]}", "${gameNames[8]}", "${gameNames[9]}");`
+      // body: `fields name,cover; where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}", "${gameNames[6]}", "${gameNames[7]}", "${gameNames[8]}", "${gameNames[9]}");`
+      body: `fields name,cover.url; where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}", "${gameNames[6]}", "${gameNames[7]}", "${gameNames[8]}", "${gameNames[9]}");`
+      // body: `fields url; where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}", "${gameNames[6]}", "${gameNames[7]}", "${gameNames[8]}", "${gameNames[9]}");`
+      // body: `fields name,summary; where id = (1942, 1943);`
+    })
+    const my_info = await response.json()
+    return my_info
+  }
+  const gameResponse = await getAllGames(gameNames)
+  console.log(gameResponse)
+  // add the cover urls to the trending_games array
+  // match the game names to the game names in the trending_games array
+  for (var i = 0; i < trending_games.length; i++) {
+    for (var j = 0; j < gameResponse.length; j++) {
+      if (trending_games[i].title == gameResponse[j].name) {
+        if (gameResponse[j].cover == undefined) {
+          trending_games[i].cover = "https://www.igdb.com/images/missing_cover_big.png"
+        } else {
+          gameResponse[j].cover.url = gameResponse[j].cover.url.replace("t_thumb", "t_cover_big")
+          trending_games[i].cover = gameResponse[j].cover.url
+        }
+      }
+    }
+  }
+console.log(trending_games)
+  // async function getCoverUrls(gameCovers) {
+  //     // const response = await fetch('https://api.igdb.com/v4/artworks', {
+  //     const response = await fetch('https://api.igdb.com/v4/covers', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Client-ID': client_id,
+  //       'Authorization': 'Bearer ' + twitchData.access_token,
+  //     },
+  //     // body: `fields name; where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}", "${gameNames[6]}", "${gameNames[7]}", "${gameNames[8]}", "${gameNames[9]}");`
+  //     // body: `fields url; where id = (${cover_array[0]}, ${cover_array[1]}, ${cover_array[2]}, ${cover_array[3]}, ${cover_array[4]}, ${cover_array[5]}, ${cover_array[6]}, ${cover_array[7]}, ${cover_array[8]}, ${cover_array[9]});`
+  //       // body: `fields url; where id = ${cover_array[1]};`
+  //       // body: `fields url; where id = (222627, 212094);`
+  //       body: `fields url; where id = (${cover_array[0]}, ${cover_array[1]}, ${cover_array[2]}, ${cover_array[3]});`
+  //     // body: `fields url; where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}", "${gameNames[6]}", "${gameNames[7]}", "${gameNames[8]}", "${gameNames[9]}");`
+  //   })
+  //   const my_info = await response.json()
+  //   return my_info
+  // }
+  // const coverResponse = await getCoverUrls(cover_array)
+
+  // console.log(coverResponse)
+  // console.log(coverResponse.length)
+  // for every i in trending_games, add add field called cover_url and set it to coverResponse[i].url
+  // for (var i = 0; i < coverResponse.length; i++) {
+  //   trending_games[i].cover_url = coverResponse[i].url
+  // }
+  // console.log(trending_games)
+
+
+    
+
+
+
+
   res.render('trending_page.ejs', {
     "loggedIn": true,
     "name": req.session.username,
