@@ -46,6 +46,7 @@
                                 <p class="card-text"><%= trending_games[i].summary %></p>
                                 <form method="post" action="/gameInformation">
                                     <input type="hidden" name="gameID" value="<%= trending_games[(i)]._id %>">
+                                    <input type ="hidden" name="gameImage" value="<%= trending_games[(i)].cover %>">
                                     <button type="submit" class="btn btn-primary">See more information</button>
                                 </form>
                             </div>
