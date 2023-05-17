@@ -4,12 +4,13 @@
             Trending Games
         </h1>
         <% for (let i = 0; i < 3; i++) { %>
-            <% console.log(trending_games[i].title) %>
             <div class="row">
                 <% for (let j = 0; j < 3; j++) { %>
                     
                         <div class="card col text-center" style="width: 18rem;">
-                            <img src="ToTK.jpg" class="card-img-top" alt="Tears of the Kingdom">
+                            <img src="
+                            <%= trending_games[(i*3) + j].cover %>
+                            " class="card-img-top" alt="Tears of the Kingdom">
                             <div class="card-body">
                                 <h5 class="card-title"> <%= trending_games[(i*3) + j].title %> </h5>
                                 <p class="card-text"> <%= trending_games[(i*3) + j].summary %> </p>
