@@ -130,14 +130,14 @@
                                         <div class="container">
                                             <div class="row">
                                                 <form method="post" action="/gameInformation" class="col">
-                                                    <input type="hidden" name="gameID" value="<%= games[i] %>">
+                                                    <input type="hidden" name="gameID" value="<%= games[i]._id %>">
                                                     <button type="submit" class="mb-1 btn" style="font-size: .77rem;">
-                                                        <%= games[i] %>
+                                                        <%= games[i].name %>
                                                     </button>
                                                 </form>
                                                 <form method="post" action="/removeSaved" style="display: inline;"
                                                     class="col">
-                                                    <input type="hidden" name="gameID" value="<%= games[i] %>">
+                                                    <input type="hidden" name="gameID" value="<%= games[i]._id %>">
                                                     <button type="submit" class="mb-1 btn btn-outline-primary"
                                                         style="font-size: .77rem; ">Remove</button>
                                                 </form>
@@ -161,14 +161,14 @@
                                         <div class="container">
                                             <div class="row">
                                                 <form method="post" action="/gameInformation" class="col">
-                                                    <input type="hidden" name="gameID" value="<%= playedGames[i] %>">
+                                                    <input type="hidden" name="gameID" value="<%= playedGames[i]._id %>">
                                                     <button type="submit" class="mb-1 btn" style="font-size: .77rem;">
-                                                        <%= playedGames[i] %>
+                                                        <%= playedGames[i].name %>
                                                     </button>
                                                 </form>
                                                 <form method="post" action="/removePlayed" style="display: inline;"
                                                     class="col">
-                                                    <input type="hidden" name="gameID" value="<%= playedGames[i] %>">
+                                                    <input type="hidden" name="gameID" value="<%= playedGames[i]._id %>">
                                                     <button type="submit" class="mb-1 btn btn-outline-primary"
                                                         style="font-size: .77rem; ">Remove</button>
                                                 </form>

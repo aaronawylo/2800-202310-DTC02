@@ -452,10 +452,11 @@ app.post('/resetPasswordSubmit', async (req, res) => {
 
 app.post("/gameInformation", async (req, res) => {
   const gameID = req.body.gameID
+  const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
   const saved = await usersModel.findOne({
     $and: [
       { username: req.session.username },
-      { "savedGames": { $in: [(new ObjectId(gameID))] } }
+      { "savedGames": { $in: [{"name": game.title, "_id": new ObjectId(gameID)}] } }
     ]
   }
   )
@@ -463,14 +464,13 @@ app.post("/gameInformation", async (req, res) => {
   const history = await usersModel.findOne({
     $and: [
       { username: req.session.username },
-      { "playedGames": { $in: [(new ObjectId(gameID))] } }
+      { "playedGames": { $in: [{"name": game.title, "_id": new ObjectId(gameID)}] } }
     ]
   }
   )
   const isInHistory = history != null
   console.log(isSaved)
   console.log(isInHistory)
-  const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
   if (req.session.authenticated) {
     res.render("gameinfo.ejs", { "game": game, "saved": isSaved, "name": req.session.username, "loggedIn": true , "inHistory": isInHistory})
   }
@@ -483,23 +483,25 @@ app.post("/gameInformation", async (req, res) => {
 
 app.post('/saveGame', async (req, res) => { // save games to saved games list from game info page
   if (req.session.authenticated) {
-    const gameTitle = req.body.game
+    const gameID = req.body.game
     const purpose = req.body.purpose
-    const game = await gamesModel.findOne({ "_id": new ObjectId(gameTitle) })
+    const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
     const history = await usersModel.findOne({ // check if game is in history
       $and: [
         { username: req.session.username },
-        { "playedGames": { $in: [(new ObjectId(gameTitle))] } }
-      ]
-    }
-    )
+        { "playedGames": { $in: [{"name": game.title, "_id": new ObjectId(gameID)}] } }
+      ]})
     const isInHistory = history != null
     if (purpose == "save") {
-      await usersModel.updateOne({ username: req.session.username }, { $push: { savedGames: new ObjectId(gameTitle) } })
+      await usersModel.updateOne({ username: req.session.username }, { $push: { 
+        savedGames: {"name": game.title, "_id": new ObjectId(gameID)}
+      } })
       res.render("gameinfo.ejs", { "game": game, "saved": true, "name": req.session.username, "loggedIn": true , "inHistory": isInHistory})
     }
     else {
-      await usersModel.updateOne({ username: req.session.username }, { $pull: { savedGames: new ObjectId(gameTitle) } })
+      await usersModel.updateOne({ username: req.session.username }, { $pull: { 
+        savedGames: {"name": game.title, "_id": new ObjectId(gameID)}
+       } })
       res.render("gameinfo.ejs", { "game": game, "saved": false, "name": req.session.username, "loggedIn": true , "inHistory": isInHistory})
     }
   }
@@ -517,17 +519,17 @@ app.post('/saveToPlayed', async (req, res) => { // save games to played games li
     const saved = await usersModel.findOne({ // looks for the game in the user's saved games
       $and: [
         { username: req.session.username },
-        { "savedGames": { $in: [(new ObjectId(gameID))] } }
+        { "savedGames": { $in: [{"name": game.title, "_id": new ObjectId(gameID)}] } }
       ]
     }
     )
     const isSaved = saved != null 
     if (purpose == "mark") {
-      await usersModel.updateOne({ username: req.session.username }, { $push: { playedGames: new ObjectId(gameID) } })
+      await usersModel.updateOne({ username: req.session.username }, { $push: { playedGames: {"name": game.title, "_id": new ObjectId(gameID)}} })
       res.render("gameinfo.ejs", { "game": game, "saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": true })
     }
     else {
-      await usersModel.updateOne({ username: req.session.username }, { $pull: { playedGames: new ObjectId(gameID) } })
+      await usersModel.updateOne({ username: req.session.username }, { $pull: { playedGames: {"name": game.title, "_id": new ObjectId(gameID)} } })
       res.render("gameinfo.ejs", { "game": game, "saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": false })
     }
   }
@@ -538,13 +540,15 @@ app.post('/saveToPlayed', async (req, res) => { // save games to played games li
 
 app.post("/removeSaved" , async (req, res) => { // remove game from saved games list from profile page
   const gameID = req.body.gameID
-  await usersModel.updateOne({ username: req.session.username }, { $pull: { savedGames: new ObjectId(gameID) } })
+  const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
+  await usersModel.updateOne({ username: req.session.username }, { $pull: { savedGames: {"name": game.title, "_id": new ObjectId(gameID)} } })
   res.redirect("/profile")
 })
 
 app.post("/removePlayed" , async (req, res) => { // remove game from played games list from profile page
   const gameID = req.body.gameID
-  await usersModel.updateOne({ username: req.session.username }, { $pull: { playedGames: new ObjectId(gameID) } })
+  const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
+  await usersModel.updateOne({ username: req.session.username }, { $pull: { playedGames: {"name": game.title, "_id": new ObjectId(gameID)} } })
   res.redirect("/profile")
 })
 
