@@ -1,18 +1,46 @@
+<style>
+    #gameCard{
+        max-width: 33%;
+    }
+    @media screen and (max-width: 1500px){
+        #gameCard{
+            max-width: 33%;
+        }
+    }
+    @media screen and (max-width: 800px){
+        #gameCard{
+            max-width: 100%;
+        }
+    }
+
+    @media screen and (max-width: 576px){
+        .gameImage{
+            width: 100%;
+        }
+        
+        #gameCard{ 
+            max-width: 100%;
+        }
+    }
+    
+</style>
+
+
 <%- include('./templates/header.ejs', { "name": name }) %>
     <main>
         <h1>
             Trending Games
         </h1>
+        <div class="row">
         <% for (let i = 0; i < 9; i++) { %>
-            <div class="row">
-                <div class="card" style="max-width: 720px;">
+                <div class="card" id = gameCard>
                     <div class="row g-0">
-                        <div class="col">
+                        <div class="col-sm row-">
                             <img src="
                                 <%= trending_games[i].cover %>
-                                " class="img-fluid rounded-start" alt="Tears of the Kingdom">
+                                " class="img-fluid rounded-start gameImage" alt="Tears of the Kingdom">
                         </div>
-                        <div class="col">
+                        <div class="col-sm row-">
                              <div class="card-body">
                                 <h5 class="card-title"><%= trending_games[i].title %></h5>
                                 <p class="card-text"><%= trending_games[i].summary %></p>
@@ -24,8 +52,8 @@
                         </div>
                     </div>
                 </div>
+                <% } %>
             </div>
-        <% } %>
     </main>
     <%- include('./templates/footer.ejs') %>
 
