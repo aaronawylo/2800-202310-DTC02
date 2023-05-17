@@ -3,29 +3,30 @@
         <h1>
             Trending Games
         </h1>
-        <% for (let i = 0; i < 3; i++) { %>
+        <% for (let i = 0; i < 9; i++) { %>
             <div class="row">
-                <% for (let j = 0; j < 3; j++) { %>
-                    
-                        <div class="card col text-center" style="width: 18rem;">
+                <div class="card" style="max-width: 720px;">
+                    <div class="row g-0">
+                        <div class="col">
                             <img src="
-                            <%= trending_games[(i*3) + j].cover %>
-                            " class="card-img-top" alt="Tears of the Kingdom">
-                            <div class="card-body">
-                                <h5 class="card-title"> <%= trending_games[(i*3) + j].title %> </h5>
-                                <p class="card-text"> <%= trending_games[(i*3) + j].summary %> </p>
-                                <p> <%= trending_games[(i*3) + j].rating %> </p>
-                                <p> <%= trending_games[(i*3) + j]._id %> </p>
+                                <%= trending_games[i].cover %>
+                                " class="img-fluid rounded-start" alt="Tears of the Kingdom">
+                        </div>
+                        <div class="col">
+                             <div class="card-body">
+                                <h5 class="card-title"><%= trending_games[i].title %></h5>
+                                <p class="card-text"><%= trending_games[i].summary %></p>
                                 <form method="post" action="/gameInformation">
-                                    <input type="hidden" name="gameID" value="<%= trending_games[(i*3) + j]._id %>">
+                                    <input type="hidden" name="gameID" value="<%= trending_games[(i)]._id %>">
                                     <button type="submit" class="btn btn-primary">See more information</button>
                                 </form>
                             </div>
                         </div>
-                    
-                        <% } %>
+                    </div>
+                </div>
             </div>
-            <% } %>
-        </div>
+        <% } %>
     </main>
     <%- include('./templates/footer.ejs') %>
+
+    
