@@ -382,7 +382,9 @@ app.get('/randomGame', async (req, res) => {
   res.render('randomGame.ejs', { "name": req.session.username, "gameID": gameID, "loggedIn": req.session.authenticated })
 })
 
-
+app.get('/easterEgg', (req, res) => {
+  res.render('easterEgg.ejs', { "name": req.session.username, "loggedIn": req.session.authenticated })
+})
 
 
 // End of Aaron's code
