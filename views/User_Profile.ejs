@@ -5,9 +5,10 @@
                 <div class="col-lg-4">
                     <div class="card mb-4">
                         <div class="card-body text-center">
-                            <img src="peppy.png"
-                                alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
-                            <h5 class="my-3"><%= name %></h5>
+                            <img src="peppy.png" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
+                            <h5 class="my-3">
+                                <%= name %>
+                            </h5>
                             <p class="text-muted mb-1">Full Stack Developer</p>
                             <p class="text-muted mb-4">Bay Area, San Francisco, CA</p>
                             <div class="d-flex justify-content-center mb-2">
@@ -51,7 +52,9 @@
                                     <p class="mb-0">Username</p>
                                 </div>
                                 <div class="col-sm-9">
-                                    <p class="text-muted mb-0"><%= name %></p>
+                                    <p class="text-muted mb-0">
+                                        <%= name %>
+                                    </p>
                                 </div>
                             </div>
                             <hr>
@@ -60,7 +63,9 @@
                                     <p class="mb-0">Email</p>
                                 </div>
                                 <div class="col-sm-9">
-                                    <p class="text-muted mb-0"><%= email %></p>
+                                    <p class="text-muted mb-0">
+                                        <%= email %>
+                                    </p>
                                 </div>
                             </div>
                             <hr>
@@ -69,7 +74,9 @@
                                     <p class="mb-0">Gaming Experience</p>
                                 </div>
                                 <div class="col-sm-9">
-                                    <p class="text-muted mb-0"><%= experience %></p>
+                                    <p class="text-muted mb-0">
+                                        <%= experience %>
+                                    </p>
                                 </div>
                             </div>
                             <hr>
@@ -96,38 +103,89 @@
                         <div class="col-md-6">
                             <div class="card mb-4 mb-md-0">
                                 <div class="card-body">
-                                    <p class="mb-4"><span class="text-primary font-italic me-1">Genres</span> 
+                                    <p class="mb-4"><span class="text-primary font-italic me-1">Genres</span>
                                         <%= name %>'s Genres
                                     </p>
                                     <% for (let i=0; i < genres.length; i++) { %>
-                                        <p class="mb-1" style="font-size: .77rem;"><%= genres[i] %></p>
+                                        <p class="mb-1" style="font-size: .77rem;">
+                                            <%= genres[i] %>
+                                        </p>
                                         <div class="progress rounded" style="height: 5px;">
                                             <div class="progress-bar" role="progressbar" style="width: 500px"
-                                                    aria-valuenow="<%= genres[i].rating %>" aria-valuemin="0" aria-valuemax="100"></div>
+                                                aria-valuenow="<%= genres[i].rating %>" aria-valuemin="0"
+                                                aria-valuemax="100"></div>
                                         </div>
-                                    <% } %>
+                                        <% } %>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="card mb-4 mb-md-0">
                                 <div class="card-body">
-                                    <p class="mb-4"><span class="text-primary font-italic me-1">Games</span> 
-                                        <%= name %>'s Games
+                                    <p class="mb-4"><span class="text-primary font-italic me-1">Games</span>
+                                        <%= name %>'s Saved Games
                                     </p>
                                     <% for (let i=0; i < games.length; i++) { %>
-                                        <form method="post" action="/gameInformation">
-                                            <input type="hidden" name="gameID" value="<%= games[i] %>">
-                                            <button type="submit" class="mb-1 btn" style="font-size: .77rem;"><%= games[i] %></button>
-                                        </form>
-                                        <div class="progress rounded" style="height: 5px;">
-                                            <div class="progress-bar" role="progressbar" style="width: auto"
-                                                aria-valuemin="0" aria-valuemax="100"></div>
+
+                                        <div class="container">
+                                            <div class="row">
+                                                <form method="post" action="/gameInformation" class="col">
+                                                    <input type="hidden" name="gameID" value="<%= games[i] %>">
+                                                    <button type="submit" class="mb-1 btn" style="font-size: .77rem;">
+                                                        <%= games[i] %>
+                                                    </button>
+                                                </form>
+                                                <form method="post" action="/removeSaved" style="display: inline;"
+                                                    class="col">
+                                                    <input type="hidden" name="gameID" value="<%= games[i] %>">
+                                                    <button type="submit" class="mb-1 btn btn-outline-primary"
+                                                        style="font-size: .77rem; ">Remove</button>
+                                                </form>
+                                                <div class="progress rounded" style="height: 5px;">
+                                                    <div class="progress-bar" role="progressbar" style="width: auto;"
+                                                        aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    <% } %>
+                                        <% } %>
+                                </div>
+                            </div>
+
+                            <div class="card mb-4 mb-md-0">
+                                <div class="card-body">
+                                    <p class="mb-4"><span class="text-primary font-italic me-1">Games</span>
+                                        <%= name %>'s Played Games
+                                    </p>
+                                    <% for (let i=0; i < playedGames.length; i++) { %>
+
+                                        <div class="container">
+                                            <div class="row">
+                                                <form method="post" action="/gameInformation" class="col">
+                                                    <input type="hidden" name="gameID" value="<%= playedGames[i] %>">
+                                                    <button type="submit" class="mb-1 btn" style="font-size: .77rem;">
+                                                        <%= playedGames[i] %>
+                                                    </button>
+                                                </form>
+                                                <form method="post" action="/removePlayed" style="display: inline;"
+                                                    class="col">
+                                                    <input type="hidden" name="gameID" value="<%= playedGames[i] %>">
+                                                    <button type="submit" class="mb-1 btn btn-outline-primary"
+                                                        style="font-size: .77rem; ">Remove</button>
+                                                </form>
+                                                <div class="progress rounded" style="height: 5px;">
+                                                    <div class="progress-bar" role="progressbar" style="width: auto;"
+                                                        aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% } %>
                                 </div>
                             </div>
                         </div>
+
+                
+
+
                     </div>
                 </div>
             </div>

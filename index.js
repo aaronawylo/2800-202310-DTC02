@@ -216,6 +216,14 @@ app.get('/profile', async (req, res) => {
     } else {
       games = current_user.savedGames
     }
+
+    if (current_user.playedGames == undefined) {
+      playedGames = []
+    } else {
+      playedGames = current_user.playedGames
+    }
+
+
     res.render('User_Profile.ejs', {
       "loggedIn": true,
       "name": current_user.username,
@@ -223,7 +231,8 @@ app.get('/profile', async (req, res) => {
       "experience": current_user.experience,
       "games": games,
       "genres": genres,
-      "all_games": all_games
+      "all_games": all_games,
+      "playedGames": playedGames
     })
   }
 
@@ -420,12 +429,12 @@ app.post("/gameInformation", async (req, res) => {
 })
 
 
-app.post('/saveGame', async (req, res) => {
+app.post('/saveGame', async (req, res) => { // save games to saved games list from game info page
   if (req.session.authenticated) {
     const gameTitle = req.body.game
     const purpose = req.body.purpose
     const game = await gamesModel.findOne({ "_id": new ObjectId(gameTitle) })
-    const history = await usersModel.findOne({
+    const history = await usersModel.findOne({ // check if game is in history
       $and: [
         { username: req.session.username },
         { "playedGames": { $in: [(new ObjectId(gameTitle))] } }
@@ -448,19 +457,19 @@ app.post('/saveGame', async (req, res) => {
 })
 
 
-app.post('/saveToPlayed', async (req, res) => {
+app.post('/saveToPlayed', async (req, res) => { // save games to played games list from game info page
   if (req.session.authenticated) {
     const gameID = req.body.game
     const purpose = req.body.purpose
     const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
-    const saved = await usersModel.findOne({
+    const saved = await usersModel.findOne({ // looks for the game in the user's saved games
       $and: [
         { username: req.session.username },
         { "savedGames": { $in: [(new ObjectId(gameID))] } }
       ]
     }
     )
-    const isSaved = saved != null
+    const isSaved = saved != null 
     if (purpose == "mark") {
       await usersModel.updateOne({ username: req.session.username }, { $push: { playedGames: new ObjectId(gameID) } })
       res.render("gameinfo.ejs", { "game": game, "saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": true })
@@ -474,6 +483,20 @@ app.post('/saveToPlayed', async (req, res) => {
     res.redirect('/login')
   }
 })
+
+app.post("/removeSaved" , async (req, res) => { // remove game from saved games list from profile page
+  const gameID = req.body.gameID
+  await usersModel.updateOne({ username: req.session.username }, { $pull: { savedGames: new ObjectId(gameID) } })
+  res.redirect("/profile")
+})
+
+app.post("/removePlayed" , async (req, res) => { // remove game from played games list from profile page
+  const gameID = req.body.gameID
+  await usersModel.updateOne({ username: req.session.username }, { $pull: { playedGames: new ObjectId(gameID) } })
+  res.redirect("/profile")
+})
+
+
 
 // End of Derek's code
 
