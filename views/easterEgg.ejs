@@ -4,7 +4,7 @@
     <%- include ('./templates/headerloggedout.ejs') %>
 <% } %>
 
-<div class="container">
+<!-- <div class="container">
     <div class="row">
         <div class="col-md text-center">
             <img src="banana-dance.gif" alt="Banana Dance" width="100">
@@ -16,7 +16,90 @@
             <img src="banana-dance.gif" alt="Banana Dance" width="100">
         </div>
     </div>
+</div> -->
+
+<div class="container">
+    <div class="row mt-3">
+        <% let i=0; %>
+        <% for(i=0; i < 4; i++) { %>
+            <% if (i % 2 == 0) { %>
+                <div class="col-3">
+                    <img src="banana-dance.gif" class="img-fluid border-image" alt="Image 1">
+                </div>
+            <% } else { %>
+                <div class="col-3">
+                    <img src="snorlax-dumper.gif" class="img-fluid border-image" alt="Image 2">
+                </div>
+            <% } %>
+        <% } %>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="video-container">
+                <iframe id="video" width="fill" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <% let k=0; %>
+        <% for(k=0; k < 4; k++) { %>
+            <% if (k % 2 == 0) { %>
+                <div class="col-3">
+                    <img src="banana-dance.gif" class="img-fluid border-image" alt="Image 1">
+                </div>
+            <% } else { %>
+                <div class="col-3">
+                    <img src="snorlax-dumper.gif" class="img-fluid border-image" alt="Image 2">
+                </div>
+            <% } %>
+        <% } %>
+    </div>
 </div>
+
+<style>
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      padding-top: 30px;
+      height: 0;
+      overflow: hidden;
+    }
+    
+    .video-container iframe,
+    .video-container object,
+    .video-container embed {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .border-image {
+      padding: 10px;
+    }
+    
+    /* // css for images */
+    .img-fluid {
+      width: 233px;
+      height: 233px;
+    }
+
+    @media (max-width: 992px) {
+      .img-fluid {
+        width: 125px;
+        height: 125px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .img-fluid {
+        width: 75px;
+        height: 75px;
+      }
+    }
+</style>
+
 
 <%- include('templates/svgs.ejs') %>
 <%- include('templates/footer.ejs') %>
