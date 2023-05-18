@@ -564,7 +564,7 @@ const getSimilarGames = async (gameID) => {
   const gameGenres = game.genres
   const similarGames = await gamesModel.find({
     "_id": { $ne: new ObjectId(gameID) },
-     "genres": { $all: gameGenres } }).limit(6).toArray()
+     "genres": { $all: gameGenres } }).limit(8).toArray()
   var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
   async function getTwitchData() {
   const response = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
@@ -612,7 +612,6 @@ const my_string = gameNames.join('","')
       }
     }
   }
-  console.log(similarGames)
   return similarGames
 }
 // End of Derek's code
