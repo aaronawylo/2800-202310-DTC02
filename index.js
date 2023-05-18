@@ -594,7 +594,7 @@ const my_string = gameNames.join('","')
       body: `fields name,cover.url; 
       sort release_dates.date desc;
       where release_dates.date != null;
-      where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}", "${gameNames[6]}");`
+      where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}", "${gameNames[6]}", "${gameNames[7]}", "${gameNames[8]}");`
     })
     const my_info = await response.json()
     return my_info
@@ -612,7 +612,6 @@ const my_string = gameNames.join('","')
       }
     }
   }
-  console.log(similarGames)
   return similarGames
 }
 // End of Derek's code
