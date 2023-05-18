@@ -567,7 +567,11 @@ app.post("/removePlayed" , async (req, res) => { // remove game from played game
 // End of Derek's code
 
 app.get("*", (req, res) => {
-  res.status(404).render("404.ejs");
+
+  res.status(404).render("404.ejs", {
+  "loggedIn": req.session.authenticated,
+  "name": req.session.username,
+  });
 });
 
 app.listen(port, () => {

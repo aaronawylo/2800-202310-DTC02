@@ -1,0 +1,22 @@
+<% if (loggedIn) { %>
+    <%- include ('./templates/header.ejs', {"name": name}) %>
+<% } else { %>
+    <%- include ('./templates/headerloggedout.ejs') %>
+<% } %>
+
+<div class="text-center">
+
+    <img src="pom-pom-no.png" alt="Pom-Pom No">
+    <br>
+    <h3>404: Page Not Found</h3>
+    <br>
+    <p>Sorry, it looks like the Astral Express has left the building, please try a different planet!</p>
+    <br>
+    <a class="btn btn-primary" href="/">Return Home</a>
+
+</div>
+
+
+
+<%- include('templates/svgs.ejs') %>
+<%- include('templates/footer.ejs') %>
