@@ -600,18 +600,19 @@ const my_string = gameNames.join('","')
     return my_info
   }
   const gameResponse = await getAllGames(gameNames)
-  for (var i = 0; i < similarGames.length; i++) {
-    for (var j = 0; j < gameResponse.length; j++) {
-      if (similarGames[i].title == gameResponse[j].name) {
-        if (gameResponse[j].cover == undefined) {
-          similarGames[i].cover = "no-cover.png"
+  for (const similarGame of similarGames) {
+    for (const game of gameResponse) {
+      if (similarGame.title == game.name) {
+        if (game.cover===undefined) {
+          similarGame.cover = "no-cover.png"
         } else {
-          gameResponse[j].cover.url = gameResponse[j].cover.url.replace("t_thumb", "t_cover_big")
-          similarGames[i].cover = gameResponse[j].cover.url
+          game.cover.url = game.cover.url.replace("t_thumb", "t_cover_big")
+          similarGame.cover = game.cover.url
         }
       }
     }
   }
+  console.log(similarGames)
   return similarGames
 }
 // End of Derek's code
