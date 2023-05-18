@@ -79,3 +79,5 @@ What is your preferred price range for purchasing games?
 The gameplay element I like the most is ${gameFeature}
 The max price I would like spend is ${maxPrice}
 The platforms I own are ${platforms} (ARRAY)
+The number of player modes I want are ${playerNum} (ARRAY)
+The number of hours I play each week is ${hoursPlay}
