@@ -84,3 +84,4 @@ The number of hours I play each week is ${hoursPlay}
 
 
 Bug fix = still need icon on header and footer to go to main
+make sure all routes are protected
