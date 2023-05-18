@@ -11,6 +11,10 @@ const port = process.env.PORT || 3000;
 
 const bcrypt = require('bcrypt');
 
+const { Configuration, OpenAIApi } = require("openai"); require('dotenv').config()
+
+const configuration = new Configuration({ apiKey: process.env.OPENAI_API_KEY, }); const openai = new OpenAIApi(configuration);
+
 const saltRounds = 12;
 
 const Joi = require('joi');
@@ -98,8 +102,35 @@ app.get('/test', (req, res) => {
 // End Test route
 
 app.use(express.static('public'));
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
   if (isValidSession(req)) {
+    var current_user = await usersModel.findOne({ username: req.session.username })
+    // reccomendation code
+    async function generateRecommendations(userProfile) {
+      const preferredGenres = userProfile.questionnaireInfo.genres.join(", ");
+      const playerExperience = "Hardcore";
+      const playedGames = userProfile.playedGames.join(", ");
+      // const playedGames = playedGames.join(", ");
+      // const playedGames = ["Civilization VI", "Humankind", "Civilization V", "Settlers of Catan", "Minecraft", "The Long Dark"].join(", ");
+      const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and the games I have played in the past such as ${playedGames}, recommend 9 games I haven't played for me to play next in javascript array format.`;
+
+      // Generate a response using ChatGPT
+      const completion = await openai.createCompletion({
+        model: "text-davinci-003",
+        prompt: prompt,
+        max_tokens: 1000
+      });
+
+      // Extract the recommendations from the response
+      const recommendations = completion.data.choices[0].text;
+
+      return recommendations;
+    }
+    recommendedGames = await generateRecommendations(current_user)
+    console.log(recommendedGames)
+
+
+
     res.render('index.ejs', {
       "loggedIn": true,
       "name": req.session.username,
@@ -272,8 +303,6 @@ app.get('/profile', async (req, res) => {
     } else {
       playedGames = current_user.playedGames
     }
-
-
     res.render('User_Profile.ejs', {
       "loggedIn": true,
       "name": current_user.username,
