@@ -240,8 +240,6 @@ app.get('/trending', async (req, res) => {
  for (var i = 0; i < trending_games.length; i++) {
     gameNames.push(trending_games[i].title)
   }
-const my_string = gameNames.join('","')
-console.log(my_string)
 
   async function getAllGames(gameNames) {
     const response = await fetch('https://api.igdb.com/v4/games', {
@@ -625,7 +623,7 @@ const getSimilarGames = async (gameID) => {
  for (var i = 0; i < similarGames.length; i++) {
     gameNames.push(similarGames[i].title)
   }
-const my_string = gameNames.join('","')
+
   async function getAllGames(gameNames) {
     const response = await fetch('https://api.igdb.com/v4/games', {
       method: 'POST',
@@ -637,7 +635,8 @@ const my_string = gameNames.join('","')
       body: `fields name,cover.url; 
       sort release_dates.date desc;
       where release_dates.date != null;
-      where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}", "${gameNames[6]}", "${gameNames[7]}", "${gameNames[8]}");`
+      where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}", "${gameNames[6]}", "${gameNames[7]}", "${gameNames[8]}");
+      limit 50;`
     })
     const my_info = await response.json()
     return my_info
