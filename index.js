@@ -599,15 +599,7 @@ app.post("/removePlayed" , async (req, res) => { // remove game from played game
   res.redirect("/profile")
 })
 
-
-const getSimilarGames = async (gameID) => {
-  const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
-  const gameGenres = game.genres
-  const similarGames = await gamesModel.find({
-    "_id": { $ne: new ObjectId(gameID) },
-     "genres": { $all: gameGenres } }).limit(8).toArray()
-  var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
-  async function getTwitchData() {
+async function getTwitchData() {
   const response = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
     method: 'POST',
     headers: {
@@ -618,6 +610,19 @@ const getSimilarGames = async (gameID) => {
   const my_info = await response.json()
   return my_info
   }
+
+
+
+const getGameImages = async (gameNames) => {
+  
+}
+const getSimilarGames = async (gameID) => {
+  const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
+  const gameGenres = game.genres
+  const similarGames = await gamesModel.find({
+    "_id": { $ne: new ObjectId(gameID) },
+     "genres": { $all: gameGenres } }).limit(8).toArray()
+  var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
   const twitchData = await getTwitchData()
   var gameNames = []
  for (var i = 0; i < similarGames.length; i++) {
