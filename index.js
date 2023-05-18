@@ -300,74 +300,88 @@ app.get('/profile', async (req, res) => {
 
 // Aaron's Code
 
-app.get('/questionnaire', sessionValidation, (req, res) => {
-  var genres = [
-    "Adventure",
-    "Arcade",
-    "Brawler",
-    "Card & Board Game",
-    "Fighting",
-    "Indie",
-    "MOBA",
-    "Music",
-    "Pinball",
-    "Platform",
-    "Point-and-Click",
-    "Puzzle",
-    "Quiz/Trivia",
-    "RPG",
-    "Racing",
-    "Real Time Strategy",
-    "Shooter",
-    "Simulator",
-    "Sport",
-    "Strategy",
-    "Tactical",
-    "Turn Based Strategy",
-    "Visual Novel"
-  ]
+app.get('/questionnaire', sessionValidation, async (req, res) => {
+  // Code to get all genres from database
+  const gameList = await gamesModel.find().toArray()
+  const genres = [];
+
+  gameList.forEach(game => {
+    const gameGenres = game.genres
+    
+    gameGenres.forEach(genre => {
+      if (!genres.includes(genre) && genre != "") {
+        genres.push(genre)
+      }
+    })
+  });
+  
+  // Code for platform options
+  const platforms = ["PC", "Playstation", "Xbox", "Nintendo", "Mobile", "Other"]
+
+  // Code for number of players options
+  const playerNum = ["Single Player", "Multiplayer VS", "Co-op"]
+
+  // Code for hours per week options
+  const hoursPlay = ["1-5", "6-10", "11-15", "16-20", "21-25", "26-30", "31+"]
+
+  // Render questionnaire page
   res.render('questionnaire.ejs', {
     "genres": genres,
     "name": req.session.username,
+    "platforms": platforms,
+    "playerNum": playerNum,
+    "hoursPlay": hoursPlay
   })
 })
 
-app.post('/questionnaireSubmit', sessionValidation, (req, res) => {
-  var genres = [
-    "Adventure",
-    "Arcade",
-    "Brawler",
-    "Card & Board Game",
-    "Fighting",
-    "Indie",
-    "MOBA",
-    "Music",
-    "Pinball",
-    "Platform",
-    "Point-and-Click",
-    "Puzzle",
-    "Quiz/Trivia",
-    "RPG",
-    "Racing",
-    "Real Time Strategy",
-    "Shooter",
-    "Simulator",
-    "Sport",
-    "Strategy",
-    "Tactical",
-    "Turn Based Strategy",
-    "Visual Novel"
-  ]
-  // create an array of all of the info from the questionnaire.ejs form
+app.post('/questionnaireSubmit', sessionValidation, async (req, res) => {
+  // Code to get all genres from database
+  const gameList = await gamesModel.find().toArray()
+  const genres = [];
+
+  gameList.forEach(game => {
+    const gameGenres = game.genres
+    
+    gameGenres.forEach(genre => {
+      if (!genres.includes(genre) && genre != "") {
+        genres.push(genre)
+      }
+    })
+  });
+
+  // create an array of all the genres the user selected
   var userGenres = []
   for (var i = 0; i < genres.length; i++) {
     if (req.body[genres[i]] == "true") {
       userGenres.push(genres[i])
     }
   }
+
+  const platforms = ["PC", "Playstation", "Xbox", "Nintendo", "Mobile", "Other"]
+  // create an array of all the platforms the user selected
+  var userPlatforms = []
+  for (var k = 0; k < platforms.length; k++) {
+    if (req.body[platforms[k]] == "true") {
+      userPlatforms.push(platforms[k])
+    }
+  }
+
+  const playerNum = ["Single Player", "Multiplayer VS", "Co-op"]
+  var userPlayerNum = []
+  for (var j = 0; j < playerNum.length; j++) {
+    if (req.body[playerNum[j]] == "true") {
+      userPlayerNum.push(playerNum[j])
+    }
+  }
+
   var questionnaireInfo = {
     "minRating": req.body.minRating,
     "genres": userGenres,
+    "gameFeature": req.body.gameFeature,
+    "maxPrice": req.body.maxPrice,
+    "platforms": userPlatforms,
+    "playerNum": userPlayerNum,
+    "hoursPlay": req.body.hoursPlay
   }
   // push the questionnaireInfo array to the database
   username = req.session.username
