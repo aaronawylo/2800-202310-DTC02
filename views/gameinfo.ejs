@@ -1,5 +1,14 @@
 <style>
- @media screen and (max-width: 576px){
+  #gameCard{
+      max-width: 50%;
+  }
+  @media screen and (max-width: 950px){
+      #gameCard{
+          max-width: 100%;
+      }
+  }
+
+  @media screen and (max-width: 576px){
       .gameImage{
           width: 100%;
       }
@@ -10,6 +19,7 @@
   }
   
 </style>
+
 
 
 
@@ -40,7 +50,7 @@
           role="tab" aria-controls="pills-stat" aria-selected="false">Stats</button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="pills-similar-games-tab" data-bs-toggle="pill" data-bs-target="#pills-contact"
+        <button class="nav-link" id="pills-similar-games-tab" data-bs-toggle="pill" data-bs-target="#pills-similar-games"
           type="button" role="tab" aria-controls="pills-similar-games" aria-selected="false">Similar Games</button>
       </li>
       <li class="nav-item" role="presentation">
@@ -88,6 +98,11 @@
           <h3>Developers</h3>
           <%= game.team %>
         </div>
+
+        <div class="card container" style="margin-bottom: 10px;">
+          <h3>Genres</h3>
+          <%= game.genres %>
+        </div>
       </div>
 
 
@@ -116,6 +131,38 @@
           <h3>Wishlist</h3>
           <%= game.wishlist %> people have this game on their wishlist.
         </div>
+      </div>
+
+      
+      
+      <div class="tab-pane fade" id="pills-similar-games" role="tabpanel" aria-labelledby="pills-similar-games-tab" tabindex="0">
+        <div class ="row">
+        <% for (const game of similarGames) { %>
+          <div class="card" id = gameCard>
+            <div class="row g-0">
+                <div class="col-sm row-">
+                    <img src="
+                        <%= game.cover %>
+                        " class="img-fluid rounded-start gameImage" alt="Tears of the Kingdom">
+                </div>
+                <div class="col-sm row-">
+                     <div class="card-body">
+                        <h5 class="card-title"><%= game.title %></h5>
+                        <p class="card-text"><%= game.summary %></p>
+                        <form method="post" action="/gameInformation">
+                            <input type="hidden" name="gameID" value="<%= game._id %>">
+                            <input type ="hidden" name="gameImage" value="<%= game.cover %>">
+                            <button type="submit" class="btn btn-primary">See more information</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+      </div>
+
+
+
       </div>
 
     </div>

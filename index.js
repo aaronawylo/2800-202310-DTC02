@@ -452,6 +452,7 @@ app.post('/resetPasswordSubmit', async (req, res) => {
 
 app.post("/gameInformation", async (req, res) => {
   const gameID = req.body.gameID
+  const similarGames = await getSimilarGames(gameID)
   const gameImage = req.body.gameImage
   const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
   const saved = await usersModel.findOne({
@@ -471,10 +472,10 @@ app.post("/gameInformation", async (req, res) => {
   )
   const isInHistory = history != null
   if (req.session.authenticated) {
-    res.render("gameinfo.ejs", { "game": game, "gameImage": gameImage, "saved": isSaved, "name": req.session.username, "loggedIn": true , "inHistory": isInHistory})
+    res.render("gameinfo.ejs", { "game": game, "gameImage": gameImage, "similarGames": similarGames, "saved": isSaved, "name": req.session.username, "loggedIn": true , "inHistory": isInHistory})
   }
   else {
-    res.render("gameinfo.ejs", { "game": game,"gameImage": gameImage, "saved": isSaved, "loggedIn": false, "inHistory": isInHistory})
+    res.render("gameinfo.ejs", { "game": game,"gameImage": gameImage, "similarGames": similarGames, "saved": isSaved, "loggedIn": false, "inHistory": isInHistory})
   }
 
 })
@@ -485,6 +486,7 @@ app.post('/saveGame', async (req, res) => { // save games to saved games list fr
     const gameID = req.body.game
     const gameImage = req.body.gameImage
     const purpose = req.body.purpose
+    const similarGames = await getSimilarGames(gameID)
     const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
     const history = await usersModel.findOne({ // check if game is in history
       $and: [
@@ -496,13 +498,13 @@ app.post('/saveGame', async (req, res) => { // save games to saved games list fr
       await usersModel.updateOne({ username: req.session.username }, { $push: { 
         savedGames: {"name": game.title, "_id": new ObjectId(gameID), "image": gameImage}
       } })
-      res.render("gameinfo.ejs", { "game": game,"gameImage": gameImage, "saved": true, "name": req.session.username, "loggedIn": true , "inHistory": isInHistory})
+      res.render("gameinfo.ejs", { "game": game,"gameImage": gameImage, "similarGames": similarGames, "saved": true, "name": req.session.username, "loggedIn": true , "inHistory": isInHistory})
     }
     else {
       await usersModel.updateOne({ username: req.session.username }, { $pull: { 
         savedGames: {"name": game.title, "_id": new ObjectId(gameID), "image": gameImage}
        } })
-      res.render("gameinfo.ejs", { "game": game,"gameImage": gameImage, "saved": false, "name": req.session.username, "loggedIn": true , "inHistory": isInHistory})
+      res.render("gameinfo.ejs", { "game": game,"gameImage": gameImage, "similarGames": similarGames, "saved": false, "name": req.session.username, "loggedIn": true , "inHistory": isInHistory})
     }
   }
   else {
@@ -516,6 +518,7 @@ app.post('/saveToPlayed', async (req, res) => { // save games to played games li
     const gameID = req.body.game
     const gameImage = req.body.gameImage
     const purpose = req.body.purpose
+    const similarGames = await getSimilarGames(gameID)
     const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
     const saved = await usersModel.findOne({ // looks for the game in the user's saved games
       $and: [
@@ -527,11 +530,11 @@ app.post('/saveToPlayed', async (req, res) => { // save games to played games li
     const isSaved = saved != null 
     if (purpose == "mark") {
       await usersModel.updateOne({ username: req.session.username }, { $push: { playedGames: {"name": game.title, "_id": new ObjectId(gameID), "image": gameImage}} })
-      res.render("gameinfo.ejs", { "game": game, "gameImage": gameImage, "saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": true })
+      res.render("gameinfo.ejs", { "game": game, "gameImage": gameImage, "similarGames": similarGames, "saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": true })
     }
     else {
       await usersModel.updateOne({ username: req.session.username }, { $pull: { playedGames: {"name": game.title, "_id": new ObjectId(gameID), "image": gameImage} } })
-      res.render("gameinfo.ejs", { "game": game, "gameImage": gameImage, "saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": false })
+      res.render("gameinfo.ejs", { "game": game, "gameImage": gameImage,  "similarGames": similarGames,"saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": false })
     }
   }
   else {
@@ -556,7 +559,62 @@ app.post("/removePlayed" , async (req, res) => { // remove game from played game
 })
 
 
-
+const getSimilarGames = async (gameID) => {
+  const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
+  const gameGenres = game.genres
+  const similarGames = await gamesModel.find({
+    "_id": { $ne: new ObjectId(gameID) },
+     "genres": { $all: gameGenres } }).limit(6).toArray()
+  var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
+  async function getTwitchData() {
+  const response = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
+    method: 'POST',
+    headers: {
+    'Client-ID': client_id,
+    'Client-Secret': '4h5nsk1q8gco3ltiiwoparvr217bmg'
+    }
+  })
+  const my_info = await response.json()
+  return my_info
+  }
+  const twitchData = await getTwitchData()
+  var gameNames = []
+ for (var i = 0; i < similarGames.length; i++) {
+    gameNames.push(similarGames[i].title)
+  }
+const my_string = gameNames.join('","')
+  async function getAllGames(gameNames) {
+    const response = await fetch('https://api.igdb.com/v4/games', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Client-ID': client_id,
+        'Authorization': 'Bearer ' + twitchData.access_token,
+      },
+      body: `fields name,cover.url; 
+      sort release_dates.date desc;
+      where release_dates.date != null;
+      where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}", "${gameNames[6]}");`
+    })
+    const my_info = await response.json()
+    return my_info
+  }
+  const gameResponse = await getAllGames(gameNames)
+  for (var i = 0; i < similarGames.length; i++) {
+    for (var j = 0; j < gameResponse.length; j++) {
+      if (similarGames[i].title == gameResponse[j].name) {
+        if (gameResponse[j].cover == undefined) {
+          similarGames[i].cover = "no-cover.png"
+        } else {
+          gameResponse[j].cover.url = gameResponse[j].cover.url.replace("t_thumb", "t_cover_big")
+          similarGames[i].cover = gameResponse[j].cover.url
+        }
+      }
+    }
+  }
+  console.log(similarGames)
+  return similarGames
+}
 // End of Derek's code
 
 app.get("*", (req, res) => {
