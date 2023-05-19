@@ -44,8 +44,10 @@
                              <div class="card-body">
                                 <h5 class="card-title"><%= trending_games[i].title %></h5>
                                 <p class="card-text"><%= trending_games[i].summary %></p>
+                                <p class="card-text"><%= trending_games[i]._id %></p>
                                 <form method="post" action="/gameInformation">
-                                    <input type="hidden" name="gameID" value="<%= trending_games[(i)]._id %>">
+                                    <input type="hidden" name="mongoGameID" value="<%= trending_games[(i)]._id %>">
+                                    <input type="hidden" name="apiGameID" value="<%= trending_games[(i)].apiID %>">
                                     <input type ="hidden" name="gameImage" value="<%= trending_games[(i)].cover %>">
                                     <button type="submit" class="btn btn-primary">See more information</button>
                                 </form>
