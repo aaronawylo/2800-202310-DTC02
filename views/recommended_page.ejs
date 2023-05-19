@@ -46,7 +46,8 @@
                                 <p class="card-text"><%= recommended_games[i].summary %></p>
                                 <form method="post" action="/gameInformation">
                                     <input type="hidden" name="gameID" value="<%= recommended_games[(i)]._id %>">
-                                    <input type ="hidden" name="gameImage" value="<%= recommended_games[(i)].cover %>">
+                                    <input type="hidden" name="gameID" value="<%= recommended_games[(i)].id %>">
+                                    <input type ="hidden" name="gameImage" value="<%= recommended_games[(i)].cover.url %>">
                                     <button type="submit" class="btn btn-primary">See more information</button>
                                 </form>
                             </div>
