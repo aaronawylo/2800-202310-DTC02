@@ -264,7 +264,10 @@ app.post('/signup', async (req, res) => {
     username: username,
     password: hashedPassword,
     experience: experience,
-    admin: false
+    admin: false,
+    savedGames: [],
+    questionnaireInfo: { minRating: "0", genres: []},
+    playedGames: [],
   };
   await usersModel.insertOne(newUser);
 
