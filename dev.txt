@@ -60,3 +60,28 @@ Questions to ask:
     <input class="form-check-input" type="checkbox" id="<%= genre%>Checkbox" name="<%= genre%>" value="<%= genre%>">
     <label class="form-check-label" for="<%= genre%>Checkbox"><%= genre%></label>
 </div>
+
+
+// chatgpt questions
+What genres or types of games do you enjoy?
+Are there any specific game features or mechanics you prefer?
+What platforms do you have available to play games on?
+Do you have any preferred game themes or settings?
+Are you looking for single-player or multiplayer games?
+What level of difficulty do you prefer in games?
+Are there any specific games you've enjoyed in the past?
+Are there any games you didn't enjoy or specific elements you dislike?
+How much time do you typically have available for gaming?
+What is your preferred price range for purchasing games?
+
+
+// questions created
+The gameplay element I like the most is ${gameFeature}
+The max price I would like spend is ${maxPrice}
+The platforms I own are ${platforms} (ARRAY)
+The number of player modes I want are ${playerNum} (ARRAY)
+The number of hours I play each week is ${hoursPlay}
+
+
+Bug fix = still need icon on header and footer to go to main
+make sure all routes are protected

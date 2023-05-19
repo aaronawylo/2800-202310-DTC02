@@ -1,4 +1,8 @@
-<%- include('./templates/header.ejs', { "name": name }) %>
+<% if (loggedIn) { %>
+    <%- include ('./templates/header.ejs', {"name": name}) %>
+<% } else { %>
+    <%- include ('./templates/headerloggedout.ejs') %>
+<% } %>
 
 
 

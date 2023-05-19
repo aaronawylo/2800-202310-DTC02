@@ -1,46 +1,134 @@
 <%- include('./templates/header.ejs', { "name": name }) %>
-
-<h1>NAME-PLACEHOLDER, TITLE OF FORM</h1>
+<div class="text-center">
+    <h1>Preferences Survey</h1>
+    <h5>Please answer the following questions to help us serve you better!</h5>
+</div>
 
 <hr class="bg-primary border-2 border-top border-primary">
 
 <form class="m-4" action="/questionnaireSubmit" method="POST">
     
-    <h1 class="text-center">Rating</h1>
-    <div class="mb-3 border-bottom">
-        <select class="form-select" aria-label="Default select example" name="minRating">
-            <option selected>Rating</option>
-            <option value="4.5">4.5</option>
-            <option value="4">4</option>
-            <option value="3.5">3.5</option>
-            <option value="3">3</option>
-            <option value="0">All</option>
-        </select>
-    </div>
-    
-    <hr class="bg-primary border-2 border-top border-primary">
-    
-    <h1 class="text-center">Genres</h1>
-    <div class="mb-3">
-        <div class="row">
-            <% let i=0; %>
-            <% for(i=0; i < genres.length; i++) { %>
-                <% if ((i % 3) == 0) { %>
-                    </div>
-                    <div class="row">
-                <% } %>
-                <%- include('templates/genreCheckbox.ejs', {genre: genres[i]})  %> 
-            <% } %> 
+    <div class="text-center">
+        <h3>Select the minimum user rating you want to see!</h3>
+        <div class="mb-3 w-50 mx-auto">
+            <select class="form-select" aria-label="Default select example" name="minRating">
+                <option value="4.5" selected>4.5</option>
+                <option value="4">4</option>
+                <option value="3.5">3.5</option>
+                <option value="3">3</option>
+                <option value="0">All</option>
+            </select>
         </div>
     </div>
-    
+
     <hr class="bg-primary border-2 border-top border-primary">
     
-    <h3> Placeholder for more questions</h3>
+    <div class="text-center">
+        <h3>Which genres are you interested in?</h3>
+        <div class="mb-3">
+            <div class="row">
+                <% let i=0; %>
+                <% for(i=0; i < genres.length; i++) { %>
+                    <% if ((i % 3) == 0) { %>
+                        </div>
+                        <div class="row">
+                    <% } %>
+                    <%- include('templates/genreCheckbox.ejs', {genre: genres[i]})  %> 
+                <% } %> 
+            </div>
+        </div>
+    </div>
+
+    <hr class="bg-primary border-2 border-top border-primary">
+
+    <div class="text-center">
+        <h3> Pick the one that speaks to you the most!</h3>
+        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+            <input type="radio" class="btn-check" name="gameFeature" id="gameFeature1" value="story" autocomplete="off" checked>
+            <label class="btn btn-outline-primary" for="gameFeature1">Story</label>
+
+            <input type="radio" class="btn-check" name="gameFeature" id="gameFeature2" value="gameplay" autocomplete="off">
+            <label class="btn btn-outline-primary" for="gameFeature2">Gameplay</label>
+
+            <input type="radio" class="btn-check" name="gameFeature" id="gameFeature3" value="graphics" autocomplete="off">
+            <label class="btn btn-outline-primary" for="gameFeature3">Graphics</label>
+        </div>
+    </div>
+
+    <hr class="bg-primary border-2 border-top border-primary">
+
+    <div class="text-center">
+        <h3>What is the most amount of money you are willing to spend on a game?</h3>
+        <div class="mb-3 w-50 mx-auto">
+            <select class="form-select" aria-label="Default select example" name="maxPrice">
+                <option value="any price" selected>Any price!</option>
+                <option value="100">$100</option>
+                <option value="60">$60</option>
+                <option value="30">$30</option>
+                <option value="10">$10</option>
+                <option value="0">Free-to-play please!</option>
+            </select>
+        </div>
+    </div>
+
+    <hr class="bg-primary border-2 border-top border-primary">
+
+    <div class="text-center">
+        <h3>Which platforms do you own?</h3>
+        <div class="mb-3">
+            <div class="row">
+                <% let k=0; %>
+                <% for(k=0; k < platforms.length; k++) { %>
+                    <% if ((k % 3) == 0) { %>
+                        </div>
+                        <div class="row">
+                    <% } %>
+                    <%- include('templates/platformCheckbox.ejs', {platform: platforms[k]})  %> 
+                <% } %> 
+            </div>
+        </div>
+    </div>
+
+    <hr class="bg-primary border-2 border-top border-primary">
+
+
+    <div class="text-center">
+        <h3> Pick all of the player number options yo uwant!</h3>
+        <div class="mb-3">
+            <div class="row">
+                <% let l=0; %>
+                <% for(l=0; l < playerNum.length; l++) { %>
+                    <% if ((l % 3) == 0) { %>
+                        </div>
+                        <div class="row">
+                    <% } %>
+                    <%- include('templates/playerNumCheckbox.ejs', {playerNum: playerNum[l]})  %> 
+                <% } %> 
+            </div>
+        </div>
+    </div> 
     
     <hr class="bg-primary border-2 border-top border-primary">
-    
-    <button type="submit" class="btn btn-primary">Submit</button>
+
+    <div class="text-center">
+        <h3>How many hours a week do you typically play video games?</h3>
+        <div class="mb-3 w-50 mx-auto">
+            <select class="form-select" aria-label="Default select example" name="hoursPlay">
+                <% let m=0; %>
+                <% for(m=0; m < hoursPlay.length; m++) { %>
+                <% console.log(hoursPlay[m]) %>
+                    <%- include('templates/hoursPlay.ejs', {hoursPlay: hoursPlay[m]})  %> 
+                <% } %>
+            </select>
+        </div>
+    </div>
+
+    <hr class="bg-primary border-2 border-top border-primary">
+
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</div>
 </form>
 
 

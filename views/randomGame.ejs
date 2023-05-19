@@ -1,0 +1,74 @@
+<% if (loggedIn) { %>
+    <%- include ('./templates/header.ejs', {"name": name}) %>
+<% } else { %>
+    <%- include ('./templates/headerloggedout.ejs') %>
+<% } %>
+
+<div class="text-center">
+    
+</div>
+<br>
+<div style="position: relative">
+    <form class="text-center" method="post" action="/gameInformation">
+        <input type="hidden" name="gameID" value="<%= gameID %>">
+        <input type="image" src="mario-mystery-box.gif" alt="Submit"></input>
+    </form>
+</div>
+
+<br>
+
+<div class="text-center">
+    <img src="up-arrow.png" alt="Up Arrow" width="100px">
+</div>
+
+<div class="text-center">
+    <h1>Hit me to go to a random game!</h1>
+</div>
+<br>
+<br>
+<br>
+<div class="text-center">
+    <img src="contra.gif" alt="Contra Running" style="width: 100px">
+</div>
+
+<script>
+    // Define the desired sequence
+    const desiredSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+    // Variable to store the entered sequence
+    let enteredSequence = [];
+
+    // Function to handle keydown event
+    function handleKeyDown(event) {
+        const { key } = event;
+
+        // Add the entered key to the sequence
+        enteredSequence.push(key);
+        console.log(enteredSequence);
+        // Check if the sequence is equal to the desired sequence
+        if (enteredSequence.join('') === desiredSequence.join('')) {
+            console.log('Sequence matched!');
+            // Perform desired action here
+            window.location.href = '/easterEgg';
+        // if enteredSequence is less than length of desiredSequence, check if the enteredSequence is equal to the same length slice of desiredSequence
+        } else if (desiredSequence.length > enteredSequence.length) {
+            if (enteredSequence.join('') === desiredSequence.slice(0, enteredSequence.length).join('')) {
+                return;
+            } else {
+                console.log('Sequence not matched!');
+                // Clear the entered sequence for a new attempt
+                enteredSequence = [];
+            }
+        } else {
+            console.log('Sequence not matched!');
+            // Clear the entered sequence for a new attempt
+            enteredSequence = [];
+        }
+    }
+
+    // Add event listener for keydown event
+    document.addEventListener('keydown', handleKeyDown);
+</script>
+
+<%- include('templates/svgs.ejs') %>
+<%- include('templates/footer.ejs') %>
