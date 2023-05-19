@@ -112,7 +112,7 @@ app.get('/', async (req, res) => {
       const playedGames = userProfile.playedGames.join(", ");
       // const playedGames = playedGames.join(", ");
       // const playedGames = ["Civilization VI", "Humankind", "Civilization V", "Settlers of Catan", "Minecraft", "The Long Dark"].join(", ");
-      const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and the games I have played in the past such as ${playedGames}, recommend 9 games I haven't played for me to play next in javascript array format.`;
+      const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and the games I have played in the past such as ${playedGames}, recommend 9 games I haven't played for me to play next in javascript array format using double quotes and full titles.`;
 
       // Generate a response using ChatGPT
       const completion = await openai.createCompletion({
@@ -120,14 +120,14 @@ app.get('/', async (req, res) => {
         prompt: prompt,
         max_tokens: 1000
       });
-
       // Extract the recommendations from the response
       const recommendations = completion.data.choices[0].text;
 
       return recommendations;
     }
-    // recommendedGames = await generateRecommendations(current_user)
-    // console.log(recommendedGames)
+    let recommendedGames = await generateRecommendations(current_user)
+    recommendedGames = JSON.parse(recommendedGames);
+    console.log(recommendedGames);
     var trending_games = await gamesModel.find().limit(3).toArray()
     var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
     async function getTwitchData() {
@@ -155,16 +155,16 @@ app.get('/', async (req, res) => {
           'Client-ID': client_id,
           'Authorization': 'Bearer ' + twitchData.access_token,
         },
-        body: `fields name,cover.url; 
+        body: `fields name,summary,cover.url; 
       sort release_dates.date desc;
       where release_dates.date != null;
-      where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}");`
+      where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}");`
       })
       const my_info = await response.json()
       return my_info
     }
     const gameResponse = await getAllGames(gameNames)
-    console.log(gameResponse)
+    // console.log(gameResponse)
     for (var i = 0; i < trending_games.length; i++) {
       for (var j = 0; j < gameResponse.length; j++) {
         if (trending_games[i].title == gameResponse[j].name) {
@@ -177,19 +177,22 @@ app.get('/', async (req, res) => {
         }
       }
     }
-
-
+    const recGameResponse = await getAllGames(recommendedGames)
+    for (var i = 0; i < recGameResponse.length; i++) {
+      recGameResponse[i].cover.url = recGameResponse[i].cover.url.replace("t_thumb", "t_cover_big")
+    }
+    console.log(recGameResponse)
     res.render('index.ejs', {
       "loggedIn": true,
       "name": req.session.username,
-      "trending_games": trending_games
+      "trending_games": trending_games,
+      "recommended_games": recGameResponse.slice(0, 3)
     })
   }
   else {
     res.render('index.ejs', {
       "loggedIn": false,
       "name": req.session.username,
-      "trending_games": trending_games
     })
   }
 })
@@ -309,7 +312,7 @@ app.get('/trending', async (req, res) => {
     return my_info
   }
   const gameResponse = await getAllGames(gameNames)
-  console.log(gameResponse)
+  // console.log(gameResponse)
   for (var i = 0; i < trending_games.length; i++) {
     for (var j = 0; j < gameResponse.length; j++) {
       if (trending_games[i].title == gameResponse[j].name) {
@@ -318,11 +321,12 @@ app.get('/trending', async (req, res) => {
         } else {
           gameResponse[j].cover.url = gameResponse[j].cover.url.replace("t_thumb", "t_cover_big")
           trending_games[i].cover = gameResponse[j].cover.url
+          trending_games[i].apiID = gameResponse[j].id
         }
       }
     }
   }
-
+  console.log(trending_games)
   res.render('trending_page.ejs', {
     "loggedIn": true,
     "name": req.session.username,
@@ -338,8 +342,6 @@ app.get('/recommended', async (req, res) => {
       const preferredGenres = userProfile.questionnaireInfo.genres.join(", ");
       const playerExperience = "Hardcore";
       const playedGames = userProfile.playedGames.join(", ");
-      // const playedGames = playedGames.join(", ");
-      // const playedGames = ["Civilization VI", "Humankind", "Civilization V", "Settlers of Catan", "Minecraft", "The Long Dark"].join(", ");
       const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and the games I have played in the past such as ${playedGames}, recommend 20 games I haven't played for me to play next in javascript array format using double quotes and full titles.`;
 
       // Generate a response using ChatGPT
@@ -402,10 +404,6 @@ app.get('/recommended', async (req, res) => {
 
 
 
-    
-    // const query = { title: { $in: arr } };
-    // const my_rec_games = await gamesModel.find(query).toArray();
-    // console.log(my_rec_games)
     res.render('recommended_page.ejs', {
       "loggedIn": true,
       "name": req.session.username,
