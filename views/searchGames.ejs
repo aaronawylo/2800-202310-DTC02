@@ -1,6 +1,36 @@
 <%- include('./templates/header.ejs', { "name": name }) %>
 
+<main>
+    <h1>
+        Search for Games
+    </h1>
 
+    <div id="pagination"></div>
+
+    <% for (let i = 0; i < 9; i++) { %>
+        <div class="row">
+            <div class="card" style="max-width: 720px;">
+                <div class="row g-0">
+                    <div class="col">
+                        <img src="
+                            <%= databaseGames[i].cover %>
+                            " class="img-fluid rounded-start" alt="Tears of the Kingdom">
+                    </div>
+                    <div class="col">
+                         <div class="card-body">
+                            <h5 class="card-title"><%= databaseGames[i].title %></h5>
+                            <p class="card-text"><%= databaseGames[i].summary %></p>
+                            <form method="post" action="/gameInformation">
+                                <input type="hidden" name="gameID" value="<%= databaseGames[(i)]._id %>">
+                                <button type="submit" class="btn btn-primary">See more information</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% } %>
+</main>
 
 
 <%- include('templates/svgs.ejs') %>

@@ -294,6 +294,113 @@ app.get('/profile', async (req, res) => {
 
 // Marco's code
 
+app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
+  var databaseGames = await gamesModel.find().limit(27).toArray() // pull games from mongodb
+  var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
+  async function getTwitchData() { // Twitch authentication for IGDB api
+  const response = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
+    method: 'POST',
+    headers: {
+    'Client-ID': client_id,
+    'Client-Secret': '4h5nsk1q8gco3ltiiwoparvr217bmg'
+    }
+  })
+  const my_info = await response.json()
+  return my_info
+  }
+
+
+  const twitchData = await getTwitchData()
+  const PAGE_SIZE = 9
+  let currentPage = 1
+  var searchGameNames = []
+  var searchGameData = []
+  // For loop to get game names of specific page from mongo database
+  for (var i = (currentPage - 1) * PAGE_SIZE; i < (currentPage * PAGE_SIZE); i++) {
+    searchGameNames.push(databaseGames[i].title)
+    searchGameData.push(databaseGames[i])
+  }
+
+  // Function to find games matching names in searchGameNames from IGDB API 
+  async function getAllGames(searchGameNames) {
+    const response = await fetch('https://api.igdb.com/v4/games', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Client-ID': client_id,
+        'Authorization': 'Bearer ' + twitchData.access_token,
+      },
+      body: `fields name,cover.url,genres;
+      sort release_dates.date desc;
+      where release_dates.date != null;
+      where name = ("${searchGameNames[0]}", "${searchGameNames[1]}", "${searchGameNames[2]}", "${searchGameNames[3]}", "${searchGameNames[4]}", "${searchGameNames[5]}", "${searchGameNames[6]}", "${searchGameNames[7]}", "${searchGameNames[8]}", "${searchGameNames[9]}");`
+    })
+    const my_info = await response.json()
+    return my_info
+  }
+
+  // // Function to get games from IGDB api
+  // async function getAllGames(searchGameNames) {
+  //   const response = await fetch('https://api.igdb.com/v4/games', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Client-ID': client_id,
+  //       'Authorization': 'Bearer ' + twitchData.access_token,
+  //     },
+  //     body: `fields name,cover.url,genres; 
+  //     sort release_dates.date desc;
+  //     where release_dates.date != null;
+  //     limit 25;`
+  //   })
+  //   const my_info = await response.json()
+  //   return my_info
+  // }
+
+  // // Function to get all available genre id and names from IGDB api
+  // async function getAllGenres() {
+  //   const response = await fetch('https://api.igdb.com/v4/genres', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Client-ID': client_id,
+  //       'Authorization': 'Bearer ' + twitchData.access_token,
+  //     },
+  //     body: `fields name,slug;
+  //     limit 25;`
+  //     })
+  //   const my_info = await response.json()
+  //   return my_info
+  // }
+
+  const gameResponse = await getAllGames(searchGameNames) // Games from IGDB API with matching names from mongo database
+  // console.log('Game Test')
+  console.log(gameResponse)
+
+  // const genresResponse = await getAllGenres()
+  // console.log('Genre Test')
+  // console.log(genresResponse)
+  // console.log(genresResponse.length)
+
+  for (var i = 0; i < databaseGames.length; i++) { // Loop through games pulled from mongo database (9 times)
+    for (var j = 0; j < gameResponse.length; j++) { // Loop through each game pulled from IGDB api
+      if (databaseGames[i].title == gameResponse[j].name) { // If game name from mongo database matches game name from IGDB api
+        if (gameResponse[j].cover == undefined) { // If game has no cover image
+          databaseGames[i].cover = "no-cover.png" // Set cover image to no-cover.png
+        } else { // If game has cover image
+          gameResponse[j].cover.url = gameResponse[j].cover.url.replace("t_thumb", "t_cover_big") // Replace t_thumb with t_cover_big in url
+          databaseGames[i].cover = gameResponse[j].cover.url // Set cover image to url from IGDB api
+        }
+      }
+    }
+  }
+
+  res.render('searchGames.ejs', {
+    "loggedIn": true,
+    "name": req.session.username,
+    "databaseGames": searchGameData,
+  },)
+})
 
 
 // End of Marco's code
