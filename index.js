@@ -34,7 +34,7 @@ const node_session_secret = process.env.NODE_SESSION_SECRET;
 var { database } = include('databaseConnection')
 
 const usersModel = database.db(mongodb_database).collection('users')
-const gamesModel = database.db(mongodb_database).collection('games')
+const gamesModel = database.db(mongodb_database).collection('gamesv2')
 
 const { ObjectId } = require('mongodb')
 
@@ -294,9 +294,11 @@ app.get('/profile', async (req, res) => {
 
 // Marco's code
 
+// Search Games GET request
 app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
-  var databaseGames = await gamesModel.find().limit(27).toArray() // pull games from mongodb
+  var databaseGames = await gamesModel.find().limit(270).toArray() // pull games from mongodb
   var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
+
   async function getTwitchData() { // Twitch authentication for IGDB api
   const response = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
     method: 'POST',
@@ -308,11 +310,10 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
   const my_info = await response.json()
   return my_info
   }
-
-
   const twitchData = await getTwitchData()
+
   const PAGE_SIZE = 9
-  let currentPage = 1
+  let currentPage = parseInt(req.query.page) || 1;
   var searchGameNames = []
   var searchGameData = []
   // For loop to get game names of specific page from mongo database
@@ -339,48 +340,7 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
     return my_info
   }
 
-  // // Function to get games from IGDB api
-  // async function getAllGames(searchGameNames) {
-  //   const response = await fetch('https://api.igdb.com/v4/games', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Accept': 'application/json',
-  //       'Client-ID': client_id,
-  //       'Authorization': 'Bearer ' + twitchData.access_token,
-  //     },
-  //     body: `fields name,cover.url,genres; 
-  //     sort release_dates.date desc;
-  //     where release_dates.date != null;
-  //     limit 25;`
-  //   })
-  //   const my_info = await response.json()
-  //   return my_info
-  // }
-
-  // // Function to get all available genre id and names from IGDB api
-  // async function getAllGenres() {
-  //   const response = await fetch('https://api.igdb.com/v4/genres', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Accept': 'application/json',
-  //       'Client-ID': client_id,
-  //       'Authorization': 'Bearer ' + twitchData.access_token,
-  //     },
-  //     body: `fields name,slug;
-  //     limit 25;`
-  //     })
-  //   const my_info = await response.json()
-  //   return my_info
-  // }
-
   const gameResponse = await getAllGames(searchGameNames) // Games from IGDB API with matching names from mongo database
-  // console.log('Game Test')
-  console.log(gameResponse)
-
-  // const genresResponse = await getAllGenres()
-  // console.log('Genre Test')
-  // console.log(genresResponse)
-  // console.log(genresResponse.length)
 
   for (var i = 0; i < databaseGames.length; i++) { // Loop through games pulled from mongo database (9 times)
     for (var j = 0; j < gameResponse.length; j++) { // Loop through each game pulled from IGDB api
@@ -399,8 +359,23 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
     "loggedIn": true,
     "name": req.session.username,
     "databaseGames": searchGameData,
-  },)
+    "currentPage": currentPage,
+    "numPages": Math.ceil(databaseGames.length / PAGE_SIZE),
+  })
 })
+
+const updatePaginationDiv = (currentPage, numPages) => {
+  $('#pagination').empty()
+
+  const startPage = 1;
+  const endPage = numPages;
+  for (let i = startPage; i <= endPage; i++) {
+    $('#pagination').append(`
+    <button class="btn btn-primary page ml-1 numberedButtons" value="${i}">${i}</button>
+    `)
+  }
+
+}
 
 
 // End of Marco's code

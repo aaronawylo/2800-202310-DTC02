@@ -5,7 +5,17 @@
         Search for Games
     </h1>
 
-    <div id="pagination"></div>
+    <ul class="pagination">
+        <% for (let i = 1; i <= numPages; i++) { %>
+          <li>
+            <a href="/searchGames?page=<%= i %>"
+              <% if (currentPage === i) { %>
+                class="active"
+              <% } %>
+            ><%= i %></a>
+          </li>
+        <% } %>
+      </ul>
 
     <% for (let i = 0; i < 9; i++) { %>
         <div class="row">
