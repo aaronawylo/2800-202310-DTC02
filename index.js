@@ -909,8 +909,8 @@ const getSimilarGames = async (gameID) => {
 app.get("*", (req, res) => {
 
   res.status(404).render("404.ejs", {
-  "loggedIn": req.session.authenticated,
-  "name": req.session.username,
+  "loggedIn": req.session.authenticated || false,
+  "name": req.session.username || "guest",
   });
 });
 
