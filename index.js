@@ -126,19 +126,70 @@ app.get('/', async (req, res) => {
 
       return recommendations;
     }
-    recommendedGames = await generateRecommendations(current_user)
-    console.log(recommendedGames)
+    // recommendedGames = await generateRecommendations(current_user)
+    // console.log(recommendedGames)
+    var trending_games = await gamesModel.find().limit(3).toArray()
+    var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
+    async function getTwitchData() {
+      const response = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
+        method: 'POST',
+        headers: {
+          'Client-ID': client_id,
+          'Client-Secret': '4h5nsk1q8gco3ltiiwoparvr217bmg'
+        }
+      })
+      const my_info = await response.json()
+      return my_info
+    }
+    const twitchData = await getTwitchData()
+    var gameNames = []
+    for (var i = 0; i < trending_games.length; i++) {
+      gameNames.push(trending_games[i].title)
+    }
 
+    async function getAllGames(gameNames) {
+      const response = await fetch('https://api.igdb.com/v4/games', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Client-ID': client_id,
+          'Authorization': 'Bearer ' + twitchData.access_token,
+        },
+        body: `fields name,cover.url; 
+      sort release_dates.date desc;
+      where release_dates.date != null;
+      where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}");`
+      })
+      const my_info = await response.json()
+      return my_info
+    }
+    const gameResponse = await getAllGames(gameNames)
+    console.log(gameResponse)
+    for (var i = 0; i < trending_games.length; i++) {
+      for (var j = 0; j < gameResponse.length; j++) {
+        if (trending_games[i].title == gameResponse[j].name) {
+          if (gameResponse[j].cover == undefined) {
+            trending_games[i].cover = "no-cover.png"
+          } else {
+            gameResponse[j].cover.url = gameResponse[j].cover.url.replace("t_thumb", "t_cover_big")
+            trending_games[i].cover = gameResponse[j].cover.url
+          }
+        }
+      }
+    }
 
 
     res.render('index.ejs', {
       "loggedIn": true,
       "name": req.session.username,
+      "trending_games": trending_games
     })
   }
   else {
     res.render('index.ejs', {
-      "loggedIn": false
+      "loggedIn": false,
+      "name": req.session.username,
+      "trending_games": trending_games
     })
   }
 })
@@ -240,8 +291,6 @@ app.get('/trending', async (req, res) => {
  for (var i = 0; i < trending_games.length; i++) {
     gameNames.push(trending_games[i].title)
   }
-const my_string = gameNames.join('","')
-console.log(my_string)
 
   async function getAllGames(gameNames) {
     const response = await fetch('https://api.igdb.com/v4/games', {
@@ -279,6 +328,94 @@ console.log(my_string)
     "name": req.session.username,
     "trending_games": trending_games
   },)
+})
+
+app.get('/recommended', async (req, res) => {
+  if (req.session.authenticated) {
+    var current_user = await usersModel.findOne({ username: req.session.username })
+    // reccomendation code
+    async function generateRecommendations(userProfile) {
+      const preferredGenres = userProfile.questionnaireInfo.genres.join(", ");
+      const playerExperience = "Hardcore";
+      const playedGames = userProfile.playedGames.join(", ");
+      // const playedGames = playedGames.join(", ");
+      // const playedGames = ["Civilization VI", "Humankind", "Civilization V", "Settlers of Catan", "Minecraft", "The Long Dark"].join(", ");
+      const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and the games I have played in the past such as ${playedGames}, recommend 20 games I haven't played for me to play next in javascript array format using double quotes and full titles.`;
+
+      // Generate a response using ChatGPT
+      const completion = await openai.createCompletion({
+        model: "text-davinci-003",
+        prompt: prompt,
+        max_tokens: 1000
+      });
+
+      // Extract the recommendations from the response
+      const recommendations = completion.data.choices[0].text;
+
+      return recommendations;
+    }
+    let recommendedGames = await generateRecommendations(current_user)
+    recommendedGames = JSON.parse(recommendedGames);
+    console.log(recommendedGames)
+    // const arr = ['Hades', 'Elden Ring', 'Risk of Rain 2', 'The Binding of Isaac: Rebirth', 'Dead Cells', 'Enter the Gungeon', 'Slay the Spire', 'Hollow Knight', 'Darkest Dungeon']
+    // const arr = ['Fortnite', 'Total War: Three Kingdoms', 'Civilization 6','Crusader Kings 3','Starcraft 2','XCOM 2','Diablo 3','Dota 2']
+
+    var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
+    async function getTwitchData() {
+      const response = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
+        method: 'POST',
+        headers: {
+          'Client-ID': client_id,
+          'Client-Secret': '4h5nsk1q8gco3ltiiwoparvr217bmg'
+        }
+      })
+      const my_info = await response.json()
+      return my_info
+    }
+    const twitchData = await getTwitchData()
+
+    async function getAllGames(gameNames) {
+      const response = await fetch('https://api.igdb.com/v4/games', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Client-ID': client_id,
+          'Authorization': 'Bearer ' + twitchData.access_token,
+        },
+        body: `fields name,involved_companies.company.name,summary,cover.url; 
+      sort release_dates.date desc;
+      where release_dates.date != null;
+      where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}", "${gameNames[6]}", "${gameNames[7]}", "${gameNames[8]}", "${gameNames[9]}", "${gameNames[10]}", "${gameNames[11]}", "${gameNames[12]}", "${gameNames[13]}", "${gameNames[14]}", "${gameNames[15]}", "${gameNames[16]}", "${gameNames[17]}", "${gameNames[18]}", "${gameNames[19]}", "${gameNames[20]}");`
+      })
+      const my_info = await response.json()
+      return my_info
+    }
+    const gameResponse = await getAllGames(recommendedGames)
+    for (var i = 0; i < gameResponse.length; i++) {
+      gameResponse[i].cover.url = gameResponse[i].cover.url.replace("t_thumb", "t_cover_big")
+    }
+    console.log(gameResponse)
+
+
+  
+
+
+
+
+    
+    // const query = { title: { $in: arr } };
+    // const my_rec_games = await gamesModel.find(query).toArray();
+    // console.log(my_rec_games)
+    res.render('recommended_page.ejs', {
+      "loggedIn": true,
+      "name": req.session.username,
+      "recommended_games": gameResponse
+    })
+  }
+
+  else {
+    res.redirect('/login');
+  }
 })
 
 app.get('/profile', async (req, res) => {
