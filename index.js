@@ -334,8 +334,7 @@ app.get('/trending', async (req, res) => {
   },)
 })
 
-app.get('/recommended', async (req, res) => {
-  if (req.session.authenticated) {
+app.get('/recommended', sessionValidation, async (req, res) => {
     var current_user = await usersModel.findOne({ username: req.session.username })
     // reccomendation code
     async function generateRecommendations(userProfile) {
@@ -398,22 +397,11 @@ app.get('/recommended', async (req, res) => {
     }
     console.log(gameResponse)
 
-
-  
-
-
-
-
     res.render('recommended_page.ejs', {
       "loggedIn": true,
       "name": req.session.username,
       "recommended_games": gameResponse
     })
-  }
-
-  else {
-    res.redirect('/login');
-  }
 })
 
 app.get('/profile', async (req, res) => {
@@ -744,8 +732,7 @@ app.post("/gameInformation", async (req, res) => {
 })
 
 
-app.post('/saveGame', async (req, res) => { // save games to saved games list from game info page
-  if (req.session.authenticated) {
+app.post('/saveGame', sessionValidation, async (req, res) => { // save games to saved games list from game info page
     const gameID = req.body.game
     const gameImage = await getGameImage(gameID)
     const purpose = req.body.purpose
@@ -766,18 +753,14 @@ app.post('/saveGame', async (req, res) => { // save games to saved games list fr
     else {
       await usersModel.updateOne({ username: req.session.username }, { $pull: { 
         savedGames: {"name": game.title, "_id": new ObjectId(gameID)}
-       } })
+      } })
       res.render("gameinfo.ejs", { "game": game, "gameImage": gameImage, "similarGames": similarGames, "saved": false, "name": req.session.username, "loggedIn": true , "inHistory": isInHistory})
     }
   }
-  else {
-    res.redirect('/login')
-  }
-})
+)
 
 
-app.post('/saveToPlayed', async (req, res) => { // save games to played games list from game info page
-  if (req.session.authenticated) {
+app.post('/saveToPlayed', sessionValidation, async (req, res) => { // save games to played games list from game info page
     const gameID = req.body.game
     const gameImage = await getGameImage(gameID)
     const purpose = req.body.purpose
@@ -800,19 +783,16 @@ app.post('/saveToPlayed', async (req, res) => { // save games to played games li
       res.render("gameinfo.ejs", { "game": game,"gameImage": gameImage,  "similarGames": similarGames,"saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": false })
     }
   }
-  else {
-    res.redirect('/login')
-  }
-})
+)
 
-app.post("/removeSaved" , async (req, res) => { // remove game from saved games list from profile page
+app.post("/removeSaved", sessionValidation, async (req, res) => { // remove game from saved games list from profile page
   const gameID = req.body.gameID
   const game = await gamesModel.findOne({ "_id": new ObjectId(gameID)})
   await usersModel.updateOne({ username: req.session.username }, { $pull: { savedGames: {"name": game.title, "_id": new ObjectId(gameID)} } })
   res.redirect("/profile")
 })
 
-app.post("/removePlayed" , async (req, res) => { // remove game from played games list from profile page
+app.post("/removePlayed", sessionValidation, async (req, res) => { // remove game from played games list from profile page
   const gameID = req.body.gameID
   const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
   await usersModel.updateOne({ username: req.session.username }, { $pull: { playedGames: {"name": game.title, "_id": new ObjectId(gameID)} } })
