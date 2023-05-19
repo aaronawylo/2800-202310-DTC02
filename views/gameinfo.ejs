@@ -151,7 +151,6 @@
                         <p class="card-text"><%= game.summary %></p>
                         <form method="post" action="/gameInformation">
                             <input type="hidden" name="gameID" value="<%= game._id %>">
-                            <input type ="hidden" name="gameImage" value="<%= game.cover %>">
                             <button type="submit" class="btn btn-primary">See more information</button>
                         </form>
                     </div>

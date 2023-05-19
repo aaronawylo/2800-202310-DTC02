@@ -164,7 +164,6 @@
                                             <div class="row">
                                                 <form method="post" action="/gameInformation" class="col">
                                                     <input type="hidden" name="gameID" value="<%= playedGames[i]._id %>">
-                                                    <input type="hidden" name="gameImage" value="<%= playedGames[i].image %>">
                                                     <button type="submit" class="mb-1 btn" style="font-size: .77rem;">
                                                         <%= playedGames[i].name %>
                                                     </button>
@@ -172,7 +171,6 @@
                                                 <form method="post" action="/removePlayed" style="display: inline;"
                                                     class="col">
                                                     <input type="hidden" name="gameID" value="<%= playedGames[i]._id %>">
-                                                    <input type="hidden" name="gameImage" value="<%= playedGames[i].image %>">
                                                     <button type="submit" class="mb-1 btn btn-outline-primary"
                                                         style="font-size: .77rem; ">Remove</button>
                                                 </form>
