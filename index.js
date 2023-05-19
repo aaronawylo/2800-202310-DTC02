@@ -33,6 +33,8 @@ const mongodb_password = process.env.MONGODB_PASSWORD;
 const mongodb_database = process.env.MONGODB_DATABASE;
 const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
 const node_session_secret = process.env.NODE_SESSION_SECRET;
+const twitch_client_secret = process.env.TWITCH_CLIENT_SECRET;
+const twitch_client_id = process.env.TWITCH_CLIENT_ID;
 // End of secret information section
 
 var { database } = include('databaseConnection')
@@ -129,13 +131,13 @@ app.get('/', async (req, res) => {
     recommendedGames = JSON.parse(recommendedGames);
     console.log(recommendedGames);
     var trending_games = await gamesModel.find().limit(3).toArray()
-    var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
+    var client_id = twitch_client_id
     async function getTwitchData() {
-      const response = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
+      const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
         method: 'POST',
         headers: {
-          'Client-ID': client_id,
-          'Client-Secret': '4h5nsk1q8gco3ltiiwoparvr217bmg'
+          'Client-ID': twitch_client_id,
+          'Client-Secret': twitch_client_secret
         }
       })
       const my_info = await response.json()
@@ -152,7 +154,7 @@ app.get('/', async (req, res) => {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
-          'Client-ID': client_id,
+          'Client-ID': twitch_client_id,
           'Authorization': 'Bearer ' + twitchData.access_token,
         },
         body: `fields name,summary,cover.url; 
@@ -277,13 +279,13 @@ app.post('/signup', async (req, res) => {
 
 app.get('/trending', async (req, res) => {
   var trending_games = await gamesModel.find().limit(9).toArray()
-  var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
+  var client_id = 'twitch_client_id'
   async function getTwitchData() {
-  const response = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
+  const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
     method: 'POST',
     headers: {
-    'Client-ID': client_id,
-    'Client-Secret': '4h5nsk1q8gco3ltiiwoparvr217bmg'
+    'Client-ID': twitch_client_id,
+    'Client-Secret': twitch_client_secret
     }
   })
   const my_info = await response.json()
@@ -300,7 +302,7 @@ app.get('/trending', async (req, res) => {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Client-ID': client_id,
+        'Client-ID': twitch_client_id,
         'Authorization': 'Bearer ' + twitchData.access_token,
       },
       body: `fields name,cover.url; 
@@ -361,13 +363,13 @@ app.get('/recommended', sessionValidation, async (req, res) => {
     // const arr = ['Hades', 'Elden Ring', 'Risk of Rain 2', 'The Binding of Isaac: Rebirth', 'Dead Cells', 'Enter the Gungeon', 'Slay the Spire', 'Hollow Knight', 'Darkest Dungeon']
     // const arr = ['Fortnite', 'Total War: Three Kingdoms', 'Civilization 6','Crusader Kings 3','Starcraft 2','XCOM 2','Diablo 3','Dota 2']
 
-    var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
+    var client_id = 'twitch_client_id'
     async function getTwitchData() {
-      const response = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
+      const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
         method: 'POST',
         headers: {
-          'Client-ID': client_id,
-          'Client-Secret': '4h5nsk1q8gco3ltiiwoparvr217bmg'
+          'Client-ID': twitch_client_id,
+          'Client-Secret': twitch_client_secret
         }
       })
       const my_info = await response.json()
@@ -380,7 +382,7 @@ app.get('/recommended', sessionValidation, async (req, res) => {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
-          'Client-ID': client_id,
+          'Client-ID': twitch_client_id,
           'Authorization': 'Bearer ' + twitchData.access_token,
         },
         body: `fields name,involved_companies.company.name,summary,cover.url; 
@@ -449,14 +451,14 @@ app.get('/profile', async (req, res) => {
 // Search Games GET request
 app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
   var databaseGames = await gamesModel.find().limit(270).toArray() // pull games from mongodb
-  var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
+  var client_id = 'twitch_client_id'
 
   async function getTwitchData() { // Twitch authentication for IGDB api
-  const response = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
+  const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
     method: 'POST',
     headers: {
-    'Client-ID': client_id,
-    'Client-Secret': '4h5nsk1q8gco3ltiiwoparvr217bmg'
+    'Client-ID': twitch_client_id,
+    'Client-Secret': twitch_client_secret
     }
   })
   const my_info = await response.json()
@@ -480,7 +482,7 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Client-ID': client_id,
+        'Client-ID': twitch_client_id,
         'Authorization': 'Bearer ' + twitchData.access_token,
       },
       body: `fields name,cover.url,genres;
@@ -800,12 +802,12 @@ app.post("/removePlayed", sessionValidation, async (req, res) => { // remove gam
 })
 
 async function getTwitchData() {
-  var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
-  const response = await fetch('https://id.twitch.tv/oauth2/token?client_id=culgms7hbkoyqwn37h25ocnd1mwa1c&client_secret=4h5nsk1q8gco3ltiiwoparvr217bmg&grant_type=client_credentials', {
+  var client_id = 'twitch_client_id'
+  const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
     method: 'POST',
     headers: {
-    'Client-ID': client_id,
-    'Client-Secret': '4h5nsk1q8gco3ltiiwoparvr217bmg'
+    'Client-ID': twitch_client_id,
+    'Client-Secret': twitch_client_secret
     }
   })
   const my_info = await response.json()
@@ -816,12 +818,12 @@ const getGameImage = async (gameID) => {
     const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
     const twitchData = await getTwitchData()
     async function getAllGames() {
-      var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
+      var client_id = 'twitch_client_id'
       const response = await fetch('https://api.igdb.com/v4/games', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
-          'Client-ID': client_id,
+          'Client-ID': twitch_client_id,
           'Authorization': 'Bearer ' + twitchData.access_token,
         },
         body: `fields name,cover.url; 
@@ -855,12 +857,12 @@ const getSimilarGames = async (gameID) => {
   }
 
   async function getAllGames(gameNames) {
-    var client_id = 'culgms7hbkoyqwn37h25ocnd1mwa1c'
+    var client_id = 'twitch_client_id'
     const response = await fetch('https://api.igdb.com/v4/games', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Client-ID': client_id,
+        'Client-ID': twitch_client_id,
         'Authorization': 'Bearer ' + twitchData.access_token,
       },
       body: `fields name,cover.url; 
