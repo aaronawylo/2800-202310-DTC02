@@ -38,7 +38,7 @@ const node_session_secret = process.env.NODE_SESSION_SECRET;
 var { database } = include('databaseConnection')
 
 const usersModel = database.db(mongodb_database).collection('users')
-const gamesModel = database.db(mongodb_database).collection('gamesv2')
+const gamesModel = database.db(mongodb_database).collection('games')
 
 const { ObjectId } = require('mongodb')
 
@@ -711,32 +711,35 @@ app.post('/resetPasswordSubmit', async (req, res) => {
 })
 
 app.post("/gameInformation", async (req, res) => {
-  const gameID = req.body.gameID
-  const similarGames = await getSimilarGames(gameID)
-  const gameImage = await getGameImage(gameID)
-  const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
-  const saved = await usersModel.findOne({
-    $and: [
-      { username: req.session.username },
-      { "savedGames": { $in: [{"name": game.title, "_id": new ObjectId(gameID)}] } }
-    ]
-  }
-  )
-  const isSaved = saved != null
-  const history = await usersModel.findOne({
-    $and: [
-      { username: req.session.username },
-      { "playedGames": { $in: [{"name": game.title, "_id": new ObjectId(gameID)}] } }
-    ]
-  }
-  )
-  const isInHistory = history != null
-  if (req.session.authenticated) {
-    res.render("gameinfo.ejs", { "game": game, "gameImage": gameImage, "similarGames": similarGames, "saved": isSaved, "name": req.session.username, "loggedIn": true , "inHistory": isInHistory})
-  }
-  else {
-    res.render("gameinfo.ejs", { "game": game,"gameImage": gameImage, "similarGames": similarGames, "saved": isSaved, "loggedIn": false, "inHistory": isInHistory})
-  }
+  // const loggedIn = req.session.authenticated
+  // const name = req.session.username
+  res.redirect('/404')
+  // const gameID = req.body.gameID
+  // const similarGames = await getSimilarGames(gameID)
+  // const gameImage = await getGameImage(gameID)
+  // const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
+  // const saved = await usersModel.findOne({
+  //   $and: [
+  //     { username: req.session.username },
+  //     { "savedGames": { $in: [{"name": game.title, "_id": new ObjectId(gameID)}] } }
+  //   ]
+  // }
+  // )
+  // const isSaved = saved != null
+  // const history = await usersModel.findOne({
+  //   $and: [
+  //     { username: req.session.username },
+  //     { "playedGames": { $in: [{"name": game.title, "_id": new ObjectId(gameID)}] } }
+  //   ]
+  // }
+  // )
+  // const isInHistory = history != null
+  // if (req.session.authenticated) {
+  //   res.render("gameinfo.ejs", { "game": game, "gameImage": gameImage, "similarGames": similarGames, "saved": isSaved, "name": req.session.username, "loggedIn": true , "inHistory": isInHistory})
+  // }
+  // else {
+  //   res.render("gameinfo.ejs", { "game": game,"gameImage": gameImage, "similarGames": similarGames, "saved": isSaved, "loggedIn": false, "inHistory": isInHistory})
+  // }
 
 })
 
