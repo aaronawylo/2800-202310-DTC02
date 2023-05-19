@@ -8,12 +8,13 @@
     <ul class="pagination">
         <% for (let i = 1; i <= numPages; i++) { %>
           <li>
-            <a href="/searchGames?page=<%= i %>"
+            <a class="btn btn-primary" href="/searchGames?page=<%= i %>"
               <% if (currentPage === i) { %>
                 class="active"
               <% } %>
             ><%= i %></a>
           </li>
+          &nbsp;
         <% } %>
       </ul>
 
