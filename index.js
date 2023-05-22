@@ -266,7 +266,7 @@ app.post('/signup', async (req, res) => {
     experience: experience,
     admin: false,
     savedGames: [],
-    questionnaireInfo: { minRating: "0", genres: []},
+    questionnaireInfo: { minRating: "0", genres: [] },
     playedGames: [],
   };
   await usersModel.insertOne(newUser);
@@ -284,19 +284,19 @@ app.get('/trending', async (req, res) => {
   var trending_games = await gamesModel.find().limit(9).toArray()
   var client_id = 'twitch_client_id'
   async function getTwitchData() {
-  const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
-    method: 'POST',
-    headers: {
-    'Client-ID': twitch_client_id,
-    'Client-Secret': twitch_client_secret
-    }
-  })
-  const my_info = await response.json()
-  return my_info
+    const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
+      method: 'POST',
+      headers: {
+        'Client-ID': twitch_client_id,
+        'Client-Secret': twitch_client_secret
+      }
+    })
+    const my_info = await response.json()
+    return my_info
   }
   const twitchData = await getTwitchData()
   var gameNames = []
- for (var i = 0; i < trending_games.length; i++) {
+  for (var i = 0; i < trending_games.length; i++) {
     gameNames.push(trending_games[i].title)
   }
 
@@ -340,73 +340,73 @@ app.get('/trending', async (req, res) => {
 })
 
 app.get('/recommended', sessionValidation, async (req, res) => {
-    var current_user = await usersModel.findOne({ username: req.session.username })
-    // reccomendation code
-    async function generateRecommendations(userProfile) {
-      const preferredGenres = userProfile.questionnaireInfo.genres.join(", ");
-      const playerExperience = "Hardcore";
-      const playedGames = userProfile.playedGames.join(", ");
-      const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and the games I have played in the past such as ${playedGames}, recommend 20 games I haven't played for me to play next in javascript array format using double quotes and full titles.`;
+  var current_user = await usersModel.findOne({ username: req.session.username })
+  // reccomendation code
+  async function generateRecommendations(userProfile) {
+    const preferredGenres = userProfile.questionnaireInfo.genres.join(", ");
+    const playerExperience = "Hardcore";
+    const playedGames = userProfile.playedGames.join(", ");
+    const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and the games I have played in the past such as ${playedGames}, recommend 20 games I haven't played for me to play next in javascript array format using double quotes and full titles.`;
 
-      // Generate a response using ChatGPT
-      const completion = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: prompt,
-        max_tokens: 1000
-      });
+    // Generate a response using ChatGPT
+    const completion = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt: prompt,
+      max_tokens: 1000
+    });
 
-      // Extract the recommendations from the response
-      const recommendations = completion.data.choices[0].text;
+    // Extract the recommendations from the response
+    const recommendations = completion.data.choices[0].text;
 
-      return recommendations;
-    }
-    let recommendedGames = await generateRecommendations(current_user)
-    recommendedGames = JSON.parse(recommendedGames);
-    console.log(recommendedGames)
-    // const arr = ['Hades', 'Elden Ring', 'Risk of Rain 2', 'The Binding of Isaac: Rebirth', 'Dead Cells', 'Enter the Gungeon', 'Slay the Spire', 'Hollow Knight', 'Darkest Dungeon']
-    // const arr = ['Fortnite', 'Total War: Three Kingdoms', 'Civilization 6','Crusader Kings 3','Starcraft 2','XCOM 2','Diablo 3','Dota 2']
+    return recommendations;
+  }
+  let recommendedGames = await generateRecommendations(current_user)
+  recommendedGames = JSON.parse(recommendedGames);
+  console.log(recommendedGames)
+  // const arr = ['Hades', 'Elden Ring', 'Risk of Rain 2', 'The Binding of Isaac: Rebirth', 'Dead Cells', 'Enter the Gungeon', 'Slay the Spire', 'Hollow Knight', 'Darkest Dungeon']
+  // const arr = ['Fortnite', 'Total War: Three Kingdoms', 'Civilization 6','Crusader Kings 3','Starcraft 2','XCOM 2','Diablo 3','Dota 2']
 
-    var client_id = 'twitch_client_id'
-    async function getTwitchData() {
-      const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
-        method: 'POST',
-        headers: {
-          'Client-ID': twitch_client_id,
-          'Client-Secret': twitch_client_secret
-        }
-      })
-      const my_info = await response.json()
-      return my_info
-    }
-    const twitchData = await getTwitchData()
+  var client_id = 'twitch_client_id'
+  async function getTwitchData() {
+    const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
+      method: 'POST',
+      headers: {
+        'Client-ID': twitch_client_id,
+        'Client-Secret': twitch_client_secret
+      }
+    })
+    const my_info = await response.json()
+    return my_info
+  }
+  const twitchData = await getTwitchData()
 
-    async function getAllGames(gameNames) {
-      const response = await fetch('https://api.igdb.com/v4/games', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Client-ID': twitch_client_id,
-          'Authorization': 'Bearer ' + twitchData.access_token,
-        },
-        body: `fields name,involved_companies.company.name,summary,cover.url; 
+  async function getAllGames(gameNames) {
+    const response = await fetch('https://api.igdb.com/v4/games', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Client-ID': twitch_client_id,
+        'Authorization': 'Bearer ' + twitchData.access_token,
+      },
+      body: `fields name,involved_companies.company.name,summary,cover.url; 
       sort release_dates.date desc;
       where release_dates.date != null;
       where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}", "${gameNames[6]}", "${gameNames[7]}", "${gameNames[8]}", "${gameNames[9]}", "${gameNames[10]}", "${gameNames[11]}", "${gameNames[12]}", "${gameNames[13]}", "${gameNames[14]}", "${gameNames[15]}", "${gameNames[16]}", "${gameNames[17]}", "${gameNames[18]}", "${gameNames[19]}", "${gameNames[20]}");`
-      })
-      const my_info = await response.json()
-      return my_info
-    }
-    const gameResponse = await getAllGames(recommendedGames)
-    for (var i = 0; i < gameResponse.length; i++) {
-      gameResponse[i].cover.url = gameResponse[i].cover.url.replace("t_thumb", "t_cover_big")
-    }
-    console.log(gameResponse)
-
-    res.render('recommended_page.ejs', {
-      "loggedIn": true,
-      "name": req.session.username,
-      "recommended_games": gameResponse
     })
+    const my_info = await response.json()
+    return my_info
+  }
+  const gameResponse = await getAllGames(recommendedGames)
+  for (var i = 0; i < gameResponse.length; i++) {
+    gameResponse[i].cover.url = gameResponse[i].cover.url.replace("t_thumb", "t_cover_big")
+  }
+  console.log(gameResponse)
+
+  res.render('recommended_page.ejs', {
+    "loggedIn": true,
+    "name": req.session.username,
+    "recommended_games": gameResponse
+  })
 })
 
 app.get('/profile', async (req, res) => {
@@ -457,15 +457,15 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
   var client_id = 'twitch_client_id'
 
   async function getTwitchData() { // Twitch authentication for IGDB api
-  const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
-    method: 'POST',
-    headers: {
-    'Client-ID': twitch_client_id,
-    'Client-Secret': twitch_client_secret
-    }
-  })
-  const my_info = await response.json()
-  return my_info
+    const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
+      method: 'POST',
+      headers: {
+        'Client-ID': twitch_client_id,
+        'Client-Secret': twitch_client_secret
+      }
+    })
+    const my_info = await response.json()
+    return my_info
   }
   const twitchData = await getTwitchData()
 
@@ -546,14 +546,14 @@ app.get('/questionnaire', sessionValidation, async (req, res) => {
 
   gameList.forEach(game => {
     const gameGenres = game.genres
-    
+
     gameGenres.forEach(genre => {
       if (!genres.includes(genre) && genre != "") {
         genres.push(genre)
       }
     })
   });
-  
+
   // Code for platform options
   const platforms = ["PC", "Playstation", "Xbox", "Nintendo", "Mobile", "Other"]
 
@@ -580,7 +580,7 @@ app.post('/questionnaireSubmit', sessionValidation, async (req, res) => {
 
   gameList.forEach(game => {
     const gameGenres = game.genres
-    
+
     gameGenres.forEach(genre => {
       if (!genres.includes(genre) && genre != "") {
         genres.push(genre)
@@ -704,204 +704,170 @@ app.post('/resetPasswordSubmit', async (req, res) => {
 })
 
 app.post("/gameInformation", async (req, res) => {
-  // const loggedIn = req.session.authenticated
-  // const name = req.session.username
-  res.redirect('/404')
-  // const gameID = req.body.gameID
-  // const similarGames = await getSimilarGames(gameID)
-  // const gameImage = await getGameImage(gameID)
-  // const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
-  // const saved = await usersModel.findOne({
-  //   $and: [
-  //     { username: req.session.username },
-  //     { "savedGames": { $in: [{"name": game.title, "_id": new ObjectId(gameID)}] } }
-  //   ]
-  // }
-  // )
-  // const isSaved = saved != null
-  // const history = await usersModel.findOne({
-  //   $and: [
-  //     { username: req.session.username },
-  //     { "playedGames": { $in: [{"name": game.title, "_id": new ObjectId(gameID)}] } }
-  //   ]
-  // }
-  // )
-  // const isInHistory = history != null
-  // if (req.session.authenticated) {
-  //   res.render("gameinfo.ejs", { "game": game, "gameImage": gameImage, "similarGames": similarGames, "saved": isSaved, "name": req.session.username, "loggedIn": true , "inHistory": isInHistory})
-  // }
-  // else {
-  //   res.render("gameinfo.ejs", { "game": game,"gameImage": gameImage, "similarGames": similarGames, "saved": isSaved, "loggedIn": false, "inHistory": isInHistory})
-  // }
+  const gameID = req.body.apiGameID
+  const gameInfoArray = await getGameInfo(gameID)
+  const loggedIn = req.session.authenticated
+  const saved = await usersModel.findOne({
+    $and: [
+      { username: req.session.username },
+      { "savedGames": { $in: [{ "name": gameInfoArray.name, "id": gameID }] } }
+    ]
+  })
+  const isSaved = saved != null
+  const history = await usersModel.findOne({
+    $and: [
+      { username: req.session.username },
+      { "playedGames": { $in: [{ "name": gameInfoArray.name, "id": gameID }] } }
+    ]
+  })
+  const inHistory = history != null
+  if (loggedIn) {
+    res.render("gameinfo.ejs", { "game": gameInfoArray, "saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": inHistory})
+  }
+  else {
+    res.render("gameinfo.ejs", { "game": gameInfoArray, "saved": false, "loggedIn": false, "inHistory": false })
+  }
+
 
 })
 
-
 app.post('/saveGame', sessionValidation, async (req, res) => { // save games to saved games list from game info page
-    const gameID = req.body.game
-    const gameImage = await getGameImage(gameID)
-    const purpose = req.body.purpose
-    const similarGames = await getSimilarGames(gameID)
-    const game = await gamesModel.findOne({"_id": new ObjectId(gameID) })
-    const history = await usersModel.findOne({ // check if game is in history
-      $and: [
-        { username: req.session.username },
-        { "playedGames": { $in: [{"name": game.title, "_id": new ObjectId(gameID)}] } }
-      ]})
-    const isInHistory = history != null
-    if (purpose == "save") {
-      await usersModel.updateOne({ username: req.session.username }, { $push: { 
-        savedGames: {"name": game.title, "_id": new ObjectId(gameID)}
-      } })
-      res.render("gameinfo.ejs", { "game": game, "gameImage": gameImage, "similarGames": similarGames, "saved": true, "name": req.session.username, "loggedIn": true , "inHistory": isInHistory})
-    }
-    else {
-      await usersModel.updateOne({ username: req.session.username }, { $pull: { 
-        savedGames: {"name": game.title, "_id": new ObjectId(gameID)}
-      } })
-      res.render("gameinfo.ejs", { "game": game, "gameImage": gameImage, "similarGames": similarGames, "saved": false, "name": req.session.username, "loggedIn": true , "inHistory": isInHistory})
-    }
+  const gameID = req.body.apiGameID
+  const purpose = req.body.purpose
+  const game = await getGameInfo(gameID)
+  const history = await usersModel.findOne({
+    $and: [
+      { username: req.session.username },
+      { "playedGames": { $in: [{ "name": game.name, "id": gameID }] } }
+    ]
+  })
+  const inHistory = history != null
+ 
+  if (purpose == "save") {
+    await usersModel.updateOne({ username: req.session.username }, {
+      $push: {
+        savedGames: { "name": game.name, "id": gameID }
+      }
+    })
+    res.render("gameinfo.ejs", { "game": game,"saved": true, "name": req.session.username, "loggedIn": true, "inHistory": inHistory })
   }
+  else {
+    await usersModel.updateOne({ username: req.session.username }, {
+      $pull: {
+        savedGames: { "name": game.name, "id": gameID }
+      }
+    })
+    res.render("gameinfo.ejs", { "game": game, "saved": false, "name": req.session.username, "loggedIn": true, "inHistory": inHistory })
+  }
+}
 )
 
 
 app.post('/saveToPlayed', sessionValidation, async (req, res) => { // save games to played games list from game info page
-    const gameID = req.body.game
-    const gameImage = await getGameImage(gameID)
-    const purpose = req.body.purpose
-    const similarGames = await getSimilarGames(gameID)
-    const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
-    const saved = await usersModel.findOne({ // looks for the game in the user's saved games
-      $and: [
-        { username: req.session.username },
-        { "savedGames": { $in: [{"name": game.title, "_id": new ObjectId(gameID)}] } }
-      ]
-    }
-    )
-    const isSaved = saved != null 
-    if (purpose == "mark") {
-      await usersModel.updateOne({ username: req.session.username }, { $push: { playedGames: {"name": game.title, "_id": new ObjectId(gameID)}} })
-      res.render("gameinfo.ejs", { "game": game,"gameImage": gameImage,  "similarGames": similarGames, "saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": true })
-    }
-    else {
-      await usersModel.updateOne({ username: req.session.username }, { $pull: { playedGames: {"name": game.title, "_id": new ObjectId(gameID)} } })
-      res.render("gameinfo.ejs", { "game": game,"gameImage": gameImage,  "similarGames": similarGames,"saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": false })
-    }
+  const gameID = req.body.apiGameID
+  const purpose = req.body.purpose
+  const game = await getGameInfo(gameID)
+  const saved = await usersModel.findOne({
+    $and: [
+      { username: req.session.username },
+      { "savedGames": { $in: [{ "name": game.name, "id": gameID }] } }
+    ]
+  })
+  const isSaved = saved != null
+  if (purpose == "mark") {
+    await usersModel.updateOne({ username: req.session.username }, {
+      $push: {
+        playedGames: { "name": game.name, "id": gameID }
+      }
+    })
+    res.render("gameinfo.ejs", { "game": game,"saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": true })
   }
+  else {
+    await usersModel.updateOne({ username: req.session.username }, {
+      $pull: {
+        playedGames: { "name": game.name, "id": gameID }
+      }
+    })
+    res.render("gameinfo.ejs", { "game": game, "saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": false})
+  }
+}
 )
 
 app.post("/removeSaved", sessionValidation, async (req, res) => { // remove game from saved games list from profile page
-  const gameID = req.body.gameID
-  const game = await gamesModel.findOne({ "_id": new ObjectId(gameID)})
-  await usersModel.updateOne({ username: req.session.username }, { $pull: { savedGames: {"name": game.title, "_id": new ObjectId(gameID)} } })
+  const gameID = req.body.apiGameID
+  const gameTitle = req.body.gameTitle
+  console.log(gameID, gameTitle)
+  await usersModel.updateOne({ username: req.session.username }, { $pull: { savedGames: { "name": gameTitle, "id": gameID} } })
   res.redirect("/profile")
 })
 
 app.post("/removePlayed", sessionValidation, async (req, res) => { // remove game from played games list from profile page
-  const gameID = req.body.gameID
-  const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
-  await usersModel.updateOne({ username: req.session.username }, { $pull: { playedGames: {"name": game.title, "_id": new ObjectId(gameID)} } })
+  const gameID = req.body.apiGameID
+  const gameTitle = req.body.gameTitle
+  console.log(gameID, gameTitle)
+  await usersModel.updateOne({ username: req.session.username }, { $pull: { playedGames: { "name": gameTitle, "id": gameID} } })
   res.redirect("/profile")
 })
 
 async function getTwitchData() {
-  var client_id = 'twitch_client_id'
   const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
     method: 'POST',
     headers: {
-    'Client-ID': twitch_client_id,
-    'Client-Secret': twitch_client_secret
+      'Client-ID': twitch_client_id,
+      'Client-Secret': twitch_client_secret
     }
   })
   const my_info = await response.json()
   return my_info
-  }
+}
 
-const getGameImage = async (gameID) => {
-    const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
-    const twitchData = await getTwitchData()
-    async function getAllGames() {
-      var client_id = 'twitch_client_id'
-      const response = await fetch('https://api.igdb.com/v4/games', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Client-ID': twitch_client_id,
-          'Authorization': 'Bearer ' + twitchData.access_token,
-        },
-        body: `fields name,cover.url; 
+const getGameInfo = async (gameID) => {
+  console.log(gameID)
+  const twitchData = await getTwitchData()
+  const response = await fetch(`https://api.igdb.com/v4/games`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Client-ID': twitch_client_id,
+      'Authorization': 'Bearer ' + twitchData.access_token,
+    },
+    body: `fields name, id, summary, cover.url, genres.name, similar_games.name, similar_games.cover.url, similar_games.summary,
+    involved_companies.company.name, total_rating, first_release_date, platforms.name, game_modes.name, themes.name; 
         sort release_dates.date desc;
         where release_dates.date != null;
-        where name = ("${game.title}");`
-      })
-      const my_info = await response.json()
-      return my_info
-    }
-    const gameImageArray = await getAllGames()
-    console.log(gameImageArray)
-    if (gameImageArray[0].cover == undefined){
-      return "no-cover.png"
+        where id = ${gameID};
+        `
+  })
+  const gameInfoArray = await response.json()
+  for (const similarGame of gameInfoArray[0].similar_games) {
+    if (similarGame.cover == undefined) {
+      similarGame.cover = "no-cover.png"
     }
     else {
-     return gameImageArray[0].cover.url.replace("t_thumb", "t_cover_big")
+      similarGame.cover = similarGame.cover.url.replace("t_thumb", "t_cover_big")
     }
   }
-
-const getSimilarGames = async (gameID) => {
-  const game = await gamesModel.findOne({ "_id": new ObjectId(gameID) })
-  const gameGenres = game.genres
-  const similarGames = await gamesModel.find({
-    "_id": { $ne: new ObjectId(gameID) },
-     "genres": { $all: gameGenres } }).limit(8).toArray()
-  const twitchData = await getTwitchData()
-  var gameNames = []
- for (var i = 0; i < similarGames.length; i++) {
-    gameNames.push(similarGames[i].title)
+  if (gameInfoArray[0].cover == undefined) {
+    gameInfoArray[0].cover = "no-cover.png"
+    return gameInfoArray[0]
   }
-
-  async function getAllGames(gameNames) {
-    var client_id = 'twitch_client_id'
-    const response = await fetch('https://api.igdb.com/v4/games', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Client-ID': twitch_client_id,
-        'Authorization': 'Bearer ' + twitchData.access_token,
-      },
-      body: `fields name,cover.url; 
-      sort release_dates.date desc;
-      where release_dates.date != null;
-      where name = ("${gameNames[0]}", "${gameNames[1]}", "${gameNames[2]}", "${gameNames[3]}", "${gameNames[4]}", "${gameNames[5]}", "${gameNames[6]}", "${gameNames[7]}", "${gameNames[8]}");
-      limit 50;`
-    })
-    const my_info = await response.json()
-    return my_info
-  }
-  const gameResponse = await getAllGames(gameNames)
-  for (const similarGame of similarGames) {
-    for (const game of gameResponse) {
-      if (similarGame.title == game.name) {
-        if (game.cover===undefined) {
-          similarGame.cover = "no-cover.png"
-        } else {
-          game.cover.url = game.cover.url.replace("t_thumb", "t_cover_big")
-          similarGame.cover = game.cover.url
-        }
-      }
-    }
-  }
-  return similarGames
+  else {
+    gameInfoArray[0].cover = gameInfoArray[0].cover.url.replace("t_thumb", "t_cover_big")
+    return gameInfoArray[0]
 }
-// End of Derek's code
+}
 
-app.get("*", (req, res) => {
 
-  res.status(404).render("404.ejs", {
-  "loggedIn": req.session.authenticated || false,
-  "name": req.session.username || "guest",
+  // End of Derek's code
+
+  app.get("*", (req, res) => {
+
+    res.status(404).render("404.ejs", {
+      "loggedIn": req.session.authenticated || false,
+      "name": req.session.username || "guest",
+    });
   });
-});
 
-app.listen(port, () => {
-  console.log("Listening on port " + port + "!");
-});
+  app.listen(port, () => {
+    console.log("Listening on port " + port + "!");
+  });
