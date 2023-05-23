@@ -278,7 +278,7 @@ app.post('/signup', async (req, res) => {
   // Log in user
   req.session.authenticated = true
   req.session.username = req.body.username
-  req.session.cookie.maxAge = 1 * 60 * 60 * 1000;
+  req.session.cookie.maxAge = expireTime;
 
   // Redirect to members area
   res.redirect('/');
@@ -669,7 +669,7 @@ app.post('/loginSubmit', async (req, res) => {
     else {
       req.session.authenticated = true
       req.session.username = user.username
-      req.session.cookie.maxAge = 60 * 60 * 1000;
+      req.session.cookie.maxAge = expireTime;
       res.redirect('/')
     }
   }
@@ -695,7 +695,7 @@ app.post('/resetPasswordSubmit', async (req, res) => {
     await usersModel.findOneAndUpdate({ email: email }, { $set: { password: hashedPassword } })
     req.session.authenticated = true
     req.session.username = user.username
-    req.session.cookie.maxAge = 60 * 60 * 1000;
+    req.session.cookie.maxAge = expireTime;
     res.redirect('/')
   }
   else { res.redirect(`/resetPassword?invalidEmail=true`) }
