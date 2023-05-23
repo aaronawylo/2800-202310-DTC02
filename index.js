@@ -40,8 +40,6 @@ var { database } = include('databaseConnection')
 const usersModel = database.db(mongodb_database).collection('users')
 const gamesModel = database.db(mongodb_database).collection('games')
 
-const { ObjectId } = require('mongodb')
-
 app.use(express.urlencoded({ extended: false }));
 
 var mongoStore = MongoStore.create({
@@ -74,33 +72,7 @@ function sessionValidation(req, res, next) {
   }
 }
 
-
-function isAdmin(req) {
-  if (req.session.user_type == 'admin') {
-    return true;
-  }
-  return false;
-}
-
-function adminAuthorization(req, res, next) {
-  if (!isAdmin(req)) {
-    res.status(403);
-    res.render("errorMessage.ejs", { error: "Not Authorized For You" });
-    return;
-  }
-  else {
-    next();
-  }
-}
-
-
-// Testing route
-app.get('/test', (req, res) => {
-  res.render('questionnaireSubmit.ejs')
-})
-
-// End Test route
-
+// Start of index main code
 app.use(express.static('public'));
 app.get('/', async (req, res) => {
   var trending_games = await gamesModel.find().limit(3).toArray()
