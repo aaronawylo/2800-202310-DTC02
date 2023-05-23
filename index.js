@@ -149,6 +149,7 @@ app.get('/', async (req, res) => {
           } else {
             gameResponse[j].cover.url = gameResponse[j].cover.url.replace("t_thumb", "t_cover_big")
             trending_games[i].cover = gameResponse[j].cover.url
+            trending_games[i].apiID = gameResponse[j].id
           }
         }
       }
