@@ -706,6 +706,7 @@ app.post('/resetPasswordSubmit', async (req, res) => {
 app.post("/gameInformation", async (req, res) => {
   const gameID = req.body.apiGameID
   const gameInfoArray = await getGameInfo(gameID)
+  console.log(gameInfoArray.aggregated_rating_count)
   const loggedIn = req.session.authenticated
   const saved = await usersModel.findOne({
     $and: [
@@ -822,7 +823,6 @@ async function getTwitchData() {
 }
 
 const getGameInfo = async (gameID) => {
-  console.log(gameID)
   const twitchData = await getTwitchData()
   const response = await fetch(`https://api.igdb.com/v4/games`, {
     method: 'POST',
@@ -831,8 +831,7 @@ const getGameInfo = async (gameID) => {
       'Client-ID': twitch_client_id,
       'Authorization': 'Bearer ' + twitchData.access_token,
     },
-    body: `fields name, id, summary, cover.url, genres.name, similar_games.name, similar_games.cover.url, similar_games.summary,
-    involved_companies.company.name, total_rating, first_release_date, platforms.name, game_modes.name, themes.name; 
+    body: `fields name, id, summary,screenshots.url,screenshots.width, rating,rating_count, aggregated_rating, aggregated_rating_count, cover.url, genres.name, similar_games.name, similar_games.cover.url, similar_games.summary, involved_companies.company.name, total_rating, first_release_date, platforms.name, game_modes.name, themes.name; 
         sort release_dates.date desc;
         where release_dates.date != null;
         where id = ${gameID};
@@ -847,12 +846,15 @@ const getGameInfo = async (gameID) => {
       similarGame.cover = similarGame.cover.url.replace("t_thumb", "t_cover_big")
     }
   }
+  for (const screenshot of gameInfoArray[0].screenshots) {
+    screenshot.url = screenshot.url.replace("t_thumb", "t_original")
+  }
   if (gameInfoArray[0].cover == undefined) {
     gameInfoArray[0].cover = "no-cover.png"
     return gameInfoArray[0]
   }
   else {
-    gameInfoArray[0].cover = gameInfoArray[0].cover.url.replace("t_thumb", "t_cover_big")
+    gameInfoArray[0].cover = gameInfoArray[0].cover.url.replace("t_thumb", "t_original")
     return gameInfoArray[0]
 }
 }
