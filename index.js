@@ -72,22 +72,22 @@ function sessionValidation(req, res, next) {
   }
 }
 
+async function getTwitchData() {
+  const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
+    method: 'POST',
+    headers: {
+      'Client-ID': twitch_client_id,
+      'Client-Secret': twitch_client_secret
+    }
+  })
+  const my_info = await response.json()
+  return my_info
+}
+
 // Start of index main code
 app.use(express.static('public'));
 app.get('/', async (req, res) => {
   var trending_games = await gamesModel.find().limit(3).toArray()
-  async function getTwitchData() {
-    const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
-      method: 'POST',
-      headers: {
-        'Client-ID': twitch_client_id,
-        'Client-Secret': twitch_client_secret
-      }
-    })
-    const my_info = await response.json()
-    return my_info
-  }
-
   const twitchData = await getTwitchData()
   var gameNames = []
   for (var i = 0; i < trending_games.length; i++) {
@@ -113,7 +113,6 @@ app.get('/', async (req, res) => {
 
   const gameResponse = await getAllGames(gameNames)
 
-  // console.log(gameResponse)
   for (var i = 0; i < trending_games.length; i++) {
     for (var j = 0; j < gameResponse.length; j++) {
       if (trending_games[i].title == gameResponse[j].name) {
@@ -150,13 +149,11 @@ app.get('/', async (req, res) => {
     }
     let recommendedGames = await generateRecommendations(current_user)
     recommendedGames = JSON.parse(recommendedGames);
-    console.log(recommendedGames);
 
     const recGameResponse = await getAllGames(recommendedGames)
     for (var i = 0; i < recGameResponse.length; i++) {
       recGameResponse[i].cover.url = recGameResponse[i].cover.url.replace("t_thumb", "t_cover_big")
     }
-    console.log(recGameResponse)
     res.render('index.ejs', {
       "loggedIn": true,
       "name": req.session.username,
@@ -203,8 +200,6 @@ app.post('/signup', async (req, res) => {
     experience,
   });
   if (validationResult.error) {
-    console.log(validationResult.error);
-    // res.status(400).send(`Invalid username or password characters or email format. <a href="/">Go back to home</a>`);
     res.status(400).send(`${validationResult.error.message}. <a href="/">Go back to home</a>`);
     return;
   }
@@ -256,18 +251,6 @@ app.post('/signup', async (req, res) => {
 
 app.get('/trending', async (req, res) => {
   var trending_games = await gamesModel.find().limit(9).toArray()
-  var client_id = 'twitch_client_id'
-  async function getTwitchData() {
-    const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
-      method: 'POST',
-      headers: {
-        'Client-ID': twitch_client_id,
-        'Client-Secret': twitch_client_secret
-      }
-    })
-    const my_info = await response.json()
-    return my_info
-  }
   const twitchData = await getTwitchData()
   var gameNames = []
   for (var i = 0; i < trending_games.length; i++) {
@@ -291,7 +274,6 @@ app.get('/trending', async (req, res) => {
     return my_info
   }
   const gameResponse = await getAllGames(gameNames)
-  // console.log(gameResponse)
   for (var i = 0; i < trending_games.length; i++) {
     for (var j = 0; j < gameResponse.length; j++) {
       if (trending_games[i].title == gameResponse[j].name) {
@@ -305,7 +287,6 @@ app.get('/trending', async (req, res) => {
       }
     }
   }
-  console.log(trending_games)
   res.render('trending_page.ejs', {
     "loggedIn": true,
     "name": req.session.username,
@@ -336,22 +317,6 @@ app.get('/recommended', sessionValidation, async (req, res) => {
   }
   let recommendedGames = await generateRecommendations(current_user)
   recommendedGames = JSON.parse(recommendedGames);
-  console.log(recommendedGames)
-  // const arr = ['Hades', 'Elden Ring', 'Risk of Rain 2', 'The Binding of Isaac: Rebirth', 'Dead Cells', 'Enter the Gungeon', 'Slay the Spire', 'Hollow Knight', 'Darkest Dungeon']
-  // const arr = ['Fortnite', 'Total War: Three Kingdoms', 'Civilization 6','Crusader Kings 3','Starcraft 2','XCOM 2','Diablo 3','Dota 2']
-
-  var client_id = 'twitch_client_id'
-  async function getTwitchData() {
-    const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
-      method: 'POST',
-      headers: {
-        'Client-ID': twitch_client_id,
-        'Client-Secret': twitch_client_secret
-      }
-    })
-    const my_info = await response.json()
-    return my_info
-  }
   const twitchData = await getTwitchData()
 
   async function getAllGames(gameNames) {
@@ -374,7 +339,6 @@ app.get('/recommended', sessionValidation, async (req, res) => {
   for (var i = 0; i < gameResponse.length; i++) {
     gameResponse[i].cover.url = gameResponse[i].cover.url.replace("t_thumb", "t_cover_big")
   }
-  console.log(gameResponse)
   res.render('recommended_page.ejs', {
     "loggedIn": true,
     "name": req.session.username,
@@ -384,8 +348,6 @@ app.get('/recommended', sessionValidation, async (req, res) => {
 
 app.get('/profile', async (req, res) => {
   if (req.session.authenticated) {
-    // console.log(req.session)
-    // console.log(req)
     var current_user = await usersModel.findOne({ username: req.session.username })
     var all_games = await gamesModel.find().toArray()
     if (current_user.questionnaireInfo == undefined) {
@@ -427,19 +389,6 @@ app.get('/profile', async (req, res) => {
 // Search Games GET request
 app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
   var databaseGames = await gamesModel.find().limit(270).toArray() // pull games from mongodb
-  var client_id = 'twitch_client_id'
-
-  async function getTwitchData() { // Twitch authentication for IGDB api
-    const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
-      method: 'POST',
-      headers: {
-        'Client-ID': twitch_client_id,
-        'Client-Secret': twitch_client_secret
-      }
-    })
-    const my_info = await response.json()
-    return my_info
-  }
   const twitchData = await getTwitchData()
 
   const PAGE_SIZE = 9
@@ -674,9 +623,7 @@ app.post('/resetPasswordSubmit', async (req, res) => {
 app.post("/gameInformation", async (req, res) => {
   try {
     let gameID = req.body.apiGameID
-    console.log(gameID)
     const gameInfoArray = await getGameInfo(gameID)
-    console.log(gameInfoArray.aggregated_rating_count)
     const loggedIn = req.session.authenticated
     const saved = await usersModel.findOne({
       $and: [
@@ -699,7 +646,6 @@ app.post("/gameInformation", async (req, res) => {
       res.render("gameinfo.ejs", { "game": gameInfoArray, "saved": false, "loggedIn": false, "inHistory": false })
     }
   } catch (err) {
-    console.log("error found")
     res.redirect("/randomGame")
   }
 })
@@ -768,7 +714,6 @@ app.post('/saveToPlayed', sessionValidation, async (req, res) => { // save games
 app.post("/removeSaved", sessionValidation, async (req, res) => { // remove game from saved games list from profile page
   const gameID = req.body.apiGameID
   const gameTitle = req.body.gameTitle
-  console.log(gameID, gameTitle)
   await usersModel.updateOne({ username: req.session.username }, { $pull: { savedGames: { "name": gameTitle, "id": gameID } } })
   res.redirect("/profile")
 })
@@ -776,22 +721,10 @@ app.post("/removeSaved", sessionValidation, async (req, res) => { // remove game
 app.post("/removePlayed", sessionValidation, async (req, res) => { // remove game from played games list from profile page
   const gameID = req.body.apiGameID
   const gameTitle = req.body.gameTitle
-  console.log(gameID, gameTitle)
   await usersModel.updateOne({ username: req.session.username }, { $pull: { playedGames: { "name": gameTitle, "id": gameID } } })
   res.redirect("/profile")
 })
 
-async function getTwitchData() {
-  const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
-    method: 'POST',
-    headers: {
-      'Client-ID': twitch_client_id,
-      'Client-Secret': twitch_client_secret
-    }
-  })
-  const my_info = await response.json()
-  return my_info
-}
 
 const getGameInfo = async (gameID) => {
   const twitchData = await getTwitchData()
