@@ -72,6 +72,7 @@ function sessionValidation(req, res, next) {
   }
 }
 
+// twitch validation code
 async function getTwitchData() {
   const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
     method: 'POST',
@@ -83,6 +84,28 @@ async function getTwitchData() {
   const my_info = await response.json()
   return my_info
 }
+
+// gpt reccomendation code
+async function generateRecommendations(userProfile, num_games) {
+  const preferredGenres = userProfile.questionnaireInfo.genres.join(", ");
+  const playerExperience = "Hardcore";
+  const playedGames = userProfile.playedGames.join(", ");
+  const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and the games I have played in the past such as ${playedGames}, recommend ${num_games} games I haven't played for me to play next in javascript array format using double quotes and full titles.`;
+
+  // Generate a response using ChatGPT
+  const completion = await openai.createCompletion({
+    model: "text-davinci-003",
+    prompt: prompt,
+    max_tokens: 1000
+  });
+
+  // Extract the recommendations from the response
+  const recommendations = completion.data.choices[0].text;
+
+  return recommendations;
+}
+
+
 
 // Start of index main code
 app.use(express.static('public'));
@@ -129,25 +152,9 @@ app.get('/', async (req, res) => {
 
   if (isValidSession(req)) {
     var current_user = await usersModel.findOne({ username: req.session.username })
+
     // reccomendation code
-    async function generateRecommendations(userProfile) {
-      const preferredGenres = userProfile.questionnaireInfo.genres.join(", ");
-      const playerExperience = "Hardcore";
-      const playedGames = userProfile.playedGames.join(", ");
-      const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and the games I have played in the past such as ${playedGames}, recommend 9 games I haven't played for me to play next in javascript array format using double quotes and full titles.`;
-
-      // Generate a response using ChatGPT
-      const completion = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: prompt,
-        max_tokens: 1000
-      });
-
-      // Extract the recommendations from the response
-      const recommendations = completion.data.choices[0].text;
-      return recommendations;
-    }
-    let recommendedGames = await generateRecommendations(current_user)
+    let recommendedGames = await generateRecommendations(current_user, 9)
     recommendedGames = JSON.parse(recommendedGames);
 
     const recGameResponse = await getAllGames(recommendedGames)
@@ -224,9 +231,6 @@ app.post('/signup', async (req, res) => {
   // Hash password
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  // Hash email
-  const hashedEmail = await bcrypt.hash(email, saltRounds);
-
   // Create new user
   const newUser = {
     email: email,
@@ -249,7 +253,10 @@ app.post('/signup', async (req, res) => {
   res.redirect('/');
 });
 
+// trending page code
 app.get('/trending', async (req, res) => {
+
+  // get trending games from database
   var trending_games = await gamesModel.find().limit(9).toArray()
   const twitchData = await getTwitchData()
   var gameNames = []
@@ -257,6 +264,7 @@ app.get('/trending', async (req, res) => {
     gameNames.push(trending_games[i].title)
   }
 
+  // get covers for trending games from api
   async function getAllGames(gameNames) {
     const response = await fetch('https://api.igdb.com/v4/games', {
       method: 'POST',
@@ -274,6 +282,8 @@ app.get('/trending', async (req, res) => {
     return my_info
   }
   const gameResponse = await getAllGames(gameNames)
+
+  // add covers to trending games
   for (var i = 0; i < trending_games.length; i++) {
     for (var j = 0; j < gameResponse.length; j++) {
       if (trending_games[i].title == gameResponse[j].name) {
@@ -287,6 +297,8 @@ app.get('/trending', async (req, res) => {
       }
     }
   }
+
+  // render trending page
   res.render('trending_page.ejs', {
     "loggedIn": true,
     "name": req.session.username,
@@ -294,31 +306,16 @@ app.get('/trending', async (req, res) => {
   },)
 })
 
+// recommended page code
 app.get('/recommended', sessionValidation, async (req, res) => {
   var current_user = await usersModel.findOne({ username: req.session.username })
-  // reccomendation code
-  async function generateRecommendations(userProfile) {
-    const preferredGenres = userProfile.questionnaireInfo.genres.join(", ");
-    const playerExperience = "Hardcore";
-    const playedGames = userProfile.playedGames.join(", ");
-    const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and the games I have played in the past such as ${playedGames}, recommend 20 games I haven't played for me to play next in javascript array format using double quotes and full titles.`;
 
-    // Generate a response using ChatGPT
-    const completion = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: prompt,
-      max_tokens: 1000
-    });
-
-    // Extract the recommendations from the response
-    const recommendations = completion.data.choices[0].text;
-
-    return recommendations;
-  }
-  let recommendedGames = await generateRecommendations(current_user)
+  // gpt recommendation code
+  let recommendedGames = await generateRecommendations(current_user, 20)
   recommendedGames = JSON.parse(recommendedGames);
   const twitchData = await getTwitchData()
 
+  // get information for recommended games from api
   async function getAllGames(gameNames) {
     const response = await fetch('https://api.igdb.com/v4/games', {
       method: 'POST',
@@ -336,9 +333,13 @@ app.get('/recommended', sessionValidation, async (req, res) => {
     return my_info
   }
   const gameResponse = await getAllGames(recommendedGames)
+
+  // add full-size covers to recommended games
   for (var i = 0; i < gameResponse.length; i++) {
     gameResponse[i].cover.url = gameResponse[i].cover.url.replace("t_thumb", "t_cover_big")
   }
+
+  // render recommended page
   res.render('recommended_page.ejs', {
     "loggedIn": true,
     "name": req.session.username,
@@ -346,6 +347,7 @@ app.get('/recommended', sessionValidation, async (req, res) => {
   })
 })
 
+// profile page code
 app.get('/profile', async (req, res) => {
   if (req.session.authenticated) {
     var current_user = await usersModel.findOne({ username: req.session.username })
@@ -366,6 +368,8 @@ app.get('/profile', async (req, res) => {
     } else {
       playedGames = current_user.playedGames
     }
+
+    // render profile page
     res.render('User_Profile.ejs', {
       "loggedIn": true,
       "name": current_user.username,
@@ -377,7 +381,6 @@ app.get('/profile', async (req, res) => {
       "playedGames": playedGames
     })
   }
-
   else {
     res.redirect('/login');
   }
