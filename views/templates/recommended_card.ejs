@@ -1,25 +1,22 @@
 <main>
     <h1>
-        Trending Games
+        Recommended Games
     </h1>
     <div class="row">
-    <% for (let i = 0; i < trending_games.length; i++) { %>
+    <% for (let i = 0; i < recommended_games.length; i++) { %>
             <div class="card" id = gameCard>
                 <div class="row g-0">
                     <div class="col-sm row-">
                         <img src="
-                            <%= trending_games[i].cover %>
+                                <%= recommended_games[i].cover.url %>
                             " class="img-fluid rounded-start gameImage" alt="Tears of the Kingdom">
                     </div>
                     <div class="col-sm row-">
                          <div class="card-body">
-                            <h5 class="card-title"><%= trending_games[i].title %></h5>
-                            <p class="card-text"><%= trending_games[i].summary %></p>
-                            <p class="card-text"><%= trending_games[i]._id %></p>
+                            <h5 class="card-title"><%= recommended_games[i].name %></h5>
+                            <p class="card-text"><%= recommended_games[i].summary %></p>
                             <form method="post" action="/gameInformation">
-                                <input type="hidden" name="mongoGameID" value="<%= trending_games[(i)]._id %>">
-                                <input type="hidden" name="apiGameID" value="<%= trending_games[(i)].apiID %>">
-                                <input type ="hidden" name="gameImage" value="<%= trending_games[(i)].cover %>">
+                                <input type="hidden" name="apiGameID" value="<%= recommended_games[(i)].id %>">
                                 <button type="submit" class="btn btn-primary">See more information</button>
                             </form>
                         </div>

@@ -105,33 +105,7 @@ app.get('/test', (req, res) => {
 
 app.use(express.static('public'));
 app.get('/', async (req, res) => {
-  if (isValidSession(req)) {
-    var current_user = await usersModel.findOne({ username: req.session.username })
-    // reccomendation code
-    async function generateRecommendations(userProfile) {
-      const preferredGenres = userProfile.questionnaireInfo.genres.join(", ");
-      const playerExperience = "Hardcore";
-      const playedGames = userProfile.playedGames.join(", ");
-      // const playedGames = playedGames.join(", ");
-      // const playedGames = ["Civilization VI", "Humankind", "Civilization V", "Settlers of Catan", "Minecraft", "The Long Dark"].join(", ");
-      const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and the games I have played in the past such as ${playedGames}, recommend 9 games I haven't played for me to play next in javascript array format using double quotes and full titles.`;
-
-      // Generate a response using ChatGPT
-      const completion = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: prompt,
-        max_tokens: 1000
-      });
-      // Extract the recommendations from the response
-      const recommendations = completion.data.choices[0].text;
-
-      return recommendations;
-    }
-    let recommendedGames = await generateRecommendations(current_user)
-    recommendedGames = JSON.parse(recommendedGames);
-    console.log(recommendedGames);
-    var trending_games = await gamesModel.find().limit(3).toArray()
-    var client_id = twitch_client_id
+  var trending_games = await gamesModel.find().limit(3).toArray()
     async function getTwitchData() {
       const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
         method: 'POST',
@@ -179,6 +153,32 @@ app.get('/', async (req, res) => {
         }
       }
     }
+    if (isValidSession(req)) {
+    var current_user = await usersModel.findOne({ username: req.session.username })
+    // reccomendation code
+    async function generateRecommendations(userProfile) {
+      const preferredGenres = userProfile.questionnaireInfo.genres.join(", ");
+      const playerExperience = "Hardcore";
+      const playedGames = userProfile.playedGames.join(", ");
+      // const playedGames = playedGames.join(", ");
+      // const playedGames = ["Civilization VI", "Humankind", "Civilization V", "Settlers of Catan", "Minecraft", "The Long Dark"].join(", ");
+      const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and the games I have played in the past such as ${playedGames}, recommend 9 games I haven't played for me to play next in javascript array format using double quotes and full titles.`;
+
+      // Generate a response using ChatGPT
+      const completion = await openai.createCompletion({
+        model: "text-davinci-003",
+        prompt: prompt,
+        max_tokens: 1000
+      });
+      // Extract the recommendations from the response
+      const recommendations = completion.data.choices[0].text;
+
+      return recommendations;
+    }
+    let recommendedGames = await generateRecommendations(current_user)
+    recommendedGames = JSON.parse(recommendedGames);
+    console.log(recommendedGames);
+    
     const recGameResponse = await getAllGames(recommendedGames)
     for (var i = 0; i < recGameResponse.length; i++) {
       recGameResponse[i].cover.url = recGameResponse[i].cover.url.replace("t_thumb", "t_cover_big")
@@ -192,9 +192,11 @@ app.get('/', async (req, res) => {
     })
   }
   else {
+
     res.render('index.ejs', {
       "loggedIn": false,
       "name": req.session.username,
+      "trending_games": trending_games,
     })
   }
 })

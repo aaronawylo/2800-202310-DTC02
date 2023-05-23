@@ -7,84 +7,8 @@
 
 
         <div>
-        <%- include('./recommended_page.ejs', { recommended_games : recommended_games }) %>
-        <%- include('./trending_page.ejs', { trending_games : trending_games }) %>
-        </div>
-
-
-        <div class="row">
-            <div class="card col text-center" style="width: 18rem;">
-                <img src="ToTK.jpg" class="card-img-top" alt="Tears of the Kingdom">
-                <div class="card-body">
-                    <h5 class="card-title">Tears of the Kingdom</h5>
-                    <p class="card-text">This game is absolutely game of the year.</p>
-                    <a href="#" class="btn btn-primary">Not a working button yet</a>
-                </div>
-            </div>
-            <div class="card col" style="width: 18rem;">
-                <img src="ToTK.jpg" class="card-img-top" alt="Tears of the Kingdom">
-                <div class="card-body">
-                    <h5 class="card-title">Tears of the Kingdom</h5>
-                    <p class="card-text">This game is absolutely game of the year.</p>
-                    <a href="#" class="btn btn-primary">Not a working button yet</a>
-                </div>
-            </div>
-            <div class="card col" style="width: 18rem;">
-                <img src="ToTK.jpg" class="card-img-top" alt="Tears of the Kingdom">
-                <div class="card-body">
-                    <h5 class="card-title text-center">Tears of the Kingdom</h5>
-                    <p class="card-text">This game is absolutely game of the year.</p>
-                    <a href="#" class="btn btn-primary">Not a working button yet</a>
-                </div>
-            </div>
-            <br>
-            <h2 class="text-center border-bottom">Above is desktop trial</h2>
-            <h2 class="text-center border-bottom">Below is mobile trial</h2>
-            <br>
-            <div class="container d-md-flex">
-                <div class="card" style="max-width: 720px;">
-                    <div class="row g-0">
-                        <div class="col">
-                            <img src="ToTK.jpg" class="img-fluid rounded-start" alt="Tears of the Kingdom">
-                        </div>
-                        <div class="col">
-                            <div class="card-body">
-                                <h5 class="card-title">Tears of the Kingdom</h5>
-                                <p class="card-text">This game is absolutely game of the year.</p>
-                                <a href="#" class="btn btn-primary">Boop</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card" style="max-width: 720px;">
-                    <div class="row g-0">
-                        <div class="col">
-                            <img src="ToTK.jpg" class="img-fluid rounded-start" alt="Tears of the Kingdom">
-                        </div>
-                        <div class="col">
-                            <div class="card-body">
-                                <h5 class="card-title">Tears of the Kingdom</h5>
-                                <p class="card-text">This game is absolutely game of the year.</p>
-                                <a href="#" class="btn btn-primary">Boop</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card" style="max-width: 720px;">
-                    <div class="row g-0">
-                        <div class="col">
-                            <img src="ToTK.jpg" class="img-fluid rounded-start" alt="Tears of the Kingdom">
-                        </div>
-                        <div class="col">
-                            <div class="card-body">
-                                <h5 class="card-title">Tears of the Kingdom</h5>
-                                <p class="card-text">This game is absolutely game of the year.</p>
-                                <a href="#" class="btn btn-primary">Boop</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <%- include('templates/recommended_card.ejs', { recommended_games : recommended_games }) %>
+        <%- include('templates/trending_card.ejs', { trending_games : trending_games }) %>
         </div>
 
     <% } else { %>
@@ -97,80 +21,7 @@
             <a href="/signup" class="btn btn-primary">Signup</a>
         </div>
         <br>
-        <div class="row">
-            <div class="card col text-center" style="width: 18rem;">
-                <img src="ToTK.jpg" class="card-img-top" alt="Tears of the Kingdom">
-                <div class="card-body">
-                    <h5 class="card-title">Tears of the Kingdom</h5>
-                    <p class="card-text">This game is absolutely game of the year.</p>
-                    <a href="#" class="btn btn-primary">Not a working button yet</a>
-                </div>
-            </div>
-            <div class="card col" style="width: 18rem;">
-                <img src="ToTK.jpg" class="card-img-top" alt="Tears of the Kingdom">
-                <div class="card-body">
-                    <h5 class="card-title">Tears of the Kingdom</h5>
-                    <p class="card-text">This game is absolutely game of the year.</p>
-                    <a href="#" class="btn btn-primary">Not a working button yet</a>
-                </div>
-            </div>
-            <div class="card col" style="width: 18rem;">
-                <img src="ToTK.jpg" class="card-img-top" alt="Tears of the Kingdom">
-                <div class="card-body">
-                    <h5 class="card-title text-center">Tears of the Kingdom</h5>
-                    <p class="card-text">This game is absolutely game of the year.</p>
-                    <a href="#" class="btn btn-primary">Not a working button yet</a>
-                </div>
-            </div>
-            <br>
-            <h2 class="text-center border-bottom">Above is desktop trial</h2>
-            <h2 class="text-center border-bottom">Below is mobile trial</h2>
-            <br>
-            <div class="container d-md-flex">
-                <div class="card" style="max-width: 720px;">
-                    <div class="row g-0">
-                        <div class="col">
-                            <img src="ToTK.jpg" class="img-fluid rounded-start" alt="Tears of the Kingdom">
-                        </div>
-                        <div class="col">
-                            <div class="card-body">
-                                <h5 class="card-title">Tears of the Kingdom</h5>
-                                <p class="card-text">This game is absolutely game of the year.</p>
-                                <a href="#" class="btn btn-primary">Boop</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card" style="max-width: 720px;">
-                    <div class="row g-0">
-                        <div class="col">
-                            <img src="ToTK.jpg" class="img-fluid rounded-start" alt="Tears of the Kingdom">
-                        </div>
-                        <div class="col">
-                            <div class="card-body">
-                                <h5 class="card-title">Tears of the Kingdom</h5>
-                                <p class="card-text">This game is absolutely game of the year.</p>
-                                <a href="#" class="btn btn-primary">Boop</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card" style="max-width: 720px;">
-                    <div class="row g-0">
-                        <div class="col">
-                            <img src="ToTK.jpg" class="img-fluid rounded-start" alt="Tears of the Kingdom">
-                        </div>
-                        <div class="col">
-                            <div class="card-body">
-                                <h5 class="card-title">Tears of the Kingdom</h5>
-                                <p class="card-text">This game is absolutely game of the year.</p>
-                                <a href="#" class="btn btn-primary">Boop</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <%- include('templates/trending_card.ejs', { trending_games : trending_games }) %>
 
     <% } %>
 
