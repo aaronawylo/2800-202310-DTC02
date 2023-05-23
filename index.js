@@ -630,8 +630,8 @@ app.post('/questionnaireSubmit', sessionValidation, async (req, res) => {
 
 // find a random game in the entire usersModel database and save the gameID as a POST request
 app.get('/randomGame', async (req, res) => {
-  var randomGame = await gamesModel.aggregate([{ $sample: { size: 1 } }]).toArray()
-  var gameID = randomGame[0]._id
+  // var randomGame = await gamesModel.aggregate([{ $sample: { size: 1 } }]).toArray()
+  var gameID = Math.floor(Math.random() * 200000) + 1;
   res.render('randomGame.ejs', { "name": req.session.username, "gameID": gameID, "loggedIn": req.session.authenticated })
 })
 
@@ -705,6 +705,7 @@ app.post('/resetPasswordSubmit', async (req, res) => {
 
 app.post("/gameInformation", async (req, res) => {
   const gameID = req.body.apiGameID
+  console.log(gameID)
   const gameInfoArray = await getGameInfo(gameID)
   console.log(gameInfoArray.aggregated_rating_count)
   const loggedIn = req.session.authenticated
