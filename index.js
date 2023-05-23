@@ -19,8 +19,6 @@ const saltRounds = 12;
 
 const Joi = require('joi');
 
-let ejs = require('ejs');
-
 app.set('view engine', 'ejs');
 
 // cookie expire time is one hour
@@ -117,7 +115,7 @@ app.get('/', async (req, res) => {
     const my_info = await response.json()
     return my_info
   }
-  
+
   const twitchData = await getTwitchData()
   var gameNames = []
   for (var i = 0; i < trending_games.length; i++) {
