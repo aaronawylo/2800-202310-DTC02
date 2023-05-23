@@ -704,7 +704,8 @@ app.post('/resetPasswordSubmit', async (req, res) => {
 })
 
 app.post("/gameInformation", async (req, res) => {
-  const gameID = req.body.apiGameID
+  try{
+  let gameID = req.body.apiGameID
   console.log(gameID)
   const gameInfoArray = await getGameInfo(gameID)
   console.log(gameInfoArray.aggregated_rating_count)
@@ -729,7 +730,10 @@ app.post("/gameInformation", async (req, res) => {
   else {
     res.render("gameinfo.ejs", { "game": gameInfoArray, "saved": false, "loggedIn": false, "inHistory": false })
   }
-
+  }catch(err){
+    console.log("error found")
+    res.redirect("/randomGame")
+  }
 
 })
 
@@ -839,6 +843,7 @@ const getGameInfo = async (gameID) => {
         `
   })
   const gameInfoArray = await response.json()
+  defineFields(gameInfoArray[0])
   for (const similarGame of gameInfoArray[0].similar_games) {
     if (similarGame.cover == undefined) {
       similarGame.cover = "no-cover.png"
@@ -860,7 +865,15 @@ const getGameInfo = async (gameID) => {
 }
 }
 
-
+const defineFields = (gameArray) => {
+  const fields = ["name", "id", "summary", "screenshots", "rating", "rating_count", "aggregated_rating", "aggregated_rating_count","genres", "similar_games", "involved_companies", "total_rating", "first_release_date", "platforms", "game_modes", "themes"]
+  for (const gameField of fields){
+    if (gameArray[`${gameField}`] == undefined){
+      gameArray[`${gameField}`] = []
+    }
+  }
+}
+ 
   // End of Derek's code
 
   app.get("*", (req, res) => {
