@@ -28,6 +28,7 @@
 <%- include('./templates/header.ejs', { "name": name }) %>
 
 <body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
   <main>
       <h1>
           Search for Games
@@ -54,26 +55,21 @@
   
       <ul class="pagination">
         <!-- Previous Page button -->
-        <a class="btn btn-primary ml-1" href="/searchGames?page=<%= (currentPage - 1) %>" <% if (currentPage === 1) { %> style="display: none;" <% } %> >
-          <
-        </a> &nbsp;
-  
-          <% for (let i = 1; i <= numPages; i++) { %>
-            <li>
-              <% if (currentPage === i) { %>
-                <a class="btn btn-primary active" href="/searchGames?page=<%= i %>"
-                  <% } else { %>
-                    <a class="btn btn-primary" href="/searchGames?page=<%= i %>"
-                <% } %>
-              ><%= i %></a>
-            </li>
-            &nbsp;
-          <% } %>
-          <!-- Next Page button -->
-          <a class="btn btn-primary ml-1" href="/searchGames?page=<%= currentPage + 1 %>" <% if (currentPage === numPages) { %> style="display: none;" <% } %> >
-            >
-          </a>
-        </ul>
+        <a class="btn btn-primary ml-1" href="/searchGames?page=<%= (currentPage - 1) %>" <% if (currentPage === 1) { %> style="display: none;" <% } %>><</a> &nbsp;
+        <% for (let i = 1; i <= numPages; i++) { %>
+          <li>
+            <% if (currentPage === i) { %>
+              <a class="btn btn-primary active" href="/searchGames?page=<%= i %>"
+                <% } else { %>
+                  <a class="btn btn-primary" href="/searchGames?page=<%= i %>"
+              <% } %>
+            ><%= i %></a>
+          </li>
+          &nbsp;
+        <% } %>
+        <!-- Next Page button -->
+        <a class="btn btn-primary ml-1" href="/searchGames?page=<%= currentPage + 1 %>" <% if (currentPage === numPages) { %> style="display: none;" <% } %>>></a>
+      </ul>
   
         <div class="row">
           <% for (let i = 0; i < databaseGames.length; i++) { %>
@@ -102,6 +98,11 @@
                   <% } %>
               </div>
       </main>
-      <%- include('./templates/footer.ejs') %>
-      <script src="/scripts/searchGamesScripts.js"></script>
+    <%- include('./templates/footer.ejs') %>
+
+    <script>
+      pulledGames = "<%=pulledGames%>"
+    </script>
+
+      <script src="searchGamesScripts.js"></script>
 </body>

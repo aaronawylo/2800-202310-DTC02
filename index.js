@@ -513,6 +513,8 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
       }
     }
   }
+  
+  // console.log(gameResponse[0])
 
   // Function to find games matching names in searchGameNames from IGDB API 
   async function getAllGenres() {
@@ -549,15 +551,6 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
   //   });
   // };
 
-  const filterGames = () => {
-    selectedTypes = [];
-    $('.typeCheckbox:checked').each(function () {
-      selectedTypes.push($(this).val());
-    });
-    paginate(currentPage, PAGE_SIZE, pokemons);
-    updatePaginationDiv(currentPage, Math.ceil(pokemons.length / PAGE_SIZE));
-  };
-
   res.render('searchGames.ejs', {
     "loggedIn": true,
     "name": req.session.username,
@@ -565,6 +558,8 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
     "currentPage": currentPage,
     "numPages": Math.ceil(databaseGames.length / PAGE_SIZE),
     "apiGenres": apiGenres,
+    "PAGE_SIZE": PAGE_SIZE,
+    "pulledGames": gameResponse,
   })
 })
 
