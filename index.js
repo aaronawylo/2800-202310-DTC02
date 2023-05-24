@@ -490,14 +490,15 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
         'Client-ID': twitch_client_id,
         'Authorization': 'Bearer ' + twitchData.access_token,
       },
-      body: `fields name,id,cover.url,genres.name,summary;
-      sort release_dates.date desc;
+      body: `fields name,id,cover.url,genres.name,summary,release_dates.date,rating;
+      sort rating desc;
       where release_dates.date != null;
+      where genres != null;
+      where rating >= 80;
       limit 270;`
     })
     const my_info = await response.json()
     console.log('test')
-    console.log(my_info[5])
     return my_info
   }
 
@@ -515,6 +516,16 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
   //     }
   //   }
   // }
+
+  const defineFields = (gameArray) => {      //replaces undefined fields with empty arrays
+    const fields = ["name", "id", "summary", "screenshots", "rating", "rating_count", "aggregated_rating", "aggregated_rating_count", "genres", "similar_games", "involved_companies", "total_rating", "first_release_date", "platforms", "game_modes", "themes"]
+    for (const gameField of fields) {
+      if (gameArray[`${gameField}`] == undefined) {
+        gameArray[`${gameField}`] = []
+      }
+    }
+  }  
+
   for (var i = 0; i < gameResponse.length; i++){
     if (gameResponse[i].cover == undefined) { // If game has no cover image
       gameResponse[i].cover = "no-cover.png" // Set cover image to no-cover.png
@@ -522,6 +533,7 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
       gameResponse[i].cover.url = gameResponse[i].cover.url.replace("t_thumb", "t_cover_big") // Replace t_thumb with t_cover_big in url
       gameResponse[i].cover = gameResponse[i].cover.url // Set cover image to url from IGDB api
     }
+    defineFields(gameResponse[i]);
   }
 
   // Function to find games matching names in searchGameNames from IGDB API 
@@ -542,10 +554,6 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
   }
 
   const apiGenres = await getAllGenres() // Genres from IGDB API with matching names from mongo database
-
-  // gameResponse.forEach(game => {
-  //   console.log(game.cover)
-  // })
 
   res.render('searchGames.ejs', {
     "loggedIn": true,

@@ -85,8 +85,8 @@
                                   <p class="card-text"><%= gameResponse[i].summary %></p>
                                   <p class="card-text"><%= gameResponse[i]._id %></p>
                                   <form method="post" action="/gameInformation">
-                                      <input type="hidden" name="mongoGameID" value="<%= gameResponse[(i)]._id %>">
-                                      <input type="hidden" name="apiGameID" value="<%= gameResponse[(i)].apiID %>">
+                                      <input type="hidden" name="mongoGameID" value="">
+                                      <input type="hidden" name="apiGameID" value="<%= gameResponse[(i)].id %>">
                                       <input type ="hidden" name="gameImage" value="<%= gameResponse[(i)].cover %>">
                                       <button type="submit" class="btn btn-primary">See more information</button>
                                   </form>

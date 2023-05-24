@@ -12,38 +12,43 @@ const filterGenresSelected = () => {
 };
 
 function filterGenres() {
-  const selectedFilters = filterGenresSelected(); // Pulls filters currently checked on page stored as an array
-  const filteredGames = databaseGames.filter((game) =>
-    selectedFilters.every((selectedFilter) => game.genres.includes(selectedFilter))
-  ); // Loops through all games pulled and checks if they match the selected filters
-  // databaseGames.forEach((game) => {
-  //   if (game.genres.includes(selectedFilters)) {
-  //     // console.log(game);
-  //   }
-  // });
-  // console.log(filteredGames)
-  const paginatedGames = paginateGames(currentPage, PAGE_SIZE, filteredGames);
-  
-  // Update the displayed games on the page with the filtered and paginated data
-  // You can update the game cards or any other elements that show the games
+  selectedFilters = filterGenresSelected(); // Pulls filters currently checked on page stored as an array
+  const filteredGames = []; // Array to store games that match the selected filters
+  $('#gameCards').empty(); // Clear the game cards div
 
-  // You can also update the pagination buttons if needed
-  filteredGames.forEach((game, index) => {
+// Iterate over the games array
+  for (let i = 0; i < gameResponse.length; i++) {
+    const genres = gameResponse[i].genres;
+    console.log(genres)
+
+    // Check if both target names exist in the genres of the current game
+    const matches = selectedFilters.every((selectedFilters) =>
+      genres.some((genre) => genre.name === selectedFilters)
+    );
+    console.log(matches)
+
+    // If both target names are found, set found to true and break the loop
+    if (matches) {
+      filteredGames.push(gameResponse[i]);
+    }
+  }
+
+  for (let i = (currentPage - 1)*PAGE_SIZE; i < currentPage * PAGE_SIZE; i++) {
     $('#gameCards').append(`
       <div class="card" id = gameCard>
         <div class="row g-0">
             <div class="col-sm row-">
-                <img src="${gameResponse[index].cover} " class="img-fluid rounded-start gameImage" alt="Tears of the Kingdom">
+                <img src="${filteredGames[i].cover} " class="img-fluid rounded-start gameImage" alt="Tears of the Kingdom">
             </div>
             <div class="col-sm row-">
                 <div class="card-body">
-                    <h5 class="card-title">${gameResponse[index].title}</h5>
-                    <p class="card-text">${gameResponse[index].summary}</p>
-                    <p class="card-text">${gameResponse[index]._id}</p>
+                    <h5 class="card-title">${filteredGames[i].name}</h5>
+                    <p class="card-text">${filteredGames[i].summary}</p>
+                    <p class="card-text">${filteredGames[i].id}</p>
                     <form method="post" action="/gameInformation">
-                        <input type="hidden" name="mongoGameID" value="${gameResponse[index]._id}">
-                        <input type="hidden" name="apiGameID" value="${gameResponse[index].apiID}">
-                        <input type ="hidden" name="gameImage" value="${gameResponse[index].cover.url.replace("t_thumb", "t_cover_big")}">
+                        <input type="hidden" name="mongoGameID" value="">
+                        <input type="hidden" name="apiGameID" value="${filteredGames[i].id}">
+                        <input type ="hidden" name="gameImage" value="${filteredGames[i].cover}">
                         <button type="submit" class="btn btn-primary">See more information</button>
                     </form>
                 </div>
@@ -51,20 +56,14 @@ function filterGenres() {
         </div>
       </div>
     `);
-  });
+  };
 
-  // filteredGames.forEach((game, index) => {
-  //   console.log(game)
-  //   console.log(index)
-  // });
-  updatePaginationDiv(currentPage, Math.ceil(filteredGames.length / PAGE_SIZE));
+  // updatePaginationDiv(currentPage, Math.ceil(filteredGames.length / PAGE_SIZE));
 }
 
 // Loops through all games pulled and checks if they match the selected filters
 // function createFilteredGames(databaseGames, selectedFilters) {
 //   const filteredGames = databaseGames.filter(game => selectedFilters.every(filter => game.genres.includes(filter)));
-//   console.log('these are filtered games')
-//   console.log(filteredGames);
 //   return filteredGames;
 // }
 
@@ -114,7 +113,6 @@ async function paginateGames(currentPage, PAGE_SIZE, pulledGames){
 }
 
 const setup = async () => {
-// console.log(gameResponse)
   // Add event listener to type checkboxes
   $('body').on('change', '.typeCheckbox', function () {
     currentPage = 1;
