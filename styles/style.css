@@ -24,3 +24,7 @@ html, body {
 .offcanvas a:hover{
     color: #0d6efd;
 }
+
+.bg-info {
+    background-color: #6592fd!important;
+}
