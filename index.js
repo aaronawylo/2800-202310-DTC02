@@ -109,6 +109,8 @@ async function generateRecommendations(userProfile, num_games) {
 
 // Start of index main code
 app.use(express.static('public'));
+app.use(express.static('styles'));
+app.use(express.static('scripts'));
 app.get('/', async (req, res) => {
   var trending_games = await gamesModel.find().limit(3).toArray()
   const twitchData = await getTwitchData()
@@ -608,7 +610,7 @@ app.get('/resetPassword', (req, res) => {
   res.render('resetPassword.ejs', { "invalidEmail": invalidEmail })
 })
 
-app.post('/resetPasswordSubmit', async (req, res) => {
+app.post('/resetPasswordSubmit', async (req, res) => {  
   var email = req.body.email
   var password = req.body.password
   var user = await usersModel.findOne({ email: email })
@@ -623,113 +625,119 @@ app.post('/resetPasswordSubmit', async (req, res) => {
   else { res.redirect(`/resetPassword?invalidEmail=true`) }
 })
 
+
+const isSaved = async (username, gameTitle, gameID) => { // check if game is saved in user's saved games list
+  const saved = await usersModel.findOne({
+    $and: [
+      { "username": username },
+      { "savedGames": { $in: [{ "name": gameTitle, "id": gameID }] } }]
+  })
+  return saved != null
+}
+
+
+const inHistory = async (username, gameTitle, gameID) => { // check if user has game marked as played
+  const history = await usersModel.findOne({
+    $and: [
+      { "username": username },
+      { "playedGames": { $in: [{ "name": gameTitle, "id": gameID }] } }]
+  })
+  return history != null
+}
+
+
 app.post("/gameInformation", async (req, res) => {
   try {
     let gameID = req.body.apiGameID
     const gameInfoArray = await getGameInfo(gameID)
     const loggedIn = req.session.authenticated
-    const saved = await usersModel.findOne({
-      $and: [
-        { username: req.session.username },
-        { "savedGames": { $in: [{ "name": gameInfoArray.name, "id": gameID }] } }
-      ]
-    })
-    const isSaved = saved != null
-    const history = await usersModel.findOne({
-      $and: [
-        { username: req.session.username },
-        { "playedGames": { $in: [{ "name": gameInfoArray.name, "id": gameID }] } }
-      ]
-    })
-    const inHistory = history != null
+    const saved = await isSaved(req.session.username, gameInfoArray.name, gameID)
+    const history = await inHistory(req.session.username, gameInfoArray.name, gameID)
     if (loggedIn) {
-      res.render("gameinfo.ejs", { "game": gameInfoArray, "saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": inHistory })
+      res.render("gameinfo.ejs", { "game": gameInfoArray, "saved": saved, "name": req.session.username, "loggedIn": true, "inHistory": history })
     }
     else {
       res.render("gameinfo.ejs", { "game": gameInfoArray, "saved": false, "loggedIn": false, "inHistory": false })
     }
-  } catch (err) {
+  } catch (err) { 
     res.redirect("/randomGame")
   }
 })
+
+const saveGame = async (username, gameTitle, gameID) => {
+  await usersModel.updateOne({ "username": username }, { $push: { savedGames: { "name": gameTitle, "id": gameID } } })
+}
+
+const markGame = async (username, gameTitle, gameID) => {
+  await usersModel.updateOne({ "username": username }, { $push: { playedGames: { "name": gameTitle, "id": gameID } } })
+}
+
+const removeSaved = async (username, gameTitle, gameID) => {
+  await usersModel.updateOne({ "username": username }, { $pull: { savedGames: { "name": gameTitle, "id": gameID } } })
+}
+
+const removePlayed = async (username, gameTitle, gameID) => { await usersModel.updateOne({ "username": username }, { $pull: { playedGames: { "name": gameTitle, "id": gameID } } }) }
 
 app.post('/saveGame', sessionValidation, async (req, res) => { // save games to saved games list from game info page
   const gameID = req.body.apiGameID
   const purpose = req.body.purpose
   const game = await getGameInfo(gameID)
-  const history = await usersModel.findOne({
-    $and: [
-      { username: req.session.username },
-      { "playedGames": { $in: [{ "name": game.name, "id": gameID }] } }
-    ]
-  })
-  const inHistory = history != null
+  const saved = await isSaved(req.session.username, game.name, gameID)
+  const history = await inHistory(req.session.username, game.name, gameID)
 
-  if (purpose == "save") {
-    await usersModel.updateOne({ username: req.session.username }, {
-      $push: {
-        savedGames: { "name": game.name, "id": gameID }
-      }
-    })
-    res.render("gameinfo.ejs", { "game": game, "saved": true, "name": req.session.username, "loggedIn": true, "inHistory": inHistory })
+  if (purpose == "save" && !saved) {
+    await saveGame(req.session.username, game.name, gameID)
+    res.render("gameinfo.ejs", { "game": game, "saved": true, "name": req.session.username, "loggedIn": true, "inHistory": history })
+  }
+  else if (purpose == "save" && saved) {
+    res.render("gameinfo.ejs", { "game": game, "saved": saved, "name": req.session.username, "loggedIn": true, "inHistory": history })
   }
   else {
-    await usersModel.updateOne({ username: req.session.username }, {
-      $pull: {
-        savedGames: { "name": game.name, "id": gameID }
-      }
-    })
-    res.render("gameinfo.ejs", { "game": game, "saved": false, "name": req.session.username, "loggedIn": true, "inHistory": inHistory })
+    await removeSaved(req.session.username, game.name, gameID)
+    res.render("gameinfo.ejs", { "game": game, "saved": false, "name": req.session.username, "loggedIn": true, "inHistory": history })
   }
 }
 )
+
 
 app.post('/saveToPlayed', sessionValidation, async (req, res) => { // save games to played games list from game info page
   const gameID = req.body.apiGameID
   const purpose = req.body.purpose
   const game = await getGameInfo(gameID)
-  const saved = await usersModel.findOne({
-    $and: [
-      { username: req.session.username },
-      { "savedGames": { $in: [{ "name": game.name, "id": gameID }] } }
-    ]
-  })
-  const isSaved = saved != null
-  if (purpose == "mark") {
-    await usersModel.updateOne({ username: req.session.username }, {
-      $push: {
-        playedGames: { "name": game.name, "id": gameID }
-      }
-    })
-    res.render("gameinfo.ejs", { "game": game, "saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": true })
+  const saved = await isSaved(req.session.username, game.name, gameID)
+  const history = await inHistory(req.session.username, game.name, gameID)
+  if (purpose == "mark" && !history) {
+    await markGame(req.session.username, game.name, gameID)
+    res.render("gameinfo.ejs", { "game": game, "saved": saved, "name": req.session.username, "loggedIn": true, "inHistory": true })
+  }
+  else if (purpose == "mark" && history) {
+    res.render("gameinfo.ejs", { "game": game, "saved": saved, "name": req.session.username, "loggedIn": true, "inHistory": history })
   }
   else {
-    await usersModel.updateOne({ username: req.session.username }, {
-      $pull: {
-        playedGames: { "name": game.name, "id": gameID }
-      }
-    })
-    res.render("gameinfo.ejs", { "game": game, "saved": isSaved, "name": req.session.username, "loggedIn": true, "inHistory": false })
+    await removePlayed(req.session.username, game.name, gameID)
+    res.render("gameinfo.ejs", { "game": game, "saved": saved, "name": req.session.username, "loggedIn": true, "inHistory": false })
   }
 }
 )
 
+
 app.post("/removeSaved", sessionValidation, async (req, res) => { // remove game from saved games list from profile page
   const gameID = req.body.apiGameID
   const gameTitle = req.body.gameTitle
-  await usersModel.updateOne({ username: req.session.username }, { $pull: { savedGames: { "name": gameTitle, "id": gameID } } })
+  await removeSaved(req.session.username, gameTitle, gameID)
   res.redirect("/profile")
 })
+
 
 app.post("/removePlayed", sessionValidation, async (req, res) => { // remove game from played games list from profile page
   const gameID = req.body.apiGameID
   const gameTitle = req.body.gameTitle
-  await usersModel.updateOne({ username: req.session.username }, { $pull: { playedGames: { "name": gameTitle, "id": gameID } } })
+  await removePlayed(req.session.username, gameTitle, gameID)
   res.redirect("/profile")
 })
 
 
-const getGameInfo = async (gameID) => {
+const getGameInfo = async (gameID) => {                           //pull game info from API using id number
   const twitchData = await getTwitchData()
   const response = await fetch(`https://api.igdb.com/v4/games`, {
     method: 'POST',
@@ -738,7 +746,7 @@ const getGameInfo = async (gameID) => {
       'Client-ID': twitch_client_id,
       'Authorization': 'Bearer ' + twitchData.access_token,
     },
-    body: `fields name, id, summary,screenshots.url,screenshots.width, rating,rating_count, aggregated_rating, aggregated_rating_count, cover.url, genres.name, similar_games.name, similar_games.cover.url, similar_games.summary, involved_companies.company.name, total_rating, first_release_date, platforms.name, game_modes.name, themes.name; 
+    body: `fields name, id, summary,screenshots.url,screenshots.width, rating,rating_count, aggregated_rating, aggregated_rating_count, cover.url, genres.name, similar_games.name, similar_games.cover.url, similar_games.summary, involved_companies.company.name, total_rating, platforms.name, game_modes.name, themes.name; 
         sort release_dates.date desc;
         where release_dates.date != null;
         where id = ${gameID};
@@ -746,28 +754,28 @@ const getGameInfo = async (gameID) => {
   })
   const gameInfoArray = await response.json()
   defineFields(gameInfoArray[0])
-  for (const similarGame of gameInfoArray[0].similar_games) {
+  for (const similarGame of gameInfoArray[0].similar_games) {   //replaces cover urls in similar games with no-cover.png if undefined
     if (similarGame.cover == undefined) {
       similarGame.cover = "no-cover.png"
     }
     else {
-      similarGame.cover = similarGame.cover.url.replace("t_thumb", "t_cover_big")
+      similarGame.cover = similarGame.cover.url.replace("t_thumb", "t_cover_big")  //replaces cover url with larger version
     }
   }
   for (const screenshot of gameInfoArray[0].screenshots) {
-    screenshot.url = screenshot.url.replace("t_thumb", "t_original")
+    screenshot.url = screenshot.url.replace("t_thumb", "t_original")       
   }
-  if (gameInfoArray[0].cover == undefined) {
+  if (gameInfoArray[0].cover == undefined) { 
     gameInfoArray[0].cover = "no-cover.png"
     return gameInfoArray[0]
   }
   else {
-    gameInfoArray[0].cover = gameInfoArray[0].cover.url.replace("t_thumb", "t_original")
+    gameInfoArray[0].cover = gameInfoArray[0].cover.url.replace("t_thumb", "t_original") 
     return gameInfoArray[0]
   }
 }
 
-const defineFields = (gameArray) => {
+const defineFields = (gameArray) => {      //replaces undefined fields with empty arrays
   const fields = ["name", "id", "summary", "screenshots", "rating", "rating_count", "aggregated_rating", "aggregated_rating_count", "genres", "similar_games", "involved_companies", "total_rating", "first_release_date", "platforms", "game_modes", "themes"]
   for (const gameField of fields) {
     if (gameArray[`${gameField}`] == undefined) {

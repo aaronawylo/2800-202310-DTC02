@@ -1,210 +1,201 @@
-<style>
-  .gameCover{
-    width: 100%;
-  }
-  #gameCard{
-      max-width: 50%;
-  }
-  @media screen and (max-width: 950px){
-      #gameCard{
-          max-width: 100%;
-      }
-  }
-
-  @media screen and (max-width: 576px){
-      .gameImage{
-          width: 100%;
-      }
-      
-      #gameCard{ 
-          max-width: 100%;
-      }
-  }
-  
-</style>
-
-
-
-
+<link rel="stylesheet" href="gameinfo.css">
 
 <% if (loggedIn) { %>
   <%- include ('./templates/header.ejs', {"name": name}) %>
-<% } else { %>
-<%- include ('./templates/headerloggedout.ejs') %>
-<% } %>
-  <div class="container">
-    <h1>
-      <%= game.name %>
-    </h1>
-    <img src="<%= game.cover %>" alt="placeholder" class = "gameCover"/>
-    
-    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="pills-description-tab" data-bs-toggle="pill"
-          data-bs-target="#pills-description" type="button" role="tab" aria-controls="pills-description"
-          aria-selected="true">Summary</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="pills-stats-tab" data-bs-toggle="pill" data-bs-target="#pills-stats" type="button"
-        role="tab" aria-controls="pills-stat" aria-selected="false">Additional Info</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="pills-screenshots-tab" data-bs-toggle="pill" data-bs-target="#pills-Screenshots"
-          type="button" role="tab" aria-controls="pills-screenshots" aria-selected="false">Screenshots</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="pills-similar-games-tab" data-bs-toggle="pill" data-bs-target="#pills-similar-games"
-          type="button" role="tab" aria-controls="pills-similar-games" aria-selected="false">Similar Games</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <form action="/saveGame" method="post">
-          <input type="hidden" name="apiGameID" value="<%= game.id %>"></input>
-          <button class="nav-link" id="pills-save-tab" name="purpose" value="<% if (saved) { %>
+    <% } else { %>
+      <%- include ('./templates/headerloggedout.ejs') %>
+        <% } %>
+          <div class="container">
+            <h1>
+              <%= game.name %>
+            </h1>
+            <img src="<%= game.cover %>" alt="placeholder" class="gameCover" />
+
+            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="pills-description-tab" data-bs-toggle="pill"
+                  data-bs-target="#pills-description" type="button" role="tab" aria-controls="pills-description"
+                  aria-selected="true">Summary</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="pills-stats-tab" data-bs-toggle="pill" data-bs-target="#pills-stats"
+                  type="button" role="tab" aria-controls="pills-stat" aria-selected="false">Additional Info</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="pills-screenshots-tab" data-bs-toggle="pill"
+                  data-bs-target="#pills-Screenshots" type="button" role="tab" aria-controls="pills-screenshots"
+                  aria-selected="false">Screenshots</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="pills-similar-games-tab" data-bs-toggle="pill"
+                  data-bs-target="#pills-similar-games" type="button" role="tab" aria-controls="pills-similar-games"
+                  aria-selected="false">Similar Games</button>
+              </li>
+
+              <!-- Form as button for saving game to user's saved games -->
+              <li class="nav-item" role="presentation">
+                <form action="/saveGame" method="post">
+                  <input type="hidden" name="apiGameID" value="<%= game.id %>"></input>
+                  <button class="nav-link" id="pills-save-tab" name="purpose" value="<% if (saved) { %>
             unsave
             <% } else { %>save<% } %>" data-bs-toggle="pill" data-bs-target="#pills-contact" type="submit" role="tab"
-            aria-controls="pills-contact" aria-selected="false">
-            <% if (saved) { %>
-              Unsave
-              <% } else { %>Save<% } %>
-          </button>
-        </form>
-      </li>
+                    aria-controls="pills-contact" aria-selected="false">
+                    <% if (saved) { %>
+                      Unsave
+                      <% } else { %>Save<% } %>
+                  </button>
+                </form>
+              </li>
 
-      <li class="nav-item" role="presentation">
-        <form action="/saveToPlayed" method="post">
-          <input type="hidden" name="apiGameID" value="<%= game.id %>"></input>
-          <button class="nav-link" id="pills-save-tab" name="purpose" value="<% if (inHistory) { %>
+              <!-- Form as button for marking game as played by user -->
+              <li class="nav-item" role="presentation">
+                <form action="/saveToPlayed" method="post">
+                  <input type="hidden" name="apiGameID" value="<%= game.id %>"></input>
+                  <button class="nav-link" id="pills-save-tab" name="purpose" value="<% if (inHistory) { %>
             unmark
             <% } else { %>mark<% } %>" data-bs-toggle="pill" data-bs-target="#pills-contact" type="submit" role="tab"
-            aria-controls="pills-contact" aria-selected="false">
-            <% if (inHistory) { %>
-              Unmark As Played
-              <% } else { %>Mark as Played<% } %>
-          </button>
-        </form>
-      </li>
-    </ul>
-    <div class="tab-content container" id="pills-tabContent">
-      <div class="tab-pane fade show active" id="pills-description" role="tabpanel"
-        aria-labelledby="pills-description-tab" tabindex="0">
-        <div class="card container" style="margin-bottom: 10px;">
-          <h3>Summary</h3>
-          <p>
-            <%= game.summary %>
-          </p>
-        </div>
-        <div class="card container" style="margin-bottom: 10px;">
-          <h3>Rating</h3>
-          <p>
-            <%= Math.round(game.total_rating) %> / 100
-          </p>
-        </div>
-        <div class="card container" style="margin-bottom: 10px;">
-          <h3>Themes</h3>
-          <% for (const theme of game.themes) {%>
-            <div>
-              <%= theme.name %>
-            </div>
-            <% } %>
-        </div>
-        <div class="card container" style="margin-bottom: 10px;">
-          <h3>Genres</h3>
-          <% for (const genre of game.genres) {%>
-            <div>
-              <%= genre.name %>
-            </div>
-            <% } %>
-          </div>
-      </div>
+                    aria-controls="pills-contact" aria-selected="false">
+                    <% if (inHistory) { %>
+                      Unmark As Played
+                      <% } else { %>Mark as Played<% } %>
+                  </button>
+                </form>
+              </li>
+            </ul>
+            <div class="tab-content container" id="pills-tabContent">
+              
+              <!-- Populate Summary Tab -->
+              <div class="tab-pane fade show active" id="pills-description" role="tabpanel"
+                aria-labelledby="pills-description-tab" tabindex="0">
+                <div class="card container" style="margin-bottom: 10px;">
+                  <h3>Summary</h3>
+                  <p>
+                    <%= game.summary %>
+                  </p>
+                </div>
+                <div class="card container" style="margin-bottom: 10px;">
+                  <h3>Rating</h3>
+                  <p>
+                    <%= Math.round(game.total_rating) %> / 100
+                  </p>
+                </div>
+                <div class="card container" style="margin-bottom: 10px;">
+                  <h3>Themes</h3>
+                  <% for (const theme of game.themes) {%>
+                    <div>
+                      <%= theme.name %>
+                    </div>
+                    <% } %>
+                </div>
+
+                <div class="card container" style="margin-bottom: 10px;">
+                  <h3>Genres</h3>
+                  <% for (const genre of game.genres) {%>
+                    <div>
+                      <%= genre.name %>
+                    </div>
+                    <% } %>
+                </div>
+              </div>
 
 
-  
+              <div class="tab-pane fade" id="pills-stats" role="tabpanel" aria-labelledby="pills-stats-tab"
+                tabindex="0">
+                <div class="card container" style="margin-bottom: 10px;">
+                  <h3>Average Player Rating</h3>
+                  <div>
+                    <p>
+                      <%= Math.round(game.rating) %> / 100 (<%= game.rating_count %> Players)
+                    </p>
+                  </div>
+                </div>
+                <div class="card container" style="margin-bottom: 10px;">
+                  <h3>Average Critic Rating</h3>
+                  <div>
+                    <p>
+                      <%= Math.round(game.aggregated_rating) %> / 100 (<%= game.aggregated_rating_count %> Critics)
+                    </p>
+                  </div>
+                </div>
+                <div class="card container" style="margin-bottom: 10px;">
+                  <h3>Involved Companies</h3>
+                  <% for (const company of game.involved_companies) {%>
+                    <div>
+                      <%= company.company.name %>
+                    </div>
+                    <% } %>
+                </div>
+                <div class="card container" style="margin-bottom: 10px;">
+                  <h3>Platforms</h3>
+                  <% for (const platform of game.platforms) {%>
+                    <div>
+                      <%= platform.name %>
+                    </div>
+                    <% } %>
+                </div>
 
-      <div class="tab-pane fade" id="pills-stats" role="tabpanel" aria-labelledby="pills-stats-tab" tabindex="0">
-        <div class="card container" style="margin-bottom: 10px;">
-          <h3>Average Player Rating</h3>
-          <div>
-            <p><%= Math.round(game.rating) %> / 100 (<%= game.rating_count %> Players) </p>
-          </div>
-        </div>
-        <div class="card container" style="margin-bottom: 10px;">
-          <h3>Average Critic Rating</h3>
-            <div>
-              <p><%= Math.round(game.aggregated_rating) %> / 100 (<%= game.aggregated_rating_count %> Critics) </p>
-            </div>
-        </div>
-        <div class="card container" style="margin-bottom: 10px;">
-          <h3>Involved Companies</h3>
-          <% for (const company of game.involved_companies) {%>
-            <div>
-              <%= company.company.name %>
-            </div>
-            <% } %>
-        </div>
-        <div class="card container" style="margin-bottom: 10px;">
-          <h3>Platforms</h3>
-          <% for (const platform of game.platforms) {%>
-            <div>
-              <%= platform.name %>
-            </div>
-            <% } %>
-          </div>
-  
-        <div class="card container" style="margin-bottom: 10px;">
-          <h3>Game Modes</h3>
-          <% for (const mode of game.game_modes) {%>
-            <div>
-              <%= mode.name %>
-            </div>
-            <% } %>
-        </div>
-      </div>
+                <div class="card container" style="margin-bottom: 10px;">
+                  <h3>Game Modes</h3>
+                  <% for (const mode of game.game_modes) {%>
+                    <div>
+                      <%= mode.name %>
+                    </div>
+                    <% } %>
+                </div>
+              </div>
 
-      <div class="tab-pane fade" id="pills-screenshots" role="tabpanel" aria-labelledby="pills-screenshots-tab" tabindex="0">
-        <div class ="row">
-          <% for (const screenshot of game.screenshots) { %>
-            <div class="card" id = gameCard>
-              <div class="row g-0">
-                  <div class="col-sm row-">
-                      <img src="
+              <!-- Populating Screenshots Tab -->
+              <div class="tab-pane fade" id="pills-screenshots" role="tabpanel" aria-labelledby="pills-screenshots-tab"
+                tabindex="0">
+                <div class="row">
+                  <% for (const screenshot of game.screenshots) { %>
+                    <div class="card" id=gameCard>
+                      <div class="row g-0">
+                        <div class="col-sm row-">
+                          <img src="
                           <%= screenshot.url %>
                           " class="img-fluid rounded-start" alt="">
-                  </div>
+                        </div>
+                      </div>
+                    </div>
+                    <% } %>
+                </div>
               </div>
-          </div>
-          <% } %>
-        </div>
-      </div>
 
-      
-      <div class="tab-pane fade" id="pills-similar-games" role="tabpanel" aria-labelledby="pills-similar-games-tab" tabindex="0">
-        <div class ="row">
-        <% for (const similarGame of game.similar_games) { %>
-          <div class="card" id = gameCard>
-            <div class="row g-0">
-                <div class="col-sm row-">
-                    <img src="
+              <!-- Populating Similar Games Tab -->
+              <div class="tab-pane fade" id="pills-similar-games" role="tabpanel" 
+                aria-labelledby="pills-similar-games-tab" tabindex="0">
+                <div class="row">
+                  <% for (const similarGame of game.similar_games) { %>
+                    <div class="card" id=gameCard>
+                      <div class="row g-0">
+                        <div class="col-sm row-">
+                          <img src="
                         <%= similarGame.cover %>
                         " class="img-fluid rounded-start gameImage" alt="">
-                </div>
-                <div class="col-sm row-">
-                     <div class="card-body">
-                        <h5 class="card-title"><%= similarGame.name %></h5>
-                        <p class="card-text"><%= similarGame.summary %></p>
-                        <form method="post" action="/gameInformation">
-                            <input type="hidden" name="apiGameID" value="<%= similarGame.id %>">
-                            <button type="submit" class="btn btn-primary">See more information</button>
-                        </form>
+                        </div>
+                        <div class="col-sm row-">
+                          <div class="card-body">
+                            <h5 class="card-title">
+                              <%= similarGame.name %>
+                            </h5>
+                            <p class="card-text">
+                              <%= similarGame.summary %>
+                            </p>
+                            <form method="post" action="/gameInformation">
+                              <input type="hidden" name="apiGameID" value="<%= similarGame.id %>">
+                              <button type="submit" class="btn btn-primary">See more information</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
                     </div>
+                    <% } %>
                 </div>
+              </div>
+
             </div>
-        </div>
-        <% } %>
-      </div>
-      </div>
 
-    </div>
+          </div>
 
-  </div>
-
-  <%- include ('./templates/footer.ejs') %>
+          <%- include ('./templates/footer.ejs') %>

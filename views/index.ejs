@@ -1,4 +1,6 @@
-    <% if (loggedIn) { %>
+<link rel="stylesheet" href="trending.css">
+
+   <% if (loggedIn) { %>
         <%- include('templates/header.ejs', { name: name }) %>
         <div>
             <h1 class="text-center">Welcome, <%= name %>
