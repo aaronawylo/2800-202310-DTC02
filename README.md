@@ -62,38 +62,81 @@ Follow these simple instructions to set up a local development environment.
 
 **That's it, you are good to go! Happy hacking! 👾**
 
+# Product Features
 
-# Support
+- A sign-up and login feature
 
-Ask your questions and participate in discussions regarding Amplication-related and web-dev topics at the Amplication Discord server. 
+1. On the homepage, click on either the Signup button if you do not have an account, or Login if you do!
 
-<a href="https://discord.gg/Z2CG3rUFnu"><img src="https://amplication.com/images/discord_banner_purple.svg" /></a>
+- Profile page that stores saved games and played games
 
-## Create a Bug Report
+1. Click the login button and login to our app
+2. Open the hamburger menu in the upper right corner
+3. Click your name
+4. Click profile
 
-If you see an error message or run into an issue, please [create bug report](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+bug&template=bug.yaml&title=%F0%9F%90%9B+Bug+Report%3A+). This effort is valued and helps all Amplication users.
+OPTIONAL
+5. Navigate to any of the game info pages
+6. Click Save/Mark as Played accordingly to save to your profile
+
+- Trending Page of the currently most popular games
+
+1. Scroll down to see a small version of the most trending games
+2. Open the hamburger menu in the upper right corner
+3. Click on "Trending Games"
+4. View at your leisure!
+
+- Questionnaire to personalize your recommendations for you
+
+1. Open the hamburger menu in the upper right corner
+2. Click on Questionnaire
+3. Answer the questions!
+
+- Recommended Page that takes your questionnaire answers into account
+
+1. Do the Questionnaire as listed above
+2. The Home page has recommended games for you
+3. If you want more, click on your name in the hamburger menu, and click the Recommended
+4. View at your leisure!
+
+- Search by tags to find games in specific genres
 
 
-## Submit a Feature Request
 
-If you have an idea, or you're missing a capability that would make development easier and more robust, please [Submit feature request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+feature+request&template=feature.yml).
+- A random game page that will give you something you've definitely never seen!
 
-If a similar feature request already exists, don't forget to leave a "+1".
-If you add some more information such as your thoughts and vision about the feature, your comments will be embraced warmly :)
+1. Open the hamburger menu in the upper right corner
+2. Click on "Give me a Random Game"!
+3. Click the Question Mark Block to get a game!
 
+...and
+- A hidden easter egg!
 
-# Contributing
+No steps, but here's a hint: It's on the Random Game page!
 
-Amplication is an open-source project. We are committed to a fully transparent development process and highly appreciate any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as a part of the Amplication community.
+# API Documentation and Credits
 
-# Useful Links
+We use MongoDB as our database, check them out here!
 
-- [Docs](https://docs.amplication.com/)
-- [Blog](https://amplication.com/blog)
-- [Twitter](https://twitter.com/amplication)
-- [Discord](https://amplication.com/discord)
-- [Youtube](https://www.youtube.com/c/Amplicationcom)
+[MongoDB Documentation](https://www.mongodb.com/docs/)
 
-Please refer to our [Contribution Guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md).
+We use both the OpenAI and IGDB APIs in our app. Below you can find links to their documentations:
 
-# Contributors ✨
+[OpenAI Documentation](https://platform.openai.com/docs/guides/completion/introduction)
+[IGDB Documentation](https://api-docs.igdb.com/)
+
+Please refer to their documentation if you want to expand on the app!
+
+# AI Usage
+
+We did use the AI to help create our app. The majority of AI usage was in using ChatGPT in checking error codes and how to troubleshoot code. There were certain usages in creating templates of code as well, for example the Easter Egg game.
+
+We did not use AI to create data sets or clean data sets, as our Kaggle Dataset was a 10.0 score to begin with, and the IGDB API does not require cleaning.
+
+The best use of AI is integrated into the Recommended Pages. The app takes the user's stored preferences and generates a prompt to OpenAI and asks for video game recommendations. OpenAI creates a list of video games and we search the IGDB database with names matching those games to populate our page.
+
+We encountered limitations coming to the AI as the prompt it gives can be variable if we were not very specific in our prompts, resulting in responses that our own app could not parse. We eventually solved this problem with a more specific prompt. We also encountered limitations in ChatGPT helping diagnose code, as sometimes it would give wrong code and we would lose time parsing to see why it's wrong and then coding, rather than just coding from scratch.
+
+# Contact Information ✨
+
+You can contact us at quickqueuedtc@gmail.com with any questions you have!
