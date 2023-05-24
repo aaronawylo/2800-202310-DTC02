@@ -156,9 +156,16 @@ app.get('/', async (req, res) => {
     var current_user = await usersModel.findOne({ username: req.session.username })
 
     // reccomendation code
-    let recommendedGames = await generateRecommendations(current_user, 9)
-    recommendedGames = JSON.parse(recommendedGames);
-
+    while (true) {
+      try {
+        recommendedGames = await generateRecommendations(current_user, 9);
+        recommendedGames = JSON.parse(recommendedGames);
+        break;
+      } catch (error) {
+        console.error("Error parsing recommendedGames:", error);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
     const recGameResponse = await getAllGames(recommendedGames)
     for (var i = 0; i < recGameResponse.length; i++) {
       recGameResponse[i].cover.url = recGameResponse[i].cover.url.replace("t_thumb", "t_cover_big")
