@@ -154,10 +154,9 @@ app.get('/', async (req, res) => {
 
   if (isValidSession(req)) {
     var current_user = await usersModel.findOne({ username: req.session.username })
-
-    let openAIcount = 0;
     // reccomendation code
-    while (true && openAIcount < 5) {
+    let openAIcount = 0;
+    while (openAIcount < 5) {
       try {
         recommendedGames = await generateRecommendations(current_user, 9);
         recommendedGames = JSON.parse(recommendedGames);
@@ -325,8 +324,21 @@ app.get('/recommended', sessionValidation, async (req, res) => {
   var current_user = await usersModel.findOne({ username: req.session.username })
 
   // gpt recommendation code
-  let recommendedGames = await generateRecommendations(current_user, 20)
-  recommendedGames = JSON.parse(recommendedGames);
+  let openAIcount = 0;
+    while (openAIcount < 5) {
+      try {
+        recommendedGames = await generateRecommendations(current_user, 9);
+        recommendedGames = JSON.parse(recommendedGames);
+        break;
+      } catch (error) {
+        console.error("Error parsing recommendedGames:", error);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        openAIcount++;
+        if (openAIcount = 5) {
+          res.redirect('/404');
+        }
+      }
+    }
   const twitchData = await getTwitchData()
 
   // get information for recommended games from api
