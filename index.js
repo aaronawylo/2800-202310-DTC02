@@ -497,8 +497,8 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
     return my_info
   }
 
+  // Function to find games matching names in searchGameNames from IGDB API
   const gameResponse = await getAllGames(searchGameNames) // Games from IGDB API with matching names from mongo database
-
   for (var i = 0; i < databaseGames.length; i++) { // Loop through games pulled from mongo database (9 times)
     for (var j = 0; j < gameResponse.length; j++) { // Loop through each game pulled from IGDB api
       if (databaseGames[i].title == gameResponse[j].name) { // If game name from mongo database matches game name from IGDB api
@@ -512,27 +512,73 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
     }
   }
 
+  // Function to find games matching names in searchGameNames from IGDB API 
+  async function getAllGenres() {
+    const response = await fetch('https://api.igdb.com/v4/genres', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Client-ID': twitch_client_id,
+        'Authorization': 'Bearer ' + twitchData.access_token,
+      },
+      body: `fields name,slug;
+      limit 25;`
+
+    })
+    const my_info = await response.json()
+    return my_info
+  }
+
+  const apiGenres = await getAllGenres() // Genres from IGDB API with matching names from mongo database
+  // console.log(apiGenres[0])
+
+  let selectedGenreTypes = [];
+  // Function to find games matching names in searchGameNames from IGDB API
+  const updateFilterTypes = (genres) => {
+    $('#gameGenreTypes').empty();
+    types.forEach((type) => {
+      const isChecked = selectedGenreTypes.includes(type);
+      $('#gameGenreTypes').append(`
+        <div class="form-check d-inline">
+          <input class="form-check-input typeCheckbox" type="checkbox" value="${type.name}" ${isChecked ? 'checked' : ''}>
+          <label class="form-check-label">${type.name}</label>
+        </div>
+      `);
+    });
+  };
+
+  const filterGames = () => {
+    selectedTypes = [];
+    $('.typeCheckbox:checked').each(function () {
+      selectedTypes.push($(this).val());
+    });
+    paginate(currentPage, PAGE_SIZE, pokemons);
+    updatePaginationDiv(currentPage, Math.ceil(pokemons.length / PAGE_SIZE));
+  };
+
   res.render('searchGames.ejs', {
     "loggedIn": true,
     "name": req.session.username,
     "databaseGames": searchGameData,
     "currentPage": currentPage,
     "numPages": Math.ceil(databaseGames.length / PAGE_SIZE),
+    "apiGenres": apiGenres,
   })
 })
 
-const updatePaginationDiv = (currentPage, numPages) => {
-  $('#pagination').empty()
+// Pagination code
+// const updatePaginationDiv = (currentPage, numPages) => {
+//   $('#pagination').empty()
 
-  const startPage = 1;
-  const endPage = numPages;
-  for (let i = startPage; i <= endPage; i++) {
-    $('#pagination').append(`
-    <button class="btn btn-primary page ml-1 numberedButtons" value="${i}">${i}</button>
-    `)
-  }
+//   const startPage = 1;
+//   const endPage = numPages;
+//   for (let i = startPage; i <= endPage; i++) {
+//     $('#pagination').append(`
+//     <button class="btn btn-primary page ml-1 numberedButtons" value="${i}">${i}</button>
+//     `)
+//   }
 
-}
+// }
 
 
 // End of Marco's code
