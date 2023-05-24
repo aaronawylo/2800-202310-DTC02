@@ -104,6 +104,8 @@ app.get('/test', (req, res) => {
 // End Test route
 
 app.use(express.static('public'));
+app.use(express.static('styles'));
+app.use(express.static('scripts'));
 app.get('/', async (req, res) => {
   if (isValidSession(req)) {
     var current_user = await usersModel.findOne({ username: req.session.username })
@@ -534,18 +536,18 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
 
   let selectedGenreTypes = [];
   // Function to find games matching names in searchGameNames from IGDB API
-  const updateFilterTypes = (genres) => {
-    $('#gameGenreTypes').empty();
-    types.forEach((type) => {
-      const isChecked = selectedGenreTypes.includes(type);
-      $('#gameGenreTypes').append(`
-        <div class="form-check d-inline">
-          <input class="form-check-input typeCheckbox" type="checkbox" value="${type.name}" ${isChecked ? 'checked' : ''}>
-          <label class="form-check-label">${type.name}</label>
-        </div>
-      `);
-    });
-  };
+  // const updateFilterTypes = (genres) => {
+  //   $('#gameGenreTypes').empty();
+  //   types.forEach((type) => {
+  //     const isChecked = selectedGenreTypes.includes(type);
+  //     $('#gameGenreTypes').append(`
+  //       <div class="form-check d-inline">
+  //         <input class="form-check-input typeCheckbox" type="checkbox" value="${type.name}" ${isChecked ? 'checked' : ''}>
+  //         <label class="form-check-label">${type.name}</label>
+  //       </div>
+  //     `);
+  //   });
+  // };
 
   const filterGames = () => {
     selectedTypes = [];
