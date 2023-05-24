@@ -3,13 +3,17 @@
    <% if (loggedIn) { %>
         <%- include('templates/header.ejs', { name: name }) %>
         <div>
-            <h1 class="text-center">Welcome, <%= name %>
+            <h1 class="text-center border-bottom">Welcome, <%= name %>
             </h1>
         </div>
 
+        <br>
 
         <div>
         <%- include('templates/recommended_card.ejs', { recommended_games : recommended_games }) %>
+
+        <br>
+
         <%- include('templates/trending_card.ejs', { trending_games : trending_games }) %>
         </div>
 
@@ -18,7 +22,7 @@
         <div class="text-center">
             <h1>Login to use our recommended tab!</h1>
         </div>
-        <div class="text-center">
+        <div class="text-center border-bottom">
             <a href="/login" class="btn btn-primary">Login</a>
             <a href="/signup" class="btn btn-primary">Signup</a>
         </div>
