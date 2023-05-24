@@ -473,16 +473,16 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
 
   const PAGE_SIZE = 9
   let currentPage = parseInt(req.query.page) || 1;
-  var searchGameNames = []
-  var searchGameData = []
-  // For loop to get game names of specific page from mongo database
-  for (var i = (currentPage - 1) * PAGE_SIZE; i < (currentPage * PAGE_SIZE); i++) {
-    searchGameNames.push(databaseGames[i].title)
-    searchGameData.push(databaseGames[i])
-  }
+  // var searchGameNames = []
+  // var searchGameData = []
+  // // For loop to get game names of specific page from mongo database
+  // for (var i = (currentPage - 1) * PAGE_SIZE; i < (currentPage * PAGE_SIZE); i++) {
+  //   searchGameNames.push(databaseGames[i].title)
+  //   searchGameData.push(databaseGames[i])
+  // }
 
-  // Function to find games matching names in searchGameNames from IGDB API 
-  async function getAllGames(searchGameNames) {
+  // Function to pull games from IGDB API
+  async function getAllGames() {
     const response = await fetch('https://api.igdb.com/v4/games', {
       method: 'POST',
       headers: {
@@ -490,31 +490,39 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
         'Client-ID': twitch_client_id,
         'Authorization': 'Bearer ' + twitchData.access_token,
       },
-      body: `fields name,cover.url,genres;
+      body: `fields name,id,cover.url,genres.name,summary;
       sort release_dates.date desc;
       where release_dates.date != null;
-      where name = ("${searchGameNames[0]}", "${searchGameNames[1]}", "${searchGameNames[2]}", "${searchGameNames[3]}", "${searchGameNames[4]}", "${searchGameNames[5]}", "${searchGameNames[6]}", "${searchGameNames[7]}", "${searchGameNames[8]}", "${searchGameNames[9]}");`
+      limit 270;`
     })
     const my_info = await response.json()
+    console.log('test')
+    console.log(my_info[5])
     return my_info
   }
 
   // Function to find games matching names in searchGameNames from IGDB API
-  const gameResponse = await getAllGames(searchGameNames) // Games from IGDB API with matching names from mongo database
-  for (var i = 0; i < databaseGames.length; i++) { // Loop through games pulled from mongo database (9 times)
-    for (var j = 0; j < gameResponse.length; j++) { // Loop through each game pulled from IGDB api
-      if (databaseGames[i].title == gameResponse[j].name) { // If game name from mongo database matches game name from IGDB api
-        if (gameResponse[j].cover == undefined) { // If game has no cover image
-          databaseGames[i].cover = "no-cover.png" // Set cover image to no-cover.png
-        } else { // If game has cover image
-          gameResponse[j].cover.url = gameResponse[j].cover.url.replace("t_thumb", "t_cover_big") // Replace t_thumb with t_cover_big in url
-          databaseGames[i].cover = gameResponse[j].cover.url // Set cover image to url from IGDB api
-        }
-      }
+  const gameResponse = await getAllGames() // Games from IGDB API with matching names from mongo database
+  // for (var i = 0; i < databaseGames.length; i++) { // Loop through games pulled from mongo database (9 times)
+  //   for (var j = 0; j < gameResponse.length; j++) { // Loop through each game pulled from IGDB api
+  //     if (databaseGames[i].title == gameResponse[j].name) { // If game name from mongo database matches game name from IGDB api
+        // if (gameResponse[j].cover == undefined) { // If game has no cover image
+        //   databaseGames[i].cover = "no-cover.png" // Set cover image to no-cover.png
+        // } else { // If game has cover image
+        //   gameResponse[j].cover.url = gameResponse[j].cover.url.replace("t_thumb", "t_cover_big") // Replace t_thumb with t_cover_big in url
+        //   databaseGames[i].cover = gameResponse[j].cover.url // Set cover image to url from IGDB api
+  //       }
+  //     }
+  //   }
+  // }
+  for (var i = 0; i < gameResponse.length; i++){
+    if (gameResponse[i].cover == undefined) { // If game has no cover image
+      gameResponse[i].cover = "no-cover.png" // Set cover image to no-cover.png
+    } else { // If game has cover image
+      gameResponse[i].cover.url = gameResponse[i].cover.url.replace("t_thumb", "t_cover_big") // Replace t_thumb with t_cover_big in url
+      gameResponse[i].cover = gameResponse[i].cover.url // Set cover image to url from IGDB api
     }
   }
-  
-  // console.log(gameResponse[0])
 
   // Function to find games matching names in searchGameNames from IGDB API 
   async function getAllGenres() {
@@ -534,49 +542,23 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
   }
 
   const apiGenres = await getAllGenres() // Genres from IGDB API with matching names from mongo database
-  // console.log(apiGenres[0])
 
-  let selectedGenreTypes = [];
-  // Function to find games matching names in searchGameNames from IGDB API
-  // const updateFilterTypes = (genres) => {
-  //   $('#gameGenreTypes').empty();
-  //   types.forEach((type) => {
-  //     const isChecked = selectedGenreTypes.includes(type);
-  //     $('#gameGenreTypes').append(`
-  //       <div class="form-check d-inline">
-  //         <input class="form-check-input typeCheckbox" type="checkbox" value="${type.name}" ${isChecked ? 'checked' : ''}>
-  //         <label class="form-check-label">${type.name}</label>
-  //       </div>
-  //     `);
-  //   });
-  // };
+  // gameResponse.forEach(game => {
+  //   console.log(game.cover)
+  // })
 
   res.render('searchGames.ejs', {
     "loggedIn": true,
     "name": req.session.username,
-    "databaseGames": searchGameData,
+    // "databaseGames": databaseGames, // Games from mongo database
+    // "searchGameData": searchGameData, // 9 games from mongo database
     "currentPage": currentPage,
-    "numPages": Math.ceil(databaseGames.length / PAGE_SIZE),
+    "numPages": Math.ceil(gameResponse.length / PAGE_SIZE),
     "apiGenres": apiGenres,
     "PAGE_SIZE": PAGE_SIZE,
-    "pulledGames": gameResponse,
+    "gameResponse": gameResponse, //API response
   })
 })
-
-// Pagination code
-// const updatePaginationDiv = (currentPage, numPages) => {
-//   $('#pagination').empty()
-
-//   const startPage = 1;
-//   const endPage = numPages;
-//   for (let i = startPage; i <= endPage; i++) {
-//     $('#pagination').append(`
-//     <button class="btn btn-primary page ml-1 numberedButtons" value="${i}">${i}</button>
-//     `)
-//   }
-
-// }
-
 
 // End of Marco's code
 

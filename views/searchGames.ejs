@@ -44,7 +44,7 @@
             <% const isChecked = selectedGenreTypes.includes(type.slug); %>
             <div class=" col-md-5 col-lg-3">
               <div class="form-check">
-                <input class="form-check-input typeCheckbox" type="checkbox" value="<%=type.slug%>" <%= isChecked ? 'checked' : '' %>>
+                <input class="form-check-input typeCheckbox" type="checkbox" value="<%=type.name%>" <%= isChecked ? 'checked' : '' %>>
                 <label class="form-check-label"><%=type.name%></label>
               </div>
             </div>
@@ -70,25 +70,24 @@
         <!-- Next Page button -->
         <a class="btn btn-primary ml-1" href="/searchGames?page=<%= currentPage + 1 %>" <% if (currentPage === numPages) { %> style="display: none;" <% } %>>></a>
       </ul>
-  
-        <div class="row">
-          <% for (let i = 0; i < databaseGames.length; i++) { %>
+        <div class="row" id="gameCards">
+          <% for (let i = (currentPage - 1)*PAGE_SIZE; i < currentPage * PAGE_SIZE; i++) { %>
                   <div class="card" id = gameCard>
                       <div class="row g-0">
                           <div class="col-sm row-">
                               <img src="
-                                  <%= databaseGames[i].cover %>
+                                  <%= gameResponse[i].cover%>
                                   " class="img-fluid rounded-start gameImage" alt="Tears of the Kingdom">
                           </div>
                           <div class="col-sm row-">
                                <div class="card-body">
-                                  <h5 class="card-title"><%= databaseGames[i].title %></h5>
-                                  <p class="card-text"><%= databaseGames[i].summary %></p>
-                                  <p class="card-text"><%= databaseGames[i]._id %></p>
+                                  <h5 class="card-title"><%= gameResponse[i].name %></h5>
+                                  <p class="card-text"><%= gameResponse[i].summary %></p>
+                                  <p class="card-text"><%= gameResponse[i]._id %></p>
                                   <form method="post" action="/gameInformation">
-                                      <input type="hidden" name="mongoGameID" value="<%= databaseGames[(i)]._id %>">
-                                      <input type="hidden" name="apiGameID" value="<%= databaseGames[(i)].apiID %>">
-                                      <input type ="hidden" name="gameImage" value="<%= databaseGames[(i)].cover %>">
+                                      <input type="hidden" name="mongoGameID" value="<%= gameResponse[(i)]._id %>">
+                                      <input type="hidden" name="apiGameID" value="<%= gameResponse[(i)].apiID %>">
+                                      <input type ="hidden" name="gameImage" value="<%= gameResponse[(i)].cover %>">
                                       <button type="submit" class="btn btn-primary">See more information</button>
                                   </form>
                               </div>
@@ -101,8 +100,11 @@
     <%- include('./templates/footer.ejs') %>
 
     <script>
-      pulledGames = "<%=pulledGames%>"
+      const gameResponse = <%- JSON.stringify(gameResponse) %>;
+      const apiGenres = <%- JSON.stringify(apiGenres) %>;
+      var currentPage = <%- JSON.stringify(currentPage) %>;
+      var numPages = <%- JSON.stringify(numPages) %>;
+      const PAGE_SIZE = <%- JSON.stringify(PAGE_SIZE) %>;
     </script>
-
       <script src="searchGamesScripts.js"></script>
 </body>

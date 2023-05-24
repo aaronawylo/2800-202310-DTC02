@@ -1,71 +1,109 @@
-
-
-// // Secret information section
-// const mongodb_host = process.env.MONGODB_HOST;
-// const mongodb_user = process.env.MONGODB_USER;
-// const mongodb_password = process.env.MONGODB_PASSWORD;
-// const mongodb_database = process.env.MONGODB_DATABASE;
-// const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
-// const node_session_secret = process.env.NODE_SESSION_SECRET;
-// const twitch_client_secret = process.env.TWITCH_CLIENT_SECRET;
-// const twitch_client_id = process.env.TWITCH_CLIENT_ID;
-// // End of secret information section
-
-
-// var { database } = include('databaseConnection')
-
-// const usersModel = database.db(mongodb_database).collection('users')
-// const gamesModel = database.db(mongodb_database).collection('games')
-
-// const { ObjectId } = require('mongodb')
-
-// async function getTwitchData() { // Twitch authentication for IGDB api
-//   const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
-//     method: 'POST',
-//     headers: {
-//       'Client-ID': twitch_client_id,
-//       'Client-Secret': twitch_client_secret
-//     }
-//   })
-//   const my_info = await response.json()
-//   return my_info
-// }
-// const twitchData = getTwitchData()
-// var databaseGames = gamesModel.find().limit(270).toArray() // pull games from mongodb
-// console.log(databaseGames[0])
-
 ////////////////////////////////
 // Filter code
 ////////////////////////////////
 
 // Pulls filters currently checked on page
 const filterGenresSelected = () => {
-    selectedTypes = [];
-    $('.typeCheckbox:checked').each(function () {
-      selectedTypes.push($(this).val());
-    });
-    // console.log(selectedTypes)
-    return selectedTypes;
-  };
+  const selectedTypes = [];
+  $('.typeCheckbox:checked').each(function () {
+    selectedTypes.push($(this).val());
+  });
+  return selectedTypes;
+};
+
+function filterGenres() {
+  const selectedFilters = filterGenresSelected(); // Pulls filters currently checked on page stored as an array
+  const filteredGames = databaseGames.filter((game) =>
+    selectedFilters.every((selectedFilter) => game.genres.includes(selectedFilter))
+  ); // Loops through all games pulled and checks if they match the selected filters
+  // databaseGames.forEach((game) => {
+  //   if (game.genres.includes(selectedFilters)) {
+  //     // console.log(game);
+  //   }
+  // });
+  // console.log(filteredGames)
+  const paginatedGames = paginateGames(currentPage, PAGE_SIZE, filteredGames);
+  
+  // Update the displayed games on the page with the filtered and paginated data
+  // You can update the game cards or any other elements that show the games
+
+  // You can also update the pagination buttons if needed
+  filteredGames.forEach((game, index) => {
+    $('#gameCards').append(`
+      <div class="card" id = gameCard>
+        <div class="row g-0">
+            <div class="col-sm row-">
+                <img src="${gameResponse[index].cover} " class="img-fluid rounded-start gameImage" alt="Tears of the Kingdom">
+            </div>
+            <div class="col-sm row-">
+                <div class="card-body">
+                    <h5 class="card-title">${gameResponse[index].title}</h5>
+                    <p class="card-text">${gameResponse[index].summary}</p>
+                    <p class="card-text">${gameResponse[index]._id}</p>
+                    <form method="post" action="/gameInformation">
+                        <input type="hidden" name="mongoGameID" value="${gameResponse[index]._id}">
+                        <input type="hidden" name="apiGameID" value="${gameResponse[index].apiID}">
+                        <input type ="hidden" name="gameImage" value="${gameResponse[index].cover.url.replace("t_thumb", "t_cover_big")}">
+                        <button type="submit" class="btn btn-primary">See more information</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+      </div>
+    `);
+  });
+
+  // filteredGames.forEach((game, index) => {
+  //   console.log(game)
+  //   console.log(index)
+  // });
+  updatePaginationDiv(currentPage, Math.ceil(filteredGames.length / PAGE_SIZE));
+}
 
 // Loops through all games pulled and checks if they match the selected filters
-function createFilteredGames(allGamesPulled, selectedFilters) {
-  const filteredGames = [];
-  allGamesPulled.forEach((obj, index) => {
-    filteredGames[index] = obj;
-  });
-  console.log(filteredGames)
-  return filteredGames;
-}
+// function createFilteredGames(databaseGames, selectedFilters) {
+//   const filteredGames = databaseGames.filter(game => selectedFilters.every(filter => game.genres.includes(filter)));
+//   console.log('these are filtered games')
+//   console.log(filteredGames);
+//   return filteredGames;
+// }
 
 // Update numbered page buttons
 function updatePaginationDiv(currentPage, numPages) {
+  $('#pagination').empty();
 
+  const startPage = Math.max(1, currentPage - 2);
+  const endPage = Math.min(numPages, startPage + 4);
+
+  for (let i = startPage; i <= endPage; i++) {
+    if (i === currentPage) {
+      $('#pagination').append(`
+      <button class="btn btn-primary page ml-1 numberedButtons active" value="${i}">${i}</button>
+    `);}
+    else {
+    $('#pagination').append(`
+      <button class="btn btn-primary page ml-1 numberedButtons" value="${i}">${i}</button>
+    `);
+    }
+  }
+
+  const prevButton = `<button class="btn btn-primary ml-1 prevButton" ${currentPage === 1 ? 'style="display: none;"' : ''}>
+  <
+  </button>`;
+
+  const nextButton = `
+    <button class="btn btn-primary ml-1 nextButton" ${currentPage === numPages ? 'style="display: none;"' : ''}>
+    >
+    </button>`;
+
+  $('#pagination').prepend(prevButton);
+  $('#pagination').append(nextButton);
 }
 
 // Update displayed games
 async function paginateGames(currentPage, PAGE_SIZE, pulledGames){
   const paginatedGames = [];
+  $('#gameCards').empty();
   for (let i = 0; i < PAGE_SIZE; i++) {
     const game = pulledGames[(currentPage - 1) * PAGE_SIZE + i];
     if (game) {
@@ -76,18 +114,33 @@ async function paginateGames(currentPage, PAGE_SIZE, pulledGames){
 }
 
 const setup = async () => {
+// console.log(gameResponse)
   // Add event listener to type checkboxes
   $('body').on('change', '.typeCheckbox', function () {
     currentPage = 1;
     filterGenres();
   });
 
-  console.log(data-pulled-games)
+  // Add event listener to numbered page buttons
+  $('body').on('click', '.numberedButtons', function () {
+    currentPage = parseInt($(this).val());
+    filterGenres();
+  });
 
-  console.log('Printing pulled games')
-  // console.log(pulledGames);
-  console.log(pulledGames);
+  // Add event listener to previous page button
+  $('body').on('click', '.prevButton', function () {
+    currentPage--;
+    filterGenres();
+  });
 
+  // Add event listener to next page button
+  $('body').on('click', '.nextButton', function () {
+    currentPage++;
+    filterGenres();
+  });
+  
+  // console.log(currentPage)
+  // console.log(databaseGames)
 }
 
 $(document).ready(setup);
