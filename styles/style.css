@@ -1,0 +1,26 @@
+html, body {
+    background-color: #6592fd;
+    color: white;
+    overflow-x: hidden;
+}
+
+#gameCard {
+    background-color: #6592fd;
+    color: white;
+}
+
+.quickQueueTitle {
+    font-size: 32px;
+}
+
+.offcanvas {
+    color: white;
+}
+
+.offcanvas a{
+    color: white;
+}
+
+.offcanvas a:hover{
+    color: #0d6efd;
+}
