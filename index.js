@@ -579,8 +579,8 @@ app.get('/login', (req, res) => {
 app.post('/loginSubmit', async (req, res) => {
   var email = req.body.email
   var password = req.body.password
-  const emailValidation = Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required()
-  const passwordValidation = Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
+  const emailValidation = Joi.string().email().validate(email)
+  const passwordValidation = Joi.string().max(20).validate(password)
   if (emailValidation.error != null || passwordValidation.error != null) {
     res.redirect("/login?invalidLogin=true")
     return
@@ -611,14 +611,9 @@ app.get('/resetPassword', (req, res) => {
 })
 
 app.post('/resetPasswordSubmit', async (req, res) => {  
+  const emailValidation = Joi.string().email().validate(req.body.email)
   var email = req.body.email
   var password = req.body.password
-  const emailValidation = Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required()
-  const passwordValidation = Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
-  if (emailValidation.error != null || passwordValidation.error != null) {
-    res.redirect("/login?invalidLogin=true")
-    return
-  }
   var user = await usersModel.findOne({ email: email })
   if (user != null) {
     const hashedPassword = await bcrypt.hash(password, saltRounds)
