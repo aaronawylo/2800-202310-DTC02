@@ -86,7 +86,8 @@ async function getTwitchData() {
 
 // Start of index main code
 app.use(express.static('public'));
-app.use(express.static('styles'))
+app.use(express.static('styles'));
+app.use(express.static('scripts'));
 app.get('/', async (req, res) => {
   var trending_games = await gamesModel.find().limit(3).toArray()
   const twitchData = await getTwitchData()
