@@ -683,18 +683,17 @@ app.post('/saveGame', sessionValidation, async (req, res) => { // save games to 
   const purpose = req.body.purpose
   const game = await getGameInfo(gameID)
   const saved = await isSaved(req.session.username, game.name, gameID)
-  const history = await inHistory(req.session.username, game.name, gameID)
 
   if (purpose == "save" && !saved) {
     await saveGame(req.session.username, game.name, gameID)
-    res.render("gameinfo.ejs", { "game": game, "saved": true, "name": req.session.username, "loggedIn": true, "inHistory": history })
+    res.status(200).send("Game saved")
   }
   else if (purpose == "save" && saved) {
-    res.render("gameinfo.ejs", { "game": game, "saved": saved, "name": req.session.username, "loggedIn": true, "inHistory": history })
+    res.status(200).send("Game already saved")
   }
   else {
     await removeSaved(req.session.username, game.name, gameID)
-    res.render("gameinfo.ejs", { "game": game, "saved": false, "name": req.session.username, "loggedIn": true, "inHistory": history })
+    res.status(200).send("Game removed")
   }
 }
 )
@@ -704,18 +703,17 @@ app.post('/saveToPlayed', sessionValidation, async (req, res) => { // save games
   const gameID = req.body.apiGameID
   const purpose = req.body.purpose
   const game = await getGameInfo(gameID)
-  const saved = await isSaved(req.session.username, game.name, gameID)
   const history = await inHistory(req.session.username, game.name, gameID)
   if (purpose == "mark" && !history) {
     await markGame(req.session.username, game.name, gameID)
-    res.render("gameinfo.ejs", { "game": game, "saved": saved, "name": req.session.username, "loggedIn": true, "inHistory": true })
+    res.status(200).send("Game marked")
   }
   else if (purpose == "mark" && history) {
-    res.render("gameinfo.ejs", { "game": game, "saved": saved, "name": req.session.username, "loggedIn": true, "inHistory": history })
+    res.status(200).send("Game already marked")
   }
   else {
     await removePlayed(req.session.username, game.name, gameID)
-    res.render("gameinfo.ejs", { "game": game, "saved": saved, "name": req.session.username, "loggedIn": true, "inHistory": false })
+    res.status(200).send("Game removed")
   }
 }
 )

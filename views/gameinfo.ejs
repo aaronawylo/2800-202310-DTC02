@@ -32,38 +32,44 @@
                   aria-selected="false">Similar Games</button>
               </li>
 
-              <!-- Form as button for saving game to user's saved games -->
+              <!-- Button for saving game to user's saved games -->
               <li class="nav-item" role="presentation">
-                <form action="/saveGame" method="post">
-                  <input type="hidden" name="apiGameID" value="<%= game.id %>"></input>
-                  <button class="nav-link" id="pills-save-tab" name="purpose" value="<% if (saved) { %>
+
+                <% if (loggedIn) { %>
+                  <input type="hidden" id="saveApiGameID" value="<%= game.id %>"></input>
+                  <button class="nav-link" id="saveButton" type="submit" purpose" value="<% if (saved) { %>
             unsave
-            <% } else { %>save<% } %>" data-bs-toggle="pill" data-bs-target="#pills-contact" type="submit" role="tab"
+            <% } else { %>save<% } %>" data-bs-toggle="pill" data-bs-target="#pills-contact"
                     aria-controls="pills-contact" aria-selected="false">
                     <% if (saved) { %>
                       Unsave
                       <% } else { %>Save<% } %>
                   </button>
-                </form>
+                  <% } else { %>
+                    <a href="/login" class="nav-link" id="saveButton">Save </a>
+                    <% } %>
               </li>
 
-              <!-- Form as button for marking game as played by user -->
+              <!-- Button for marking game as played by user -->
               <li class="nav-item" role="presentation">
-                <form action="/saveToPlayed" method="post">
-                  <input type="hidden" name="apiGameID" value="<%= game.id %>"></input>
-                  <button class="nav-link" id="pills-save-tab" name="purpose" value="<% if (inHistory) { %>
+                <% if (loggedIn) { %>
+
+                  <input type="hidden" id="markApiGameID" value="<%= game.id %>"></input>
+                  <button class="nav-link" id="markButton" name="purpose" value="<% if (inHistory) { %>
             unmark
-            <% } else { %>mark<% } %>" data-bs-toggle="pill" data-bs-target="#pills-contact" type="submit" role="tab"
+            <% } else { %>mark<% } %>" data-bs-toggle="pill" data-bs-target="#pills-contact" type="submit"
                     aria-controls="pills-contact" aria-selected="false">
                     <% if (inHistory) { %>
                       Unmark As Played
                       <% } else { %>Mark as Played<% } %>
                   </button>
-                </form>
+                  <% } else { %>
+                    <a href="/login" class="nav-link" id="markButton">Mark as Played </a>
+                    <% } %>
               </li>
             </ul>
+
             <div class="tab-content container" id="pills-tabContent">
-              
               <!-- Populate Summary Tab -->
               <div class="tab-pane fade show active" id="pills-description" role="tabpanel"
                 aria-labelledby="pills-description-tab" tabindex="0">
@@ -163,7 +169,7 @@
               </div>
 
               <!-- Populating Similar Games Tab -->
-              <div class="tab-pane fade" id="pills-similar-games" role="tabpanel" 
+              <div class="tab-pane fade" id="pills-similar-games" role="tabpanel"
                 aria-labelledby="pills-similar-games-tab" tabindex="0">
                 <div class="row">
                   <% for (const similarGame of game.similar_games) { %>
@@ -199,3 +205,5 @@
           </div>
 
           <%- include ('./templates/footer.ejs') %>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+            <script src="gameinfo.js"></script>
