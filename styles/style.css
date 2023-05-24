@@ -109,6 +109,10 @@ html, body {
     background-color: #343090;
 }
 
+.navbar .dropdown-menu .dropdown-item:active {
+    background-color: white;
+}
+
 .nav-link.dropdown-toggle {
     color: white!important;
 }
