@@ -58,6 +58,30 @@ html, body {
     color: white;
     padding-top: 10px;
     padding-bottom: 10px;
+    max-width: 33%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+@media screen and (max-width: 1500px){
+    #gameCard{
+        max-width: 33%;
+    }
+}
+@media screen and (max-width: 900px){
+    #gameCard{
+        max-width: 100%;
+    }
+}
+
+@media screen and (max-width: 576px){
+    .gameImage{
+        width: 100%;
+    }
+    
+    #gameCard{ 
+        max-width: 100%;
+    }
 }
 
 /* Navbar */
@@ -95,4 +119,14 @@ html, body {
 
 .nav-link.dropdown-toggle.show:hover {
     color: #343090!important;
+}
+
+/* Profile */
+.text-primary {
+    color: #44c2fd!important;
+}
+
+/* Login */
+.login-form a {
+    color: white;
 }
