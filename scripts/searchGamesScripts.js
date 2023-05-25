@@ -33,6 +33,7 @@ function filterGenres() {
   }
 
   // Update gameCards div with filtered games up to PAGE_SIZE limit
+  console.log(filteredGames)
   paginateGames(currentPage, PAGE_SIZE, filteredGames);
   numPages = Math.ceil(filteredGames.length / PAGE_SIZE);
   updatePaginationDiv(currentPage, numPages);

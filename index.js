@@ -507,7 +507,7 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
   // Loop to replace undefined cover images with no-cover.png and replace t_thumb with t_cover_big in url
   async function processGameResponse() {
     for (var i = 0; i < gameResponse.length; i++){
-      if (gameResponse[i].cover === undefined) { // If game has no cover image
+      if (gameResponse[i].cover == undefined) { // If game has no cover image
         gameResponse[i].cover = "no-cover.png" // Set cover image to no-cover.png
       } else { // If game has cover image
         gameResponse[i].cover.url = gameResponse[i].cover.url.replace("t_thumb", "t_cover_big") // Replace t_thumb with t_cover_big in url

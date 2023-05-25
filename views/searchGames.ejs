@@ -75,9 +75,6 @@
       <!-- Paginated game cards -->
         <div class="row" id="gameCards">
           <% for (let i = (currentPage - 1)*PAGE_SIZE; i < currentPage * PAGE_SIZE; i++) { %>
-            <% if (gameResponse[i].cover === undefined) { %>
-              <% continue; %>
-            <% } %>
                   <div class="card" id = gameCard>
                       <div class="row g-0">
                           <div class="col-sm row">
