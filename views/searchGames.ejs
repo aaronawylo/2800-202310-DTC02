@@ -28,6 +28,7 @@
 <%- include('./templates/header.ejs', { "name": name }) %>
 
 <body>
+  <!-- import jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
   <main>
       <h1>
@@ -36,6 +37,7 @@
   
       <br>
   
+      <!-- Filter checkbox divs -->
       <div id="filter">
         <h3>Filter by Categories:</h3>
         <div id="gameGenreTypes" class="row">
@@ -53,33 +55,37 @@
       </div>
       <br>
   
-      <ul class="pagination">
-        <!-- Previous Page button -->
-        <a class="btn btn-primary ml-1" href="/searchGames?page=<%= (currentPage - 1) %>" <% if (currentPage === 1) { %> style="display: none;" <% } %>><</a> &nbsp;
-        <% for (let i = 1; i <= numPages; i++) { %>
-          <li>
-            <% if (currentPage === i) { %>
-              <a class="btn btn-primary active" href="/searchGames?page=<%= i %>"
-                <% } else { %>
-                  <a class="btn btn-primary" href="/searchGames?page=<%= i %>"
-              <% } %>
-            ><%= i %></a>
-          </li>
-          &nbsp;
+      <!-- Pagination page navigation buttons -->
+      <div id="pagination" class="d-flex justify-content-center">
+        <% const startPage = Math.max(1, currentPage - 2); %>
+        <% const endPage = Math.min(numPages, startPage + 4); %>
+        <button class="btn btn-primary ml-1 prevButton" <%= currentPage === 1 ? 'disabled' : '' %>>&lt;</button>&nbsp;
+        <% for (let i = startPage; i <= endPage; i++) { %>
+          <% if (i === currentPage) { %>
+            <button class="btn btn-primary page ml-1 numberedButtons active" value="<%=i%>"><%=i%></button>&nbsp;
+          <% } else { %>
+            <button class="btn btn-primary page ml-1 numberedButtons" value="<%=i%>"><%=i%></button>&nbsp;
+          <% } %>
         <% } %>
-        <!-- Next Page button -->
-        <a class="btn btn-primary ml-1" href="/searchGames?page=<%= currentPage + 1 %>" <% if (currentPage === numPages) { %> style="display: none;" <% } %>>></a>
-      </ul>
+        <button class="btn btn-primary ml-1 nextButton"<%= currentPage === numPages ? 'disabled' : '' %>>></button>
+        </div>
+
+      <br>
+
+      <!-- Paginated game cards -->
         <div class="row" id="gameCards">
           <% for (let i = (currentPage - 1)*PAGE_SIZE; i < currentPage * PAGE_SIZE; i++) { %>
+            <% if (gameResponse[i].cover === undefined) { %>
+              <% continue; %>
+            <% } %>
                   <div class="card" id = gameCard>
                       <div class="row g-0">
-                          <div class="col-sm row-">
+                          <div class="col-sm row">
                               <img src="
                                   <%= gameResponse[i].cover%>
                                   " class="img-fluid rounded-start gameImage" alt="Tears of the Kingdom">
                           </div>
-                          <div class="col-sm row-">
+                          <div class="col-sm row">
                                <div class="card-body">
                                   <h5 class="card-title"><%= gameResponse[i].name %></h5>
                                   <p class="card-text"><%= gameResponse[i].summary %></p>
@@ -99,6 +105,7 @@
       </main>
     <%- include('./templates/footer.ejs') %>
 
+    <!-- Objects passed by index.js and accessible by searchGamesScripts.js -->
     <script>
       const gameResponse = <%- JSON.stringify(gameResponse) %>;
       const apiGenres = <%- JSON.stringify(apiGenres) %>;

@@ -1,5 +1,5 @@
 ////////////////////////////////
-// Filter code
+// Filter script code
 ////////////////////////////////
 
 // Pulls filters currently checked on page
@@ -11,6 +11,7 @@ const filterGenresSelected = () => {
   return selectedTypes;
 };
 
+// Function to filter games based on selected filters from DOM checkboxes
 function filterGenres() {
   selectedFilters = filterGenresSelected(); // Pulls filters currently checked on page stored as an array
   const filteredGames = []; // Array to store games that match the selected filters
@@ -19,13 +20,11 @@ function filterGenres() {
 // Iterate over the games array
   for (let i = 0; i < gameResponse.length; i++) {
     const genres = gameResponse[i].genres;
-    console.log(genres)
 
     // Check if both target names exist in the genres of the current game
     const matches = selectedFilters.every((selectedFilters) =>
       genres.some((genre) => genre.name === selectedFilters)
     );
-    console.log(matches)
 
     // If both target names are found, set found to true and break the loop
     if (matches) {
@@ -33,6 +32,46 @@ function filterGenres() {
     }
   }
 
+  // Update gameCards div with filtered games up to PAGE_SIZE limit
+  paginateGames(currentPage, PAGE_SIZE, filteredGames);
+  numPages = Math.ceil(filteredGames.length / PAGE_SIZE);
+  updatePaginationDiv(currentPage, numPages);
+}
+
+// Update numbered page buttons
+function updatePaginationDiv(currentPage, numPages) {
+  $('#pagination').empty();
+
+  const startPage = Math.max(1, currentPage - 2);
+  const endPage = Math.min(numPages, startPage + 4);
+
+  for (let i = startPage; i <= endPage; i++) {
+    if (i === currentPage) {
+      $('#pagination').append(`
+      <button class="btn btn-primary page ml-1 numberedButtons active" value="${i}">${i}</button>&nbsp;
+    `);}
+    else {
+    $('#pagination').append(`
+      <button class="btn btn-primary page ml-1 numberedButtons" value="${i}">${i}</button>&nbsp;
+    `);
+    }
+  }
+
+  const prevButton = `<button class="btn btn-primary ml-1 prevButton" ${currentPage === 1 ? 'disabled' : '' }>
+  <
+  </button>&nbsp;`;
+
+  const nextButton = `
+    <button class="btn btn-primary ml-1 nextButton" ${currentPage === numPages ?  'disabled' : '' }>
+    >
+    </button>`;
+
+  $('#pagination').prepend(prevButton);
+  $('#pagination').append(nextButton);
+}
+
+// Update displayed games
+async function paginateGames(currentPage, PAGE_SIZE, filteredGames){
   for (let i = (currentPage - 1)*PAGE_SIZE; i < currentPage * PAGE_SIZE; i++) {
     $('#gameCards').append(`
       <div class="card" id = gameCard>
@@ -57,59 +96,6 @@ function filterGenres() {
       </div>
     `);
   };
-
-  // updatePaginationDiv(currentPage, Math.ceil(filteredGames.length / PAGE_SIZE));
-}
-
-// Loops through all games pulled and checks if they match the selected filters
-// function createFilteredGames(databaseGames, selectedFilters) {
-//   const filteredGames = databaseGames.filter(game => selectedFilters.every(filter => game.genres.includes(filter)));
-//   return filteredGames;
-// }
-
-// Update numbered page buttons
-function updatePaginationDiv(currentPage, numPages) {
-  $('#pagination').empty();
-
-  const startPage = Math.max(1, currentPage - 2);
-  const endPage = Math.min(numPages, startPage + 4);
-
-  for (let i = startPage; i <= endPage; i++) {
-    if (i === currentPage) {
-      $('#pagination').append(`
-      <button class="btn btn-primary page ml-1 numberedButtons active" value="${i}">${i}</button>
-    `);}
-    else {
-    $('#pagination').append(`
-      <button class="btn btn-primary page ml-1 numberedButtons" value="${i}">${i}</button>
-    `);
-    }
-  }
-
-  const prevButton = `<button class="btn btn-primary ml-1 prevButton" ${currentPage === 1 ? 'style="display: none;"' : ''}>
-  <
-  </button>`;
-
-  const nextButton = `
-    <button class="btn btn-primary ml-1 nextButton" ${currentPage === numPages ? 'style="display: none;"' : ''}>
-    >
-    </button>`;
-
-  $('#pagination').prepend(prevButton);
-  $('#pagination').append(nextButton);
-}
-
-// Update displayed games
-async function paginateGames(currentPage, PAGE_SIZE, pulledGames){
-  const paginatedGames = [];
-  $('#gameCards').empty();
-  for (let i = 0; i < PAGE_SIZE; i++) {
-    const game = pulledGames[(currentPage - 1) * PAGE_SIZE + i];
-    if (game) {
-      paginatedGames.push(game);
-    }
-  }
-  return paginatedGames;
 }
 
 const setup = async () => {
@@ -136,9 +122,6 @@ const setup = async () => {
     currentPage++;
     filterGenres();
   });
-  
-  // console.log(currentPage)
-  // console.log(databaseGames)
 }
 
 $(document).ready(setup);

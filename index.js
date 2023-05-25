@@ -455,9 +455,6 @@ app.get('/profile', async (req, res) => {
 
 // Search Games GET request
 app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
-  var databaseGames = await gamesModel.find().limit(270).toArray() // pull games from mongodb
-  var client_id = 'twitch_client_id'
-
   async function getTwitchData() { // Twitch authentication for IGDB api
     const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
       method: 'POST',
@@ -473,13 +470,6 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
 
   const PAGE_SIZE = 9
   let currentPage = parseInt(req.query.page) || 1;
-  // var searchGameNames = []
-  // var searchGameData = []
-  // // For loop to get game names of specific page from mongo database
-  // for (var i = (currentPage - 1) * PAGE_SIZE; i < (currentPage * PAGE_SIZE); i++) {
-  //   searchGameNames.push(databaseGames[i].title)
-  //   searchGameData.push(databaseGames[i])
-  // }
 
   // Function to pull games from IGDB API
   async function getAllGames() {
@@ -495,30 +485,18 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
       where release_dates.date != null;
       where genres != null;
       where rating >= 80;
-      limit 270;`
+      limit 495;`
     })
     const my_info = await response.json()
-    console.log('test')
     return my_info
   }
 
   // Function to find games matching names in searchGameNames from IGDB API
   const gameResponse = await getAllGames() // Games from IGDB API with matching names from mongo database
-  // for (var i = 0; i < databaseGames.length; i++) { // Loop through games pulled from mongo database (9 times)
-  //   for (var j = 0; j < gameResponse.length; j++) { // Loop through each game pulled from IGDB api
-  //     if (databaseGames[i].title == gameResponse[j].name) { // If game name from mongo database matches game name from IGDB api
-        // if (gameResponse[j].cover == undefined) { // If game has no cover image
-        //   databaseGames[i].cover = "no-cover.png" // Set cover image to no-cover.png
-        // } else { // If game has cover image
-        //   gameResponse[j].cover.url = gameResponse[j].cover.url.replace("t_thumb", "t_cover_big") // Replace t_thumb with t_cover_big in url
-        //   databaseGames[i].cover = gameResponse[j].cover.url // Set cover image to url from IGDB api
-  //       }
-  //     }
-  //   }
-  // }
 
+  // Function to replace undefined fields with empty arrays in JSON object
   const defineFields = (gameArray) => {      //replaces undefined fields with empty arrays
-    const fields = ["name", "id", "summary", "screenshots", "rating", "rating_count", "aggregated_rating", "aggregated_rating_count", "genres", "similar_games", "involved_companies", "total_rating", "first_release_date", "platforms", "game_modes", "themes"]
+    const fields = ["name", "id", "summary", "screenshots", "rating", "rating_count", "aggregated_rating", "aggregated_rating_count", "genres", "similar_games", "involved_companies", "total_rating", "first_release_date", "platforms", "game_modes", "themes", "cover"]
     for (const gameField of fields) {
       if (gameArray[`${gameField}`] == undefined) {
         gameArray[`${gameField}`] = []
@@ -526,15 +504,20 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
     }
   }  
 
-  for (var i = 0; i < gameResponse.length; i++){
-    if (gameResponse[i].cover == undefined) { // If game has no cover image
-      gameResponse[i].cover = "no-cover.png" // Set cover image to no-cover.png
-    } else { // If game has cover image
-      gameResponse[i].cover.url = gameResponse[i].cover.url.replace("t_thumb", "t_cover_big") // Replace t_thumb with t_cover_big in url
-      gameResponse[i].cover = gameResponse[i].cover.url // Set cover image to url from IGDB api
+  // Loop to replace undefined cover images with no-cover.png and replace t_thumb with t_cover_big in url
+  async function processGameResponse() {
+    for (var i = 0; i < gameResponse.length; i++){
+      if (gameResponse[i].cover === undefined) { // If game has no cover image
+        gameResponse[i].cover = "no-cover.png" // Set cover image to no-cover.png
+      } else { // If game has cover image
+        gameResponse[i].cover.url = gameResponse[i].cover.url.replace("t_thumb", "t_cover_big") // Replace t_thumb with t_cover_big in url
+        gameResponse[i].cover = gameResponse[i].cover.url // Set cover image to url from IGDB api
+      }
+      defineFields(gameResponse[i]);
     }
-    defineFields(gameResponse[i]);
   }
+
+  processGameResponse();
 
   // Function to find games matching names in searchGameNames from IGDB API 
   async function getAllGenres() {
@@ -555,11 +538,10 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
 
   const apiGenres = await getAllGenres() // Genres from IGDB API with matching names from mongo database
 
+  // Render searchGames.ejs with the following variables
   res.render('searchGames.ejs', {
     "loggedIn": true,
     "name": req.session.username,
-    // "databaseGames": databaseGames, // Games from mongo database
-    // "searchGameData": searchGameData, // 9 games from mongo database
     "currentPage": currentPage,
     "numPages": Math.ceil(gameResponse.length / PAGE_SIZE),
     "apiGenres": apiGenres,
