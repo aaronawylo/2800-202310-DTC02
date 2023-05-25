@@ -98,7 +98,7 @@ Before you begin, make sure you have the following installed:
 
 ## Getting Started With Local Development
 
-QuickQueue is is using a single repo with multiple dependecies.
+QuickQueue is using a single repo with multiple dependecies.
 
 Follow these simple instructions to set up a local development environment.
 
@@ -134,7 +134,7 @@ Follow these simple instructions to set up a local development environment.
 
 1. On the homepage, click on either the Signup button if you do not have an account, or Login if you do!
 
-- Profile page that stores saved games and played games
+- Profile page that stores saved games, played games, and preferred genres
 
 1. Click the login button and login to our app
 2. Open the hamburger menu in the upper right corner
