@@ -15,6 +15,12 @@ html, body {
     color: white!important;
 }
 
+.active {
+    background-color: #5f59f7!important;
+    border-color: white!important;
+    color: white!important;
+}
+
 /* Questionnaire */
 .btn-outline-primary {
     --bs-btn-color: #343090;
