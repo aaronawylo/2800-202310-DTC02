@@ -88,7 +88,7 @@ async function getTwitchData() {
 // gpt reccomendation code
 async function generateRecommendations(userProfile, num_games) {
   const preferredGenres = userProfile.questionnaireInfo.genres.join(", ");
-  const playerExperience = "Hardcore";
+  const playerExperience = userProfile.experience;
   const playedGames = userProfile.playedGames.join(", ");
   const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and the games I have played in the past such as ${playedGames}, recommend ${num_games} games I haven't played for me to play next in javascript array format using double quotes and full titles.`;
 
