@@ -4,10 +4,10 @@
 
 Our project, QuickQueue, is an app designed to help users on any gaming platform efficiently find their best matched video-games by using filters and AI to provide personalized game recommendations.
 
-# Technologies Used
+## Technologies Used
 QuickQueue uses Node.js, the MongoDB databse, an OpenAI key and the IGDB API. The dependecies are located in package.json.
 
-# Features
+## Features
 
 QuickQueue provides the following features:
 
@@ -21,7 +21,7 @@ QuickQueue provides the following features:
 ...and
 - A hidden easter egg!
 
-# File Contents of folder
+## File Contents of folder
 
 These are all the files you can expect to see after you clone the repo!
 
@@ -129,7 +129,7 @@ Follow these simple instructions to set up a local development environment.
 
 **That's it, you are good to go! Happy hacking! 👾**
 
-# Product Features
+## Product Features
 
 - A sign-up and login feature
 
@@ -184,7 +184,7 @@ OPTIONAL
 
 No steps, but here's a hint: It's on the Random Game page!
 
-# API Documentation and Credits
+## API Documentation and Credits
 
 We use MongoDB as our database, check them out here!
 
@@ -197,7 +197,7 @@ We use both the OpenAI and IGDB APIs in our app. Below you can find links to the
 
 Please refer to their documentation if you want to expand on the app!
 
-# AI Usage
+## AI Usage
 
 We did use the AI to help create our app. The majority of AI usage was in using ChatGPT in checking error codes and how to troubleshoot code. There were certain usages in creating templates of code as well, for example the Easter Egg game.
 
@@ -207,6 +207,6 @@ The best use of AI is integrated into the Recommended Pages. The app takes the u
 
 We encountered limitations coming to the AI as the prompt it gives can be variable if we were not very specific in our prompts, resulting in responses that our own app could not parse. We eventually solved this problem with a more specific prompt. We also encountered limitations in ChatGPT helping diagnose code, as sometimes it would give wrong code and we would lose time parsing to see why it's wrong and then coding, rather than just coding from scratch.
 
-# Contact Information ✨
+## Contact Information ✨
 
 You can contact us at quickqueuedtc@gmail.com with any questions you have!
