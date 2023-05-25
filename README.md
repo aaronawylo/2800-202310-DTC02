@@ -5,7 +5,7 @@
 Our project, QuickQueue, is an app designed to help users on any gaming platform efficiently find their best matched video-games by using filters and AI to provide personalized game recommendations.
 
 ## Technologies Used
-QuickQueue uses Node.js, the MongoDB databse, an OpenAI key and the IGDB API. The dependecies are located in package.json.
+QuickQueue uses HTML, CSS, Node.js, the MongoDB databse, an OpenAI key and the IGDB API. The dependecies are located in package.json.
 
 ## Features
 
