@@ -84,9 +84,7 @@ async function paginateGames(currentPage, PAGE_SIZE, filteredGames){
                 <div class="card-body">
                     <h5 class="card-title">${filteredGames[i].name}</h5>
                     <p class="card-text">${filteredGames[i].summary}</p>
-                    <p class="card-text">${filteredGames[i].id}</p>
                     <form method="post" action="/gameInformation">
-                        <input type="hidden" name="mongoGameID" value="">
                         <input type="hidden" name="apiGameID" value="${filteredGames[i].id}">
                         <input type ="hidden" name="gameImage" value="${filteredGames[i].cover}">
                         <button type="submit" class="btn btn-primary">See more information</button>
