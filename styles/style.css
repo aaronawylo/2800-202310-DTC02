@@ -12,6 +12,7 @@ html, body {
 .btn-primary {
     background-color: #343090!important;
     border-color: white!important;
+    color: white!important;
 }
 
 /* Questionnaire */
