@@ -174,7 +174,11 @@ app.get('/', async (req, res) => {
     }
     const recGameResponse = await getAllGames(recommendedGames)
     for (var i = 0; i < recGameResponse.length; i++) {
-      recGameResponse[i].cover.url = recGameResponse[i].cover.url.replace("t_thumb", "t_cover_big")
+      if (recGameResponse[i].cover == undefined) {
+        recGameResponse[i].cover = {url: "no-cover.png"}
+      } else {
+        recGameResponse[i].cover.url = recGameResponse[i].cover.url.replace("t_thumb", "t_cover_big")
+      }
     }
     res.render('index.ejs', {
       "loggedIn": true,
@@ -365,13 +369,12 @@ app.get('/recommended', sessionValidation, async (req, res) => {
 
   // add full-size covers to recommended games
   for (var i = 0; i < gameResponse.length; i++) {
-    if (gameResponse[i].cover.url == undefined) {
-      trending_games[i].cover = "no-cover.png"
+    if (gameResponse[i].cover == undefined) {
+      gameResponse[i].cover = {url: "no-cover.png"}
     } else {
-    gameResponse[i].cover.url = gameResponse[i].cover.url.replace("t_thumb", "t_cover_big")
+      gameResponse[i].cover.url = gameResponse[i].cover.url.replace("t_thumb", "t_cover_big")
   }
   }
-  
 
   // render recommended page
   res.render('recommended_page.ejs', {
