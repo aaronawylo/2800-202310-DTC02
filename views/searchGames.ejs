@@ -52,12 +52,12 @@
             <% if (gameResponse[i] && gameResponse[i].cover !== undefined) { %>
                   <div class="card" id="gameCard">
                       <div class="row g-0">
-                          <div class="col-sm row">
+                          <div class="col-sm row-">
                               <img src="
                                   <%- gameResponse[i].cover %>
                                   " class="img-fluid rounded-start gameImage" alt="Tears of the Kingdom">
                           </div>
-                          <div class="col-sm row">
+                          <div class="col-sm row-">
                                <div class="card-body">
                                   <h5 class="card-title"><%= gameResponse[i].name %></h5>
                                   <p class="card-text"><%= gameResponse[i].summary %></p>
