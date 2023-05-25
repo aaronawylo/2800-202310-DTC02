@@ -75,7 +75,7 @@ async function paginateGames(currentPage, PAGE_SIZE, filteredGames){
   for (let i = (currentPage - 1)*PAGE_SIZE; i < currentPage * PAGE_SIZE; i++) {
     if (filteredGames[i] && filteredGames[i].cover !== undefined) {
     $('#gameCards').append(`
-      <div class="card" id = gameCard>
+      <div class="card" id="gameCard">
         <div class="row g-0">
             <div class="col-sm row-">
                 <img src="${filteredGames[i].cover} " class="img-fluid rounded-start gameImage" alt="Tears of the Kingdom">
