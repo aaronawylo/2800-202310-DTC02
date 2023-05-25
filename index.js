@@ -426,20 +426,26 @@ app.get('/profile', async (req, res) => {
 // Search Games GET request
 app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
   var databaseGames = await gamesModel.find().limit(270).toArray() // pull games from mongodb
+  var client_id = 'twitch_client_id'
+
+  async function getTwitchData() { // Twitch authentication for IGDB api
+    const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
+      method: 'POST',
+      headers: {
+        'Client-ID': twitch_client_id,
+        'Client-Secret': twitch_client_secret
+      }
+    })
+    const my_info = await response.json()
+    return my_info
+  }
   const twitchData = await getTwitchData()
 
   const PAGE_SIZE = 9
   let currentPage = parseInt(req.query.page) || 1;
-  var searchGameNames = []
-  var searchGameData = []
-  // For loop to get game names of specific page from mongo database
-  for (var i = (currentPage - 1) * PAGE_SIZE; i < (currentPage * PAGE_SIZE); i++) {
-    searchGameNames.push(databaseGames[i].title)
-    searchGameData.push(databaseGames[i])
-  }
 
-  // Function to find games matching names in searchGameNames from IGDB API 
-  async function getAllGames(searchGameNames) {
+  // Function to pull games from IGDB API
+  async function getAllGames() {
     const response = await fetch('https://api.igdb.com/v4/games', {
       method: 'POST',
       headers: {
@@ -447,52 +453,75 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
         'Client-ID': twitch_client_id,
         'Authorization': 'Bearer ' + twitchData.access_token,
       },
-      body: `fields name,cover.url,genres;
-      sort release_dates.date desc;
+      body: `fields name,id,cover.url,genres.name,summary,release_dates.date,rating;
+      sort rating desc;
       where release_dates.date != null;
-      where name = ("${searchGameNames[0]}", "${searchGameNames[1]}", "${searchGameNames[2]}", "${searchGameNames[3]}", "${searchGameNames[4]}", "${searchGameNames[5]}", "${searchGameNames[6]}", "${searchGameNames[7]}", "${searchGameNames[8]}", "${searchGameNames[9]}");`
+      where genres != null;
+      where rating >= 80;
+      limit 495;`
     })
     const my_info = await response.json()
     return my_info
   }
 
-  const gameResponse = await getAllGames(searchGameNames) // Games from IGDB API with matching names from mongo database
+  // Function to find games matching names in searchGameNames from IGDB API
+  const gameResponse = await getAllGames() // Games from IGDB API with matching names from mongo database
 
-  for (var i = 0; i < databaseGames.length; i++) { // Loop through games pulled from mongo database (9 times)
-    for (var j = 0; j < gameResponse.length; j++) { // Loop through each game pulled from IGDB api
-      if (databaseGames[i].title == gameResponse[j].name) { // If game name from mongo database matches game name from IGDB api
-        if (gameResponse[j].cover == undefined) { // If game has no cover image
-          databaseGames[i].cover = "no-cover.png" // Set cover image to no-cover.png
-        } else { // If game has cover image
-          gameResponse[j].cover.url = gameResponse[j].cover.url.replace("t_thumb", "t_cover_big") // Replace t_thumb with t_cover_big in url
-          databaseGames[i].cover = gameResponse[j].cover.url // Set cover image to url from IGDB api
-        }
+  // Function to replace undefined fields with empty arrays in JSON object
+  const defineFields = (gameArray) => {      //replaces undefined fields with empty arrays
+    const fields = ["name", "id", "summary", "screenshots", "rating", "rating_count", "aggregated_rating", "aggregated_rating_count", "genres", "similar_games", "involved_companies", "total_rating", "first_release_date", "platforms", "game_modes", "themes", "cover"]
+    for (const gameField of fields) {
+      if (gameArray[`${gameField}`] == undefined) {
+        gameArray[`${gameField}`] = []
       }
+    }
+  }  
+
+  // Loop to replace undefined cover images with no-cover.png and replace t_thumb with t_cover_big in url
+  async function processGameResponse() {
+    for (var i = 0; i < gameResponse.length; i++){
+      if (gameResponse[i].cover == undefined) { // If game has no cover image
+        gameResponse[i].cover = "no-cover.png" // Set cover image to no-cover.png
+      } else { // If game has cover image
+        gameResponse[i].cover.url = gameResponse[i].cover.url.replace("t_thumb", "t_cover_big") // Replace t_thumb with t_cover_big in url
+        gameResponse[i].cover = gameResponse[i].cover.url // Set cover image to url from IGDB api
+      }
+      defineFields(gameResponse[i]);
     }
   }
 
+  processGameResponse();
+
+  // Function to find games matching names in searchGameNames from IGDB API 
+  async function getAllGenres() {
+    const response = await fetch('https://api.igdb.com/v4/genres', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Client-ID': twitch_client_id,
+        'Authorization': 'Bearer ' + twitchData.access_token,
+      },
+      body: `fields name,slug;
+      limit 25;`
+
+    })
+    const my_info = await response.json()
+    return my_info
+  }
+
+  const apiGenres = await getAllGenres() // Genres from IGDB API with matching names from mongo database
+
+  // Render searchGames.ejs with the following variables
   res.render('searchGames.ejs', {
     "loggedIn": true,
     "name": req.session.username,
-    "databaseGames": searchGameData,
     "currentPage": currentPage,
-    "numPages": Math.ceil(databaseGames.length / PAGE_SIZE),
+    "numPages": Math.ceil(gameResponse.length / PAGE_SIZE),
+    "apiGenres": apiGenres,
+    "PAGE_SIZE": PAGE_SIZE,
+    "gameResponse": gameResponse, //API response
   })
 })
-
-const updatePaginationDiv = (currentPage, numPages) => {
-  $('#pagination').empty()
-
-  const startPage = 1;
-  const endPage = numPages;
-  for (let i = startPage; i <= endPage; i++) {
-    $('#pagination').append(`
-    <button class="btn btn-primary page ml-1 numberedButtons" value="${i}">${i}</button>
-    `)
-  }
-
-}
-
 
 // End of Marco's code
 
