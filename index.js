@@ -88,9 +88,11 @@ async function getTwitchData() {
 // gpt reccomendation code
 async function generateRecommendations(userProfile, num_games) {
   const preferredGenres = userProfile.questionnaireInfo.genres.join(", ");
-  const playerExperience = "Hardcore";
+  const playerExperience = userProfile.experience;
+  const gameFeature = userProfile.questionnaireInfo.gameFeatures
+  const maxPrice = userProfile.questionnaireInfo.maxPrice;
   const playedGames = userProfile.playedGames.join(", ");
-  const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and the games I have played in the past such as ${playedGames}, recommend ${num_games} games I haven't played for me to play next in javascript array format using double quotes and full titles.`;
+  const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and my favorite game feature is ${gameFeature} and the max money I would like to spend is $${maxPrice} and the games I have played in the past such as ${playedGames}, recommend ${num_games} games I haven't played for me to play next in javascript array format using double quotes and full titles.`;
 
   // Generate a response using ChatGPT
   const completion = await openai.createCompletion({
@@ -157,7 +159,7 @@ app.get('/', async (req, res) => {
 
     // reccomendation code
     let openAIcount = 0;
-    while (openAIcount < 5) {
+    while (openAIcount < 10) {
       try {
         recommendedGames = await generateRecommendations(current_user, 9);
         recommendedGames = JSON.parse(recommendedGames);
@@ -166,7 +168,7 @@ app.get('/', async (req, res) => {
         console.error("Error parsing recommendedGames:", error);
         await new Promise((resolve) => setTimeout(resolve, 1000));
         openAIcount++;
-        if (openAIcount = 5) {
+        if (openAIcount = 10) {
           res.redirect('/404');
           break;
         }
