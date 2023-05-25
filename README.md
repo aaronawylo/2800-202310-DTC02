@@ -25,6 +25,7 @@ QuickQueue provides the following features:
 
 These are all the files you can expect to see after you clone the repo!
 
+```bash
 root
 |   .gitignore
 |   databaseConnection.js
@@ -87,6 +88,7 @@ root
             recommended_card.ejs
             svgs.ejs
             trending_card.ejs
+```
 
 ## System Requirements
 
