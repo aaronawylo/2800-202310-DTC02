@@ -12,17 +12,17 @@ const filterGenresSelected = () => {
 };
 
 // Function to filter games based on selected filters from DOM checkboxes
-function filterGenres() {
+async function filterGenres() {
   selectedFilters = filterGenresSelected(); // Pulls filters currently checked on page stored as an array
   const filteredGames = []; // Array to store games that match the selected filters
   $('#gameCards').empty(); // Clear the game cards div
 
 // Iterate over the games array
   for (let i = 0; i < gameResponse.length; i++) {
-    const genres = gameResponse[i].genres;
+    const genres = await gameResponse[i].genres;
 
     // Check if both target names exist in the genres of the current game
-    const matches = selectedFilters.every((selectedFilters) =>
+    const matches = await selectedFilters.every((selectedFilters) =>
       genres.some((genre) => genre.name === selectedFilters)
     );
 
@@ -33,7 +33,6 @@ function filterGenres() {
   }
 
   // Update gameCards div with filtered games up to PAGE_SIZE limit
-  console.log(filteredGames)
   paginateGames(currentPage, PAGE_SIZE, filteredGames);
   numPages = Math.ceil(filteredGames.length / PAGE_SIZE);
   updatePaginationDiv(currentPage, numPages);
@@ -74,6 +73,7 @@ function updatePaginationDiv(currentPage, numPages) {
 // Update displayed games
 async function paginateGames(currentPage, PAGE_SIZE, filteredGames){
   for (let i = (currentPage - 1)*PAGE_SIZE; i < currentPage * PAGE_SIZE; i++) {
+    if (filteredGames[i] && filteredGames[i].cover !== undefined) {
     $('#gameCards').append(`
       <div class="card" id = gameCard>
         <div class="row g-0">
@@ -96,6 +96,9 @@ async function paginateGames(currentPage, PAGE_SIZE, filteredGames){
         </div>
       </div>
     `);
+    } else {
+      continue;
+    }
   };
 }
 

@@ -73,8 +73,10 @@
       <br>
 
       <!-- Paginated game cards -->
+      <!-- Paginates up to PAGE_SIZE number of objects -->
         <div class="row" id="gameCards">
           <% for (let i = (currentPage - 1)*PAGE_SIZE; i < currentPage * PAGE_SIZE; i++) { %>
+            <% if (gameResponse[i] && gameResponse[i].cover !== undefined) { %>
                   <div class="card" id = gameCard>
                       <div class="row g-0">
                           <div class="col-sm row">
@@ -97,7 +99,8 @@
                           </div>
                       </div>
                   </div>
-                  <% } %>
+                <% } %>
+          <% } %>
               </div>
       </main>
     <%- include('./templates/footer.ejs') %>
