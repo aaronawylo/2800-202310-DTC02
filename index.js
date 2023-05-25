@@ -89,8 +89,10 @@ async function getTwitchData() {
 async function generateRecommendations(userProfile, num_games) {
   const preferredGenres = userProfile.questionnaireInfo.genres.join(", ");
   const playerExperience = userProfile.experience;
+  const gameFeature = userProfile.questionnaireInfo.gameFeatures
+  const maxPrice = userProfile.questionnaireInfo.maxPrice;
   const playedGames = userProfile.playedGames.join(", ");
-  const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and the games I have played in the past such as ${playedGames}, recommend ${num_games} games I haven't played for me to play next in javascript array format using double quotes and full titles.`;
+  const prompt = `Based on my experience as a ${playerExperience} gamer and my preferences for ${preferredGenres} and my favorite game feature is ${gameFeature} and the max money I would like to spend is $${maxPrice} and the games I have played in the past such as ${playedGames}, recommend ${num_games} games I haven't played for me to play next in javascript array format using double quotes and full titles.`;
 
   // Generate a response using ChatGPT
   const completion = await openai.createCompletion({
