@@ -159,7 +159,7 @@ app.get('/', async (req, res) => {
 
     // reccomendation code
     let openAIcount = 0;
-    while (openAIcount < 5) {
+    while (openAIcount < 10) {
       try {
         recommendedGames = await generateRecommendations(current_user, 9);
         recommendedGames = JSON.parse(recommendedGames);
@@ -168,7 +168,7 @@ app.get('/', async (req, res) => {
         console.error("Error parsing recommendedGames:", error);
         await new Promise((resolve) => setTimeout(resolve, 1000));
         openAIcount++;
-        if (openAIcount = 5) {
+        if (openAIcount = 10) {
           res.redirect('/404');
           break;
         }
