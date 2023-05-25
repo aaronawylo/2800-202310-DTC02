@@ -1,9 +1,11 @@
+# QuickQueue
+
 [QuickQueue](http://xkdqzglrwm.ca02.qoddiapp.com) is an open‑source development platform. It is designed to bring you recommended video games using an AI model to parse your tastes and play history!
 
 Our project, QuickQueue, is an app designed to help users on any gaming platform efficiently find their best matched video-games by using filters and AI to provide personalized game recommendations.
 
 # Technologies Used
-QuickQueue uses Node.js, an OpenAI key and the IGDB API.
+QuickQueue uses Node.js, the MongoDB databse, an OpenAI key and the IGDB API. The dependecies are located in package.json.
 
 # Features
 
@@ -21,7 +23,70 @@ QuickQueue provides the following features:
 
 # File Contents of folder
 
+These are all the files you can expect to see after you clone the repo!
 
+root
+|   .gitignore
+|   databaseConnection.js
+|   index.js
+|   package.json
+|   Procfile
+|   README.md
+|   utils.js
+|   
++---public
+|       banana-dance.gif
+|       contra.gif
+|       logo-no-background.png
+|       logo-transparent.png
+|       mario-mystery-box.gif
+|       no-cover.png
+|       peppy.png
+|       pom-pom-no.png
+|       snorlax-dumper.gif
+|       up-arrow.png
+|       
++---scripts
+|       browseGamesScripts.js
+|       easterEgg.js
+|       gameinfo.js
+|       randomGame.js
+|       
++---styles
+|       404.css
+|       browseGame.css
+|       easterEgg.css
+|       gameinfo.css
+|       style.css
+|       trending.css
+|       
+\---views
+    |   404.ejs
+    |   browseGames.ejs
+    |   easterEgg.ejs
+    |   gameinfo.ejs
+    |   index.ejs
+    |   login.ejs
+    |   questionnaire.ejs
+    |   questionnaireSubmit.ejs
+    |   randomGame.ejs
+    |   recommended_page.ejs
+    |   resetPassword.ejs
+    |   signup.ejs
+    |   trending_page.ejs
+    |   User_Profile.ejs
+    |   
+    \---templates
+            footer.ejs
+            genreCheckbox.ejs
+            header.ejs
+            headerloggedout.ejs
+            hoursPlay.ejs
+            platformCheckbox.ejs
+            playerNumCheckbox.ejs
+            recommended_card.ejs
+            svgs.ejs
+            trending_card.ejs
 
 ## System Requirements
 
@@ -101,7 +166,10 @@ OPTIONAL
 
 - Search by tags to find games in specific genres
 
-
+1. Login/Signup to the website
+2. Open the hamburger menu in the upper right corner
+3. Click on Browse Games
+4. Select the categories that interest you!
 
 - A random game page that will give you something you've definitely never seen!
 
