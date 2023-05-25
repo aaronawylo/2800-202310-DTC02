@@ -9,7 +9,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
   <main>
       <h1>
-          Search for Games
+          Browse Games
       </h1>
   
       <br>
@@ -80,7 +80,7 @@
       </main>
     <%- include('./templates/footer.ejs') %>
 
-    <!-- Objects passed by index.js and accessible by searchGamesScripts.js -->
+    <!-- Objects passed by index.js and accessible by browseGamesScripts.js -->
     <script>
       const gameResponse = <%- JSON.stringify(gameResponse) %>;
       const apiGenres = <%- JSON.stringify(apiGenres) %>;
