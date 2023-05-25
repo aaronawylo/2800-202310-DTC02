@@ -168,6 +168,7 @@ app.get('/', async (req, res) => {
         openAIcount++;
         if (openAIcount = 5) {
           res.redirect('/404');
+          break;
         }
       }
     }
@@ -337,6 +338,7 @@ app.get('/recommended', sessionValidation, async (req, res) => {
         openAIcount++;
         if (openAIcount = 5) {
           res.redirect('/404');
+          break;
         }
       }
     }
