@@ -424,7 +424,7 @@ app.get('/profile', async (req, res) => {
 // Marco's code
 
 // Search Games GET request
-app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
+app.get('/browseGames', async (req, res) => {  // get reqeust for /searchGames
   var databaseGames = await gamesModel.find().limit(270).toArray() // pull games from mongodb
   var client_id = 'twitch_client_id'
 
@@ -512,7 +512,7 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
   const apiGenres = await getAllGenres() // Genres from IGDB API with matching names from mongo database
 
   // Render searchGames.ejs with the following variables
-  res.render('searchGames.ejs', {
+  res.render('browseGames.ejs', {
     "loggedIn": true,
     "name": req.session.username,
     "currentPage": currentPage,

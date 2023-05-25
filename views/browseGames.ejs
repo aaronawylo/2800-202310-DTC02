@@ -1,4 +1,8 @@
+
+
 <%- include('./templates/header.ejs', { "name": name }) %>
+
+<link rel="stylesheet" href="browseGame.css">
 
 <body>
   <!-- import jQuery -->
@@ -84,5 +88,5 @@
       var numPages = <%- JSON.stringify(numPages) %>;
       const PAGE_SIZE = <%- JSON.stringify(PAGE_SIZE) %>;
     </script>
-      <script src="searchGamesScripts.js"></script>
+      <script src="browseGamesScripts.js"></script>
 </body>
