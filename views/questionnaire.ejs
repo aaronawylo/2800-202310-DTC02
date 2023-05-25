@@ -93,7 +93,7 @@
 
 
     <div class="text-center">
-        <h3> Pick all of the player number options yo uwant!</h3>
+        <h3> Pick all of the player number options you want!</h3>
         <div class="mb-3">
             <div class="row">
                 <% let l=0; %>
@@ -116,7 +116,6 @@
             <select class="form-select" aria-label="Default select example" name="hoursPlay">
                 <% let m=0; %>
                 <% for(m=0; m < hoursPlay.length; m++) { %>
-                <% console.log(hoursPlay[m]) %>
                     <%- include('templates/hoursPlay.ejs', {hoursPlay: hoursPlay[m]})  %> 
                 <% } %>
             </select>

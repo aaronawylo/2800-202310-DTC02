@@ -1,34 +1,9 @@
-<style>
-    #gameCard{
-        max-width: 33%;
-    }
-    @media screen and (max-width: 1500px){
-        #gameCard{
-            max-width: 33%;
-        }
-    }
-    @media screen and (max-width: 900px){
-        #gameCard{
-            max-width: 100%;
-        }
-    }
-
-    @media screen and (max-width: 576px){
-        .gameImage{
-            width: 100%;
-        }
-        
-        #gameCard{ 
-            max-width: 100%;
-        }
-    }
-    
-</style>
+<link rel="stylesheet" href="trending.css">
 
 
 <%- include('./templates/header.ejs', { "name": name }) %>
     <main>
-        <h1>
+        <h1 class="text-center">
             Trending Games
         </h1>
         <div class="row">
@@ -41,12 +16,10 @@
                                 " class="img-fluid rounded-start gameImage" alt="Tears of the Kingdom">
                         </div>
                         <div class="col-sm row-">
-                             <div class="card-body">
+                            <div class="card-body">
                                 <h5 class="card-title"><%= trending_games[i].title %></h5>
                                 <p class="card-text"><%= trending_games[i].summary %></p>
-                                <p class="card-text"><%= trending_games[i]._id %></p>
                                 <form method="post" action="/gameInformation">
-                                    <input type="hidden" name="mongoGameID" value="<%= trending_games[(i)]._id %>">
                                     <input type="hidden" name="apiGameID" value="<%= trending_games[(i)].apiID %>">
                                     <input type ="hidden" name="gameImage" value="<%= trending_games[(i)].cover %>">
                                     <button type="submit" class="btn btn-primary">See more information</button>

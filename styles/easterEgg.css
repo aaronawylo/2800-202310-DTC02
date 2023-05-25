@@ -1,0 +1,47 @@
+html,
+        body {
+            overflow-x: hidden;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-y: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .easterEggGame {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: hidden;
+            height: calc(100vh - 76px - 62px);
+        }
+
+        .easterEggGame img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+
+
+        @media (max-width: 992px) {
+            .img-fluid {
+                width: 125px;
+                height: 125px;
+                max-height: calc(100vh - 138px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .img-fluid {
+                width: 75px;
+                height: 75px;
+                max-height: calc(100vh - 138px);
+            }
+        }

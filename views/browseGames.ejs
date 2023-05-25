@@ -1,0 +1,92 @@
+
+
+<%- include('./templates/header.ejs', { "name": name }) %>
+
+<link rel="stylesheet" href="browseGame.css">
+
+<body>
+  <!-- import jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <main>
+      <h1>
+          Browse Games
+      </h1>
+  
+      <br>
+  
+      <!-- Filter checkbox divs -->
+      <div id="filter">
+        <h3>Filter by Categories:</h3>
+        <div id="gameGenreTypes" class="row">
+          <% let selectedGenreTypes = [] %>
+          <% apiGenres.forEach((type) => { %>
+            <% const isChecked = selectedGenreTypes.includes(type.slug); %>
+            <div class=" col-md-5 col-lg-3">
+              <div class="form-check">
+                <input class="form-check-input typeCheckbox" type="checkbox" value="<%=type.name%>" <%= isChecked ? 'checked' : '' %>>
+                <label class="form-check-label"><%=type.name%></label>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+      <br>
+  
+      <!-- Pagination page navigation buttons -->
+      <div id="pagination" class="d-flex justify-content-center">
+        <% const startPage = Math.max(1, currentPage - 2); %>
+        <% const endPage = Math.min(numPages, startPage + 4); %>
+        <button class="btn btn-primary ml-1 prevButton" <%= currentPage === 1 ? 'disabled' : '' %>>&lt;</button>&nbsp;
+        <% for (let i = startPage; i <= endPage; i++) { %>
+          <% if (i === currentPage) { %>
+            <button class="btn btn-primary page ml-1 numberedButtons active" value="<%=i%>"><%=i%></button>&nbsp;
+          <% } else { %>
+            <button class="btn btn-primary page ml-1 numberedButtons" value="<%=i%>"><%=i%></button>&nbsp;
+          <% } %>
+        <% } %>
+        <button class="btn btn-primary ml-1 nextButton"<%= currentPage === numPages ? 'disabled' : '' %>>></button>
+        </div>
+
+      <br>
+
+      <!-- Paginated game cards -->
+      <!-- Paginates up to PAGE_SIZE number of objects -->
+        <div class="row" id="gameCards">
+          <% for (let i = (currentPage - 1)*PAGE_SIZE; i < currentPage * PAGE_SIZE; i++) { %>
+            <% if (gameResponse[i] && gameResponse[i].cover !== undefined) { %>
+                  <div class="card" id="gameCard">
+                      <div class="row g-0">
+                          <div class="col-sm row-">
+                              <img src="
+                                  <%- gameResponse[i].cover %>
+                                  " class="img-fluid rounded-start gameImage" alt="Tears of the Kingdom">
+                          </div>
+                          <div class="col-sm row-">
+                               <div class="card-body">
+                                  <h5 class="card-title"><%= gameResponse[i].name %></h5>
+                                  <p class="card-text"><%= gameResponse[i].summary %></p>
+                                  <form method="post" action="/gameInformation">
+                                      <input type="hidden" name="apiGameID" value="<%= gameResponse[(i)].id %>">
+                                      <input type ="hidden" name="gameImage" value="<% gameResponse[(i)].cover %>">
+                                      <button type="submit" class="btn btn-primary">See more information</button>
+                                  </form>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                <% } %>
+          <% } %>
+              </div>
+      </main>
+    <%- include('./templates/footer.ejs') %>
+
+    <!-- Objects passed by index.js and accessible by browseGamesScripts.js -->
+    <script>
+      const gameResponse = <%- JSON.stringify(gameResponse) %>;
+      const apiGenres = <%- JSON.stringify(apiGenres) %>;
+      var currentPage = <%- JSON.stringify(currentPage) %>;
+      var numPages = <%- JSON.stringify(numPages) %>;
+      const PAGE_SIZE = <%- JSON.stringify(PAGE_SIZE) %>;
+    </script>
+      <script src="browseGamesScripts.js"></script>
+</body>

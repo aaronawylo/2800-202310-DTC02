@@ -1,0 +1,23 @@
+.gameCover {
+    width: 100%;
+  }
+
+  #gameCard {
+    max-width: 50%;
+  }
+
+  @media screen and (max-width: 950px) {
+    #gameCard {
+      max-width: 100%;
+    }
+  }
+
+  @media screen and (max-width: 576px) {
+    .gameImage {
+      width: 100%;
+    }
+
+    #gameCard {
+      max-width: 100%;
+    }
+  }
