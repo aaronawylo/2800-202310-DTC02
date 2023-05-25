@@ -428,9 +428,6 @@ app.get('/profile', async (req, res) => {
 
 // Search Games GET request
 app.get('/browseGames', async (req, res) => {  // get reqeust for /searchGames
-  var databaseGames = await gamesModel.find().limit(270).toArray() // pull games from mongodb
-  var client_id = 'twitch_client_id'
-
   async function getTwitchData() { // Twitch authentication for IGDB api
     const response = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitch_client_id}&client_secret=${twitch_client_secret}&grant_type=client_credentials`, {
       method: 'POST',
