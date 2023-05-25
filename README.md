@@ -12,7 +12,7 @@ QuickQueue uses HTML, CSS, Bootstrap, Node.js, the MongoDB databse, an OpenAI ke
 QuickQueue provides the following features:
 
 - A sign-up and login feature
-- Profile page that stores saved games and played games
+- Profile page that stores saved games, played games, and preferred genres
 - Trending Page of the currently most popular games
 - Questionnaire to personalize your recommendations for you
 - Recommended Page that takes your questionnaire answers into account
