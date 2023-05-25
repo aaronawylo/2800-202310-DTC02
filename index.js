@@ -483,8 +483,8 @@ app.get('/searchGames', async (req, res) => {  // get reqeust for /searchGames
       if (gameResponse[i].cover == undefined) { // If game has no cover image
         gameResponse[i].cover = "no-cover.png" // Set cover image to no-cover.png
       } else { // If game has cover image
-        gameResponse[i].cover.url = gameResponse[i].cover.url.replace("t_thumb", "t_cover_big") // Replace t_thumb with t_cover_big in url
-        gameResponse[i].cover = gameResponse[i].cover.url // Set cover image to url from IGDB api
+        gameResponse[i].cover = gameResponse[i].cover.url.replace("t_thumb", "t_cover_big") // Replace t_thumb with t_cover_big in url
+        // gameResponse[i].cover = gameResponse[i].cover.url // Set cover image to url from IGDB api
       }
       defineFields(gameResponse[i]);
     }
