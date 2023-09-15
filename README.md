@@ -8,7 +8,7 @@ Our project, QuickQueue, is an app designed to help users on any gaming platform
 QuickQueue uses HTML, CSS, Bootstrap, Node.js, the MongoDB databse, an OpenAI key and the IGDB API. The dependecies are located in package.json.
 
 ## Features
-
+ 
 QuickQueue provides the following features:
 
 - A sign-up and login feature
